@@ -7,7 +7,7 @@ import { Link } from '@inertiajs/vue3';
 <template>
     <div class="flex min-h-screen bg-white dark:bg-gray-950">
         <!-- Left Side: Image (Hidden on small screens) -->
-        <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-indigo-900">
+        <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-green-900">
             <img 
                 src="/images/auth_bg.png" 
                 alt="Background" 
@@ -21,7 +21,7 @@ import { Link } from '@inertiajs/vue3';
                     <ApplicationLogo v-else class="h-24 w-24 fill-current text-white mb-8" />
                 </Link>
                 <h1 class="text-4xl font-extrabold tracking-tight mb-4">Sistem Keuangan Sekolah</h1>
-                <p class="text-xl text-indigo-100 text-center max-w-md">
+                <p class="text-xl text-green-100 text-center max-w-md">
                     Manajemen keuangan sekolah yang terintegrasi, transparan, dan profesional.
                 </p>
                 <div class="mt-12 grid grid-cols-1 gap-6 w-full max-w-md">
@@ -33,7 +33,7 @@ import { Link } from '@inertiajs/vue3';
                         </div>
                         <div>
                             <div class="text-xl font-bold text-white">Terautentikasi</div>
-                            <div class="text-sm text-indigo-200">Akses aman dan terenkripsi.</div>
+                            <div class="text-sm text-green-200">Akses aman dan terenkripsi.</div>
                         </div>
                     </div>
                     <div class="p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 flex items-center space-x-4">
@@ -44,13 +44,13 @@ import { Link } from '@inertiajs/vue3';
                         </div>
                         <div>
                             <div class="text-xl font-bold text-white">Transparan</div>
-                            <div class="text-sm text-indigo-200">Laporan keuangan real-time.</div>
+                            <div class="text-sm text-green-200">Laporan keuangan real-time.</div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Decorative Gradient Overlay -->
-            <div class="absolute inset-0 bg-gradient-to-tr from-indigo-950/80 via-transparent to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-tr from-green-950/80 via-transparent to-transparent"></div>
         </div>
 
         <!-- Right Side: Auth Form -->
@@ -60,7 +60,7 @@ import { Link } from '@inertiajs/vue3';
                 <div class="flex justify-center lg:hidden mb-8">
                     <Link href="/">
                         <img v-if="$page.props.settings?.logo_url" :src="$page.props.settings.logo_url" class="h-16 w-auto" alt="Logo" />
-                        <ApplicationLogo v-else class="h-16 w-16 fill-current text-indigo-600 dark:text-indigo-400" />
+                        <ApplicationLogo v-else class="h-16 w-16 fill-current text-green-600 dark:text-green-400" />
                     </Link>
                 </div>
                 
