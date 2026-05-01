@@ -13,10 +13,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Roles only - no hardcoded credentials
-        Role::firstOrCreate(['name' => 'admin']);
+        // Create Roles only - no hardcoded credentials initially, but we add default admin for fresh install
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
         Role::firstOrCreate(['name' => 'bendahara']);
         Role::firstOrCreate(['name' => 'guru']);
         Role::firstOrCreate(['name' => 'siswa']);
+
+        // Create Default Admin User
+        $adminUser = \App\Models\User::firstOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Administrator',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            ]
+        );
+        $adminUser->assignRole($adminRole);
     }
 }
