@@ -491,7 +491,7 @@ const formatCurrency = (value: number) => {
 
                 <div class="grid grid-cols-1 gap-4 mb-10">
                     <button v-for="cat in categories" :key="cat.id" 
-                        @click="teacherForm.bpjs_category_id = cat.id"
+                        @click="teacherForm.bpjs_category_id = teacherForm.bpjs_category_id === cat.id ? null : cat.id"
                         class="p-5 rounded-3xl border-2 text-left transition-all duration-200 group"
                         :class="teacherForm.bpjs_category_id === cat.id ? 'border-green-500 bg-green-50 ring-4 ring-green-500/10' : 'border-gray-100 hover:border-green-200 bg-white'">
                         <div class="flex justify-between items-center mb-2">
