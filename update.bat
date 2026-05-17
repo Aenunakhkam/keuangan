@@ -55,6 +55,11 @@ if %errorlevel% neq 0 (
 echo [OK] Struktur database berhasil diperbarui!
 echo.
 
+:: Step 4.5: Storage Link
+echo [*] Menghubungkan penyimpanan media (storage:link)...
+call php artisan storage:link
+echo.
+
 :: Step 5: Build Assets
 echo [5/5] Mengompilasi ulang tampilan visual (npm run build)...
 call npm run build
