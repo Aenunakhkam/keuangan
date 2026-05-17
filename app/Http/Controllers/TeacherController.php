@@ -23,7 +23,41 @@ class TeacherController extends Controller
             });
         }
 
-        $teachers = $query->with('positions')->latest()->paginate($request->input('per_page', 10))->through(function ($teacher) {
+        $bpjsConfig = \App\Models\BpjsConfig::first();
+
+        $teachers = $query->with(['positions', 'bpjsCategory'])->latest()->paginate($request->input('per_page', 10))->through(function ($teacher) use ($bpjsConfig) {
+            $bpjsAllowance = 0;
+            $bpjsHealth = 0;
+            $bpjsNaker = 0;
+
+            if ($bpjsConfig && $teacher->bpjsCategory) {
+                $category = $teacher->bpjsCategory;
+                $umk = (float) $bpjsConfig->umk_reference;
+                
+                $healthSchool = (float) $bpjsConfig->health_school_percent;
+                $healthEmp = (float) $bpjsConfig->health_employee_percent;
+                $nakerSchool = (float) $bpjsConfig->naker_school_percent;
+                $nakerEmp = (float) $bpjsConfig->naker_employee_percent;
+
+                $healthTotalPercent = $healthSchool + $healthEmp;
+                $nakerTotalPercent = $nakerSchool + $nakerEmp;
+
+                $allowancePercent = 0;
+                if ($category->code === 'A') {
+                    $allowancePercent = $healthSchool + $nakerSchool;
+                } elseif ($category->code === 'B') {
+                    $allowancePercent = $healthTotalPercent + $nakerTotalPercent;
+                } elseif ($category->code === 'C') {
+                    $allowancePercent = $healthTotalPercent;
+                } elseif ($category->code === 'D') {
+                    $allowancePercent = $nakerTotalPercent;
+                }
+
+                $bpjsAllowance = round($umk * $allowancePercent / 100);
+                $bpjsHealth = $category->has_health ? round($umk * $healthTotalPercent / 100) : 0;
+                $bpjsNaker = $category->has_naker ? round($umk * $nakerTotalPercent / 100) : 0;
+            }
+
             return [
                 'id' => $teacher->id,
                 'name' => $teacher->name,
@@ -42,6 +76,15 @@ class TeacherController extends Controller
                 'basic_salary' => \App\Models\SalaryScale::getAmount($teacher->education, $teacher->service_years),
                 'other_allowance' => $teacher->other_allowance,
                 'joined_date' => $teacher->joined_date ? $teacher->joined_date->format('Y-m-d') : null,
+                'bpjs_info' => [
+                    'category_name' => $teacher->bpjsCategory ? $teacher->bpjsCategory->name : 'Belum Diatur',
+                    'category_code' => $teacher->bpjsCategory ? $teacher->bpjsCategory->code : null,
+                    'has_health' => $teacher->bpjsCategory ? (bool)$teacher->bpjsCategory->has_health : false,
+                    'has_naker' => $teacher->bpjsCategory ? (bool)$teacher->bpjsCategory->has_naker : false,
+                    'bpjs_allowance' => $bpjsAllowance,
+                    'bpjs_health' => $bpjsHealth,
+                    'bpjs_naker' => $bpjsNaker,
+                ],
                 'positions' => $teacher->positions->map(function ($pos) {
                     return [
                         'id' => $pos->id, 

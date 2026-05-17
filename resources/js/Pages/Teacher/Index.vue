@@ -656,6 +656,53 @@ watch(() => form.joined_date, (newDate) => {
                         <div v-else class="text-sm text-gray-400 italic bg-gray-50 p-4 rounded-2xl text-center">Tidak menjabat posisi struktural tambahan.</div>
                     </div>
 
+                    <!-- Konfigurasi BPJS Pegawai -->
+                    <div class="md:col-span-2 space-y-4">
+                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest border-l-4 border-indigo-500 pl-3">Informasi & Estimasi BPJS</h3>
+                        <div v-if="viewingTeacher.bpjs_info" class="p-5 bg-indigo-50/50 dark:bg-gray-700/20 rounded-3xl border border-indigo-100/50 dark:border-gray-600 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                            <div>
+                                <span class="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block mb-1">Kategori BPJS</span>
+                                <span class="text-base font-black text-gray-900 dark:text-white">
+                                    {{ viewingTeacher.bpjs_info.category_code ? 'Kategori ' + viewingTeacher.bpjs_info.category_code + ' - ' : '' }}{{ viewingTeacher.bpjs_info.category_name }}
+                                </span>
+                                <div class="flex items-center space-x-3 mt-2">
+                                    <span 
+                                        class="px-2.5 py-1 text-[10px] font-black rounded-lg uppercase tracking-wider flex items-center space-x-1"
+                                        :class="viewingTeacher.bpjs_info.has_health ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-400 dark:bg-gray-800'"
+                                    >
+                                        <span>Kesehatan:</span>
+                                        <span>{{ viewingTeacher.bpjs_info.has_health ? 'Aktif' : 'Non-Aktif' }}</span>
+                                    </span>
+                                    <span 
+                                        class="px-2.5 py-1 text-[10px] font-black rounded-lg uppercase tracking-wider flex items-center space-x-1"
+                                        :class="viewingTeacher.bpjs_info.has_naker ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-gray-100 text-gray-400 dark:bg-gray-800'"
+                                    >
+                                        <span>Ketenagakerjaan:</span>
+                                        <span>{{ viewingTeacher.bpjs_info.has_naker ? 'Aktif' : 'Non-Aktif' }}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div v-if="viewingTeacher.bpjs_info.category_name !== 'Belum Diatur' && viewingTeacher.bpjs_info.category_name !== 'Non-BPJS'" class="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full md:w-auto">
+                                <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 min-w-[120px]">
+                                    <div class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Tunjangan BPJS</div>
+                                    <div class="text-xs font-extrabold text-emerald-600 mt-1">Rp {{ Number(viewingTeacher.bpjs_info.bpjs_allowance).toLocaleString('id-ID') }}</div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 min-w-[120px]">
+                                    <div class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Potongan BPJS Kes</div>
+                                    <div class="text-xs font-extrabold text-rose-600 mt-1">Rp {{ Number(viewingTeacher.bpjs_info.bpjs_health).toLocaleString('id-ID') }}</div>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 min-w-[120px]">
+                                    <div class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Potongan BPJS TK</div>
+                                    <div class="text-xs font-extrabold text-rose-600 mt-1">Rp {{ Number(viewingTeacher.bpjs_info.bpjs_naker).toLocaleString('id-ID') }}</div>
+                                </div>
+                            </div>
+                            <div v-else class="text-sm font-bold text-gray-400 dark:text-gray-500 italic">
+                                Belum ada estimasi iuran karena kategori BPJS non-aktif.
+                            </div>
+                        </div>
+                    </div>
+
 
                 </div>
 
