@@ -47,7 +47,6 @@ class TeacherController extends Controller
                         'id' => $pos->id, 
                         'name' => $pos->name, 
                         'allowance' => $pos->allowance,
-                        'health_allowance' => $pos->health_allowance
                     ];
                 })->toArray(),
             ];
@@ -58,7 +57,6 @@ class TeacherController extends Controller
                 'id' => $pos->id, 
                 'name' => $pos->name, 
                 'allowance' => $pos->allowance,
-                'health_allowance' => $pos->health_allowance
             ];
         });
 
@@ -309,7 +307,7 @@ class TeacherController extends Controller
                         if (!empty($posName)) {
                             $pos = \App\Models\Position::firstOrCreate(
                                 ['name' => $posName],
-                                ['allowance' => 0, 'health_allowance' => 0]
+                                ['allowance' => 0]
                             );
                             $posIds[] = $pos->id;
                         }

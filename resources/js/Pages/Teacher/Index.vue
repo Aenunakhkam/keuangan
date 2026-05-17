@@ -649,8 +649,7 @@ watch(() => form.joined_date, (newDate) => {
                             <div v-for="pos in viewingTeacher.positions" :key="pos.id" class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex justify-between items-center">
                                 <span class="text-sm font-bold text-gray-700">{{ pos.name }}</span>
                                 <div class="text-right">
-                                    <div class="text-xs font-black text-emerald-600">+ Jab: Rp {{ Number(pos.allowance).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
-                                    <div class="text-[10px] font-bold text-blue-600">+ Kes: Rp {{ Number(pos.health_allowance).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
+                                    <div class="text-xs font-black text-emerald-600">Rp {{ Number(pos.allowance).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
                                 </div>
                             </div>
                         </div>

@@ -19,7 +19,6 @@ class PositionController extends Controller
                 'id' => $pos->id,
                 'name' => $pos->name,
                 'allowance' => $pos->allowance,
-                'health_allowance' => $pos->health_allowance,
             ];
         })->withQueryString();
 
@@ -34,7 +33,6 @@ class PositionController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:positions,name',
             'allowance' => 'required|numeric|min:0',
-            'health_allowance' => 'required|numeric|min:0',
         ]);
 
         Position::create($validated);
@@ -46,7 +44,6 @@ class PositionController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:positions,name,' . $position->id,
             'allowance' => 'required|numeric|min:0',
-            'health_allowance' => 'required|numeric|min:0',
         ]);
 
         $position->update($validated);

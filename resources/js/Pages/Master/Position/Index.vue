@@ -35,7 +35,6 @@ const selectedPosition = ref<any>(null);
 const form = useForm({
     name: '',
     allowance: 0,
-    health_allowance: 0,
 });
 
 const openCreateModal = () => {
@@ -50,7 +49,6 @@ const openEditModal = (position: any) => {
     selectedPosition.value = position;
     form.name = position.name;
     form.allowance = position.allowance;
-    form.health_allowance = position.health_allowance;
     form.clearErrors();
     showingModal.value = true;
 };
@@ -137,16 +135,14 @@ const deletePosition = async (position: any) => {
                                 <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-center w-16">No</th>
                                 <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest">Nama Jabatan</th>
                                 <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-right">Tunjangan Jabatan</th>
-                                <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-right">Tunjangan Kesehatan</th>
                                 <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <tr v-for="(pos, index) in positions.data" :key="pos.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150">
+                             <tr v-for="(pos, index) in positions.data" :key="pos.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150">
                                 <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ (positions.current_page - 1) * positions.per_page + index + 1 }}</td>
                                 <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">{{ pos.name }}</td>
                                 <td class="px-6 py-4 font-black text-emerald-600 dark:text-emerald-400 text-right">Rp {{ Number(pos.allowance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
-                                <td class="px-6 py-4 font-black text-indigo-600 dark:text-indigo-400 text-right">Rp {{ Number(pos.health_allowance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
                                 <td class="px-6 py-4 text-right space-x-2">
                                     <button @click="openEditModal(pos)" class="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,7 +157,7 @@ const deletePosition = async (position: any) => {
                                 </td>
                             </tr>
                             <tr v-if="positions.data.length === 0">
-                                <td colspan="5" class="px-6 py-20 text-center text-gray-500 font-bold">Belum ada data jabatan.</td>
+                                <td colspan="4" class="px-6 py-20 text-center text-gray-500 font-bold">Belum ada data jabatan.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -227,11 +223,7 @@ const deletePosition = async (position: any) => {
                         <InputError :message="form.errors.allowance" />
                     </div>
 
-                    <div class="space-y-1.5">
-                        <InputLabel for="health_allowance" value="Nominal Tunjangan Kesehatan (Rp)" />
-                        <CurrencyInput id="health_allowance" v-model="form.health_allowance" class="block w-full border-gray-300 rounded-md shadow-sm" placeholder="Contoh: 150.000" />
-                        <InputError :message="form.errors.health_allowance" />
-                    </div>
+
 
                     <div class="mt-4 flex justify-end space-x-3">
                         <SecondaryButton @click="showingModal = false">Batal</SecondaryButton>

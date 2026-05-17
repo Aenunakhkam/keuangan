@@ -84,7 +84,7 @@ class SalaryController extends Controller
                 $baseSalary = (float) \App\Models\SalaryScale::getAmount($teacher->education, $teacher->service_years);
             }
             
-            $structuralAllowance = $teacher->positions ? ($teacher->positions->sum('allowance') + $teacher->positions->sum('health_allowance')) : 0;
+            $structuralAllowance = $teacher->positions ? $teacher->positions->sum('allowance') : 0;
             $allowance = $structuralAllowance + ($teacher->other_allowance ?? 0);
 
             return [
@@ -159,7 +159,7 @@ class SalaryController extends Controller
             }
             
             // Tunjangan Jabatan (Allowance) + Tunjangan Tetap Lainnya
-            $structuralAllowance = $teacher->positions ? ($teacher->positions->sum('allowance') + $teacher->positions->sum('health_allowance')) : 0;
+            $structuralAllowance = $teacher->positions ? $teacher->positions->sum('allowance') : 0;
             $allowance = $structuralAllowance + ($teacher->other_allowance ?? 0);
             
             $netSalary = $baseSalary + $allowance;
