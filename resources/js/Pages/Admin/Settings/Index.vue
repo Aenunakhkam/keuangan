@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
-import { ref, inject } from 'vue';
+import { ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -12,16 +12,10 @@ const props = defineProps<{
     settings: any;
 }>();
 
-
 const form = useForm({
     app_name:            props.settings.app_name || '',
     school_name:         props.settings.school_name || '',
     copyright:           props.settings.copyright || '',
-    bank_name:           props.settings.bank_name || '',
-    bank_account_number: props.settings.bank_account_number || '',
-    bank_account_name:   props.settings.bank_account_name || '',
-    teaching_rate_per_hour: props.settings.teaching_rate_per_hour || '',
-    transport_allowance: props.settings.transport_allowance || '',
     logo: null as File | null,
 });
 
@@ -100,65 +94,25 @@ const deleteLogo = async () => {
                             </div>
                         </div>
 
-                        <!-- Informasi Rekening Bank -->
-                        <div class="space-y-4">
-                            <h3 class="text-lg font-black text-gray-900 dark:text-white border-b border-gray-50 pb-2">Informasi Pembayaran Transfer</h3>
-                            <p class="text-xs text-gray-400">Data ini akan tampil di dashboard siswa sebagai panduan pembayaran via transfer.</p>
+                        <!-- Copyright & Identity Details -->
+                        <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <h3 class="text-lg font-black text-gray-900 dark:text-white border-b border-gray-50 pb-2">Detail Identitas Aplikasi</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-1.5">
-                                    <InputLabel for="bank_name" value="Nama Bank" />
-                                    <TextInput id="bank_name" v-model="form.bank_name" type="text" class="block w-full" placeholder="Contoh: BRI, BNI, Mandiri" />
-                                    <InputError :message="form.errors.bank_name" />
+                                    <InputLabel for="app_name" value="Nama Aplikasi" />
+                                    <TextInput id="app_name" v-model="form.app_name" type="text" class="block w-full" placeholder="E-Keuangan" />
+                                    <InputError :message="form.errors.app_name" />
                                 </div>
                                 <div class="space-y-1.5">
-                                    <InputLabel for="bank_account_number" value="Nomor Rekening" />
-                                    <TextInput id="bank_account_number" v-model="form.bank_account_number" type="text" class="block w-full" placeholder="Contoh: 1234567890" />
-                                    <InputError :message="form.errors.bank_account_number" />
+                                    <InputLabel for="school_name" value="Nama Sekolah" />
+                                    <TextInput id="school_name" v-model="form.school_name" type="text" class="block w-full" placeholder="SMK Negeri 1 Contoh" />
+                                    <InputError :message="form.errors.school_name" />
                                 </div>
                                 <div class="space-y-1.5 md:col-span-2">
-                                    <InputLabel for="bank_account_name" value="Atas Nama Rekening" />
-                                    <TextInput id="bank_account_name" v-model="form.bank_account_name" type="text" class="block w-full" placeholder="Contoh: SMK Negeri 1 Contoh" />
-                                    <InputError :message="form.errors.bank_account_name" />
+                                    <InputLabel for="copyright" value="Teks Copyright (Footer)" />
+                                    <TextInput id="copyright" v-model="form.copyright" type="text" class="block w-full" placeholder="© 2026 SMK Negeri 1 Contoh" />
+                                    <InputError :message="form.errors.copyright" />
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Data Keuangan Sekolah -->
-                        <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                            <h3 class="text-lg font-black text-gray-900 dark:text-white border-b border-gray-50 pb-2">Pengaturan Gaji & Keuangan</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-1.5 md:col-span-1">
-                                    <InputLabel for="teaching_rate_per_hour" value="Harga Honor Mengajar Per Jam (Rp)" />
-                                    <TextInput id="teaching_rate_per_hour" v-model="form.teaching_rate_per_hour" type="number" step="1000" class="block w-full" placeholder="Contoh: 50000" />
-                                    <p class="text-[10px] text-gray-500 font-medium">Nominal pengali jam mengajar (Jam × Harga).</p>
-                                    <InputError :message="form.errors.teaching_rate_per_hour" />
-                                </div>
-                                <div class="space-y-1.5 md:col-span-1">
-                                    <InputLabel for="transport_allowance" value="Uang Transportasi Global (Rp)" />
-                                    <TextInput id="transport_allowance" v-model="form.transport_allowance" type="number" step="1000" class="block w-full" placeholder="Contoh: 200000" />
-                                    <p class="text-[10px] text-gray-500 font-medium">Nominal tambahan Uang Transportasi untuk semua guru.</p>
-                                    <InputError :message="form.errors.transport_allowance" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Copyright -->
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-1.5">
-                                <InputLabel for="app_name" value="Nama Aplikasi" />
-                                <TextInput id="app_name" v-model="form.app_name" type="text" class="block w-full" placeholder="E-Keuangan" />
-                                <InputError :message="form.errors.app_name" />
-                            </div>
-                            <div class="space-y-1.5">
-                                <InputLabel for="school_name" value="Nama Sekolah" />
-                                <TextInput id="school_name" v-model="form.school_name" type="text" class="block w-full" placeholder="SMK Negeri 1 Contoh" />
-                                <InputError :message="form.errors.school_name" />
-                            </div>
-                            <div class="space-y-1.5 md:col-span-2">
-                                <InputLabel for="copyright" value="Teks Copyright (Footer)" />
-                                <TextInput id="copyright" v-model="form.copyright" type="text" class="block w-full" placeholder="© 2026 SMK Negeri 1 Contoh" />
-                                <InputError :message="form.errors.copyright" />
                             </div>
                         </div>
 

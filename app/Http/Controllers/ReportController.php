@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CashTransaction;
-use App\Models\StudentBill;
+use App\Models\Salary;
+use App\Models\Teacher;
 use Inertia\Inertia;
 
 class ReportController extends Controller
@@ -14,13 +15,13 @@ class ReportController extends Controller
         $driver = \DB::getDriverName();
         $monthFormat = $driver === 'sqlite' ? "strftime('%m', transaction_date)" : "MONTH(transaction_date)";
 
-        // Monthly Income (Payments)
+        // Monthly Income
         $incomeByMonth = CashTransaction::where('type', 'income')
             ->selectRaw("$monthFormat as month, SUM(amount) as total")
             ->groupBy('month')
             ->get();
 
-        // Monthly Expense (Cash Out)
+        // Monthly Expense
         $expenseByMonth = CashTransaction::where('type', 'expense')
             ->selectRaw("$monthFormat as month, SUM(amount) as total")
             ->groupBy('month')
@@ -33,19 +34,17 @@ class ReportController extends Controller
             ->groupBy('category')
             ->get();
 
-        // Delinquent Students
-        $topUnpaidBills = StudentBill::with(['student', 'feeType'])
-            ->where('status', '!=', 'paid')
-            ->orderByDesc('amount')
+        // Recent Salary Distributions
+        $recentSalaries = Salary::with('teacher')
+            ->latest()
             ->limit(10)
-            ->get()->map(function ($bill) {
+            ->get()->map(function ($sal) {
                 return [
-                    'id' => $bill->id,
-                    'amount' => $bill->amount,
-                    'status' => $bill->status,
-                    'due_date' => $bill->due_date,
-                    'student' => $bill->student ? ['name' => $bill->student->name, 'nis' => $bill->student->nis] : null,
-                    'fee_type' => $bill->feeType ? ['name' => $bill->feeType->name] : null,
+                    'id' => $sal->id,
+                    'amount' => $sal->net_salary,
+                    'status' => $sal->status,
+                    'period' => $sal->month.'/'.$sal->year,
+                    'teacher' => $sal->teacher ? ['name' => $sal->teacher->name] : null,
                 ];
             });
 
@@ -56,10 +55,10 @@ class ReportController extends Controller
             ->groupBy('category')
             ->get();
 
-        // Bill Status Summary
-        $billStatusSummary = [
-            'paid' => StudentBill::where('status', 'paid')->count(),
-            'unpaid' => StudentBill::where('status', '!=', 'paid')->count(),
+        // Payroll Status Summary
+        $payrollStatusSummary = [
+            'paid' => Salary::where('status', 'paid')->count(),
+            'pending' => Salary::where('status', 'pending')->count(),
         ];
 
         return inertia('Report/Index', [
@@ -67,8 +66,8 @@ class ReportController extends Controller
             'expenseByMonth' => $expenseByMonth,
             'expenseByCategory' => $expenseByCategory,
             'incomeByCategory' => $incomeByCategory,
-            'topUnpaidBills' => $topUnpaidBills,
-            'billStatusSummary' => $billStatusSummary,
+            'recentSalaries' => $recentSalaries,
+            'payrollStatusSummary' => $payrollStatusSummary,
         ]);
     }
 

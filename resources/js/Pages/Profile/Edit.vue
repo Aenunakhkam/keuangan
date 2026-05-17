@@ -50,18 +50,7 @@ const activeTab = ref('profile');
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="activeTab === 'profile' ? 'text-indigo-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
-                                        <span class="font-bold">Informasi Profil</span>
-                                    </button>
-
-                                    <button 
-                                        @click="activeTab = 'password'"
-                                        class="w-full flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-200 group text-left"
-                                        :class="activeTab === 'password' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="activeTab === 'password' ? 'text-indigo-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                        </svg>
-                                        <span class="font-bold">Keamanan Password</span>
+                                        <span class="font-bold">Profil & Keamanan</span>
                                     </button>
 
                                     <button 
@@ -93,15 +82,17 @@ const activeTab = ref('profile');
 
                     <!-- Main Content Panel -->
                     <div class="lg:col-span-8">
-                        <div v-if="activeTab === 'profile'" class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 sm:p-10 transition-all duration-300">
-                            <UpdateProfileInformationForm
-                                :must-verify-email="mustVerifyEmail"
-                                :status="status"
-                            />
-                        </div>
+                        <div v-if="activeTab === 'profile'" class="space-y-8">
+                            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 sm:p-10 transition-all duration-300">
+                                <UpdateProfileInformationForm
+                                    :must-verify-email="mustVerifyEmail"
+                                    :status="status"
+                                />
+                            </div>
 
-                        <div v-if="activeTab === 'password'" class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 sm:p-10 transition-all duration-300">
-                            <UpdatePasswordForm />
+                            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 sm:p-10 transition-all duration-300">
+                                <UpdatePasswordForm />
+                            </div>
                         </div>
 
                         <div v-if="activeTab === 'danger'" class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 sm:p-10 transition-all duration-300">

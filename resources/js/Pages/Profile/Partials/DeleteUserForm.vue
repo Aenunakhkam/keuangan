@@ -41,72 +41,82 @@ const closeModal = () => {
 </script>
 
 <template>
-    <section class="space-y-6">
-        <header class="mb-8">
-            <h2 class="text-xl font-black text-rose-600 dark:text-rose-400 tracking-tight">
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Left Panel: Header -->
+        <div class="md:col-span-1">
+            <h2 class="text-lg font-black text-rose-600 dark:text-rose-400 tracking-tight">
                 Hapus Akun
             </h2>
 
-            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-                Setelah akun Anda dihapus, semua sumber daya dan datanya akan dihapus secara permanen. Sebelum menghapus akun, silakan unduh data atau informasi apa pun yang ingin Anda simpan.
+            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+                Setelah akun Anda dihapus, semua sumber daya dan datanya akan dihapus secara permanen.
             </p>
-        </header>
+        </div>
 
-        <DangerButton 
-            @click="confirmUserDeletion"
-            class="px-8 py-3.5 rounded-2xl font-black shadow-xl shadow-rose-500/20 transform transition-transform hover:scale-[1.02] active:scale-[0.98]"
-        >
-            Hapus Akun Permanen
-        </DangerButton>
-
-        <Modal :show="confirmingUserDeletion" @close="closeModal">
-            <div class="p-8">
-                <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-2">
-                    Apakah Anda yakin ingin menghapus akun?
-                </h2>
-
-                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed mb-6">
-                    Setelah akun dihapus, semua data tidak dapat dikembalikan. Silakan masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun secara permanen.
+        <!-- Right Panel: Actions card -->
+        <div class="md:col-span-2">
+            <div class="space-y-6 bg-rose-50/50 dark:bg-rose-950/10 p-6 sm:p-8 rounded-3xl border border-rose-100 dark:border-rose-900/30 shadow-sm">
+                <p class="text-xs text-rose-700 dark:text-rose-300 font-bold leading-relaxed">
+                    Tindakan ini bersifat permanen dan tidak dapat dibatalkan. Sebelum menghapus akun, silakan unduh data atau informasi apa pun yang ingin Anda simpan terlebih dahulu.
                 </p>
 
-                <div class="space-y-2">
-                    <InputLabel
-                        for="password"
-                        value="Kata Sandi Verifikasi"
-                        class="sr-only"
-                    />
-
-                    <TextInput
-                        id="password"
-                        ref="passwordInput"
-                        v-model="form.password"
-                        type="password"
-                        class="block w-full px-5 py-3.5 rounded-2xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all duration-200"
-                        placeholder="Masukkan kata sandi Anda"
-                        @keyup.enter="deleteUser"
-                    />
-
-                    <InputError :message="form.errors.password" class="mt-2" />
-                </div>
-
-                <div class="mt-8 flex justify-end space-x-3">
-                    <SecondaryButton 
-                        @click="closeModal"
-                        class="px-6 py-3 rounded-2xl font-bold border-gray-200"
-                    >
-                        Batalkan
-                    </SecondaryButton>
-
-                    <DangerButton
-                        class="px-6 py-3 rounded-2xl font-black shadow-lg shadow-rose-500/20"
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing"
-                        @click="deleteUser"
-                    >
-                        Ya, Hapus Akun
-                    </DangerButton>
-                </div>
+                <DangerButton 
+                    @click="confirmUserDeletion"
+                    class="px-8 py-3.5 rounded-2xl font-black shadow-xl shadow-rose-500/20 transform transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                >
+                    Hapus Akun Permanen
+                </DangerButton>
             </div>
-        </Modal>
+
+            <Modal :show="confirmingUserDeletion" @close="closeModal">
+                <div class="p-8">
+                    <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight mb-2">
+                        Apakah Anda yakin ingin menghapus akun?
+                    </h2>
+
+                    <p class="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed mb-6">
+                        Setelah akun dihapus, semua data tidak dapat dikembalikan. Silakan masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun secara permanen.
+                    </p>
+
+                    <div class="space-y-2">
+                        <InputLabel
+                            for="password"
+                            value="Kata Sandi Verifikasi"
+                            class="sr-only"
+                        />
+
+                        <TextInput
+                            id="password"
+                            ref="passwordInput"
+                            v-model="form.password"
+                            type="password"
+                            class="block w-full px-5 py-3.5 rounded-2xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all duration-200"
+                            placeholder="Masukkan kata sandi Anda"
+                            @keyup.enter="deleteUser"
+                        />
+
+                        <InputError :message="form.errors.password" class="mt-2" />
+                    </div>
+
+                    <div class="mt-8 flex justify-end space-x-3">
+                        <SecondaryButton 
+                            @click="closeModal"
+                            class="px-6 py-3 rounded-2xl font-bold border-gray-200"
+                        >
+                            Batalkan
+                        </SecondaryButton>
+
+                        <DangerButton
+                            class="px-6 py-3 rounded-2xl font-black shadow-lg shadow-rose-500/20"
+                            :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing"
+                            @click="deleteUser"
+                        >
+                            Ya, Hapus Akun
+                        </DangerButton>
+                    </div>
+                </div>
+            </Modal>
+        </div>
     </section>
 </template>

@@ -19,6 +19,8 @@ use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
 
+use App\Http\Controllers\SalaryScaleController;
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -28,29 +30,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Master Data
     Route::resource('positions', \App\Http\Controllers\PositionController::class);
-    Route::resource('students', StudentController::class);
+    Route::get('teachers/template', [TeacherController::class, 'downloadTemplate'])->name('teachers.template');
+    Route::post('teachers/import', [TeacherController::class, 'import'])->name('teachers.import');
     Route::resource('teachers', TeacherController::class);
-    Route::resource('fee-types', FeeTypeController::class);
+    
+    // Potongan Gaji Pegawai
+    Route::get('salary-deductions', [\App\Http\Controllers\SalaryDeductionController::class, 'index'])->name('salary-deductions.index');
+    Route::post('salary-deductions/bulk', [\App\Http\Controllers\SalaryDeductionController::class, 'storeBulk'])->name('salary-deductions.storeBulk');
 
-    // Akademik
-    Route::resource('academic-years', AcademicYearController::class);
-    Route::resource('class-rooms', ClassRoomController::class);
+    Route::resource('salary-scales', SalaryScaleController::class);
+    Route::get('salary-scales/calculate', [SalaryScaleController::class, 'getSalary'])->name('salary-scales.calculate');
+    Route::get('salary-calculations', [\App\Http\Controllers\Master\SalaryCalculationController::class, 'index'])->name('salary-calculations.index');
+    Route::put('salary-calculations/{teacher}', [\App\Http\Controllers\Master\SalaryCalculationController::class, 'update'])->name('salary-calculations.update');
+
+    Route::get('bpjs', [\App\Http\Controllers\Master\BpjsController::class, 'index'])->name('bpjs.index');
+    Route::put('bpjs/config', [\App\Http\Controllers\Master\BpjsController::class, 'updateConfig'])->name('bpjs.config.update');
+    Route::put('bpjs/teachers/{teacher}', [\App\Http\Controllers\Master\BpjsController::class, 'updateTeacherCategory'])->name('bpjs.teacher.update');
+
     Route::resource('users', UserController::class);
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/transactions', [ReportController::class, 'transactionReport'])->name('reports.transactions');
+    Route::get('reports/salary-spj', [\App\Http\Controllers\Report\SalarySpjController::class, 'index'])->name('reports.salary-spj');
     Route::get('reports/export-expense', [ReportController::class, 'exportExpense'])->name('reports.export-expense');
     Route::get('reports/export-income', [ReportController::class, 'exportIncome'])->name('reports.export-income');
 
     // Keuangan
-    Route::post('student-bills/generate-bulk', [StudentBillController::class, 'generateBulk'])->name('student-bills.generate-bulk');
-    Route::resource('student-bills', StudentBillController::class);
-    Route::resource('payments', PaymentController::class);
     Route::resource('cash-transactions', CashTransactionController::class);
 
     // Payroll
     Route::post('salaries/generate-bulk', [SalaryController::class, 'generateBulk'])->name('salaries.generate-bulk');
+    Route::get('salaries/print-bulk', [SalaryController::class, 'printBulk'])->name('salaries.print-bulk');
     Route::get('salaries/{salary}/print', [SalaryController::class, 'print'])->name('salaries.print');
     Route::post('salaries/{salary}/process-payment', [SalaryController::class, 'processPayment'])->name('salaries.process-payment');
+    Route::post('salaries/bulk-pay', [SalaryController::class, 'bulkPay'])->name('salaries.bulk-pay');
+    Route::post('salaries/bulk-delete', [SalaryController::class, 'bulkDelete'])->name('salaries.bulk-delete');
     Route::resource('salaries', SalaryController::class);
 
     // Pengaturan

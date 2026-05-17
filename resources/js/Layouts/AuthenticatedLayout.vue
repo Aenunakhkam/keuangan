@@ -46,13 +46,6 @@ const toggleMobileMenu = (menu: string) => {
 
                     <!-- Right Utilities -->
                     <div class="flex items-center space-x-4">
-                        <!-- Notification Icon -->
-                        <button class="p-2 text-green-100 hover:text-white transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                        </button>
-
                         <!-- Profile Dropdown -->
                         <div class="relative flex items-center">
                             <Dropdown align="right" width="48">
@@ -97,7 +90,7 @@ const toggleMobileMenu = (menu: string) => {
                         <Dropdown align="left" width="56" v-if="$page.props.auth.user.roles.includes('admin')">
                             <template #trigger>
                                 <button class="px-5 py-3 text-sm font-bold rounded-xl flex items-center space-x-2 text-green-100 hover:bg-white/10 hover:text-white transition-all duration-300 glass-nav"
-                                    :class="route().current('students.*') || route().current('teachers.*') || route().current('positions.*') || route().current('academic-years.*') || route().current('class-rooms.*') ? 'bg-white/10 text-white shadow-sm ring-1 ring-white/20' : ''">
+                                    :class="route().current('students.*') || route().current('teachers.*') || route().current('positions.*') || route().current('academic-years.*') || route().current('class-rooms.*') || route().current('salary-calculations.*') || route().current('salary-scales.*') || route().current('bpjs.*') ? 'bg-white/10 text-white shadow-sm ring-1 ring-white/20' : ''">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                     </svg>
@@ -109,20 +102,12 @@ const toggleMobileMenu = (menu: string) => {
                             </template>
                             <template #content>
                                 <div class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Data Utama</div>
-                                <DropdownLink :href="route('students.index')">
-                                    <div class="flex items-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                        <span>Data Siswa</span>
-                                    </div>
-                                </DropdownLink>
                                 <DropdownLink :href="route('teachers.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
-                                        <span>Data Guru</span>
+                                        <span>Data Pegawai</span>
                                     </div>
                                 </DropdownLink>
                                 <DropdownLink :href="route('positions.index')">
@@ -133,21 +118,28 @@ const toggleMobileMenu = (menu: string) => {
                                         <span>Data Jabatan</span>
                                     </div>
                                 </DropdownLink>
-                                <div class="px-4 py-2 mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Akademik</div>
-                                <DropdownLink :href="route('academic-years.index')">
+                                <DropdownLink :href="route('salary-scales.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        <span>Tahun Pelajaran</span>
+                                        <span>Master Gaji Pokok</span>
                                     </div>
                                 </DropdownLink>
-                                <DropdownLink :href="route('class-rooms.index')">
+                                <DropdownLink :href="route('salary-calculations.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
-                                        <span>Data Kelas</span>
+                                        <span>Daftar Perhitungan Gaji</span>
+                                    </div>
+                                </DropdownLink>
+                                <DropdownLink :href="route('bpjs.index')">
+                                    <div class="flex items-center space-x-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                        </svg>
+                                        <span>BPJS</span>
                                     </div>
                                 </DropdownLink>
                             </template>
@@ -168,30 +160,6 @@ const toggleMobileMenu = (menu: string) => {
                                 </button>
                             </template>
                             <template #content>
-                                <DropdownLink :href="route('fee-types.index')">
-                                    <div class="flex items-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 00-2 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                                        </svg>
-                                        <span>Jenis Pembayaran</span>
-                                    </div>
-                                </DropdownLink>
-                                <DropdownLink :href="route('student-bills.index')">
-                                    <div class="flex items-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        <span>Tagihan Siswa</span>
-                                    </div>
-                                </DropdownLink>
-                                <DropdownLink :href="route('payments.index')">
-                                    <div class="flex items-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                        <span>Transaksi Pembayaran</span>
-                                    </div>
-                                </DropdownLink>
                                 <DropdownLink :href="route('salaries.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -200,12 +168,28 @@ const toggleMobileMenu = (menu: string) => {
                                         <span>Penggajian (Payroll)</span>
                                     </div>
                                 </DropdownLink>
+                                <DropdownLink :href="route('salary-deductions.index')">
+                                    <div class="flex items-center space-x-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Potongan Gaji</span>
+                                    </div>
+                                </DropdownLink>
                                 <DropdownLink :href="route('cash-transactions.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
                                         </svg>
                                         <span>Jurnal Kas</span>
+                                    </div>
+                                </DropdownLink>
+                                <DropdownLink :href="route('reports.salary-spj')">
+                                    <div class="flex items-center space-x-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
+                                        </svg>
+                                        <span>Daftar Gaji SPJ</span>
                                     </div>
                                 </DropdownLink>
                             </template>
@@ -369,27 +353,18 @@ const toggleMobileMenu = (menu: string) => {
                                 >
                                     <div v-show="activeMobileMenu === 'master'" class="bg-gray-50/50 pb-2">
                                         <div class="px-10 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Data Utama</div>
-                                        <Link :href="route('students.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('students.*')}">
-                                            <svg class="h-4 w-4" :class="route().current('students.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                                            <span>Data Siswa</span>
-                                        </Link>
                                         <Link :href="route('teachers.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('teachers.*')}">
                                             <svg class="h-4 w-4" :class="route().current('teachers.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                                            <span>Data Guru</span>
-                                        </Link>
-                                        <Link :href="route('positions.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('positions.*')}">
-                                            <svg class="h-4 w-4" :class="route().current('positions.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                                            <span>Data Jabatan</span>
-                                        </Link>
-                                        <div class="px-10 py-2 mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Akademik</div>
-                                        <Link :href="route('academic-years.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('academic-years.*')}">
-                                            <svg class="h-4 w-4" :class="route().current('academic-years.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                            <span>Tahun Pelajaran</span>
-                                        </Link>
-                                        <Link :href="route('class-rooms.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('class-rooms.*')}">
-                                            <svg class="h-4 w-4" :class="route().current('class-rooms.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                                            <span>Data Kelas</span>
-                                        </Link>
+                                            <span>Data Pegawai</span>
+                                         </Link>
+                                         <Link :href="route('positions.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('positions.*')}">
+                                             <svg class="h-4 w-4" :class="route().current('positions.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                                             <span>Data Jabatan</span>
+                                         </Link>
+                                         <Link :href="route('salary-scales.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('salary-scales.*')}">
+                                             <svg class="h-4 w-4" :class="route().current('salary-scales.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                             <span>Master Gaji Pokok</span>
+                                         </Link>
                                     </div>
                                 </transition>
                             </div>
@@ -412,18 +387,6 @@ const toggleMobileMenu = (menu: string) => {
                                     leave-to-class="max-h-0 opacity-0"
                                 >
                                     <div v-show="activeMobileMenu === 'keuangan'" class="bg-gray-50/50 pb-2">
-                                        <Link :href="route('fee-types.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('fee-types.*')}">
-                                            <svg class="h-4 w-4" :class="route().current('fee-types.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 00-2 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                                            <span>Jenis Pembayaran</span>
-                                        </Link>
-                                        <Link :href="route('student-bills.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('student-bills.*')}">
-                                            <svg class="h-4 w-4" :class="route().current('student-bills.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                            <span>Tagihan Siswa</span>
-                                        </Link>
-                                        <Link :href="route('payments.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('payments.*')}">
-                                            <svg class="h-4 w-4" :class="route().current('payments.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                            <span>Transaksi Tagihan</span>
-                                        </Link>
                                         <Link :href="route('salaries.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('salaries.*')}">
                                             <svg class="h-4 w-4" :class="route().current('salaries.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                             <span>Penggajian</span>

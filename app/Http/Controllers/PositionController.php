@@ -14,18 +14,18 @@ class PositionController extends Controller
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
-        $positions = $query->latest()->get()->map(function ($pos) {
+        $positions = $query->latest()->paginate($request->input('per_page', 10))->through(function ($pos) {
             return [
                 'id' => $pos->id,
                 'name' => $pos->name,
                 'allowance' => $pos->allowance,
                 'health_allowance' => $pos->health_allowance,
             ];
-        });
+        })->withQueryString();
 
         return Inertia::render('Master/Position/Index', [
             'positions' => $positions,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search', 'per_page'])
         ]);
     }
 

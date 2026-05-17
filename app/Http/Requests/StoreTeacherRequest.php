@@ -18,14 +18,22 @@ class StoreTeacherRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'nip' => 'nullable|string|max:20|unique:teachers,nip',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
+            'nipty' => 'nullable|string|max:50|unique:teachers,nipty',
+            'nipy' => 'nullable|string|max:50|unique:teachers,nipy',
+            'birth_place' => 'nullable|string|max:100',
+            'birth_date' => 'nullable|date',
             'joined_date' => 'nullable|date',
             'user_id' => 'nullable|exists:users,id',
             'position_ids' => 'nullable|array',
             'position_ids.*' => 'exists:positions,id',
-            'teaching_hours' => 'nullable|integer|min:0',
+            'education' => 'nullable|string|max:100',
+            'major' => 'nullable|string|max:150',
+            'unit' => 'nullable|string|max:100',
+            'service_years' => 'nullable|integer|min:0',
+            'service_months' => 'nullable|integer|min:0|max:11',
+            'grade' => 'nullable|string|max:50',
+            'basic_salary' => 'nullable|numeric|min:0',
+            'other_allowance' => 'nullable|numeric|min:0',
         ];
     }
 }

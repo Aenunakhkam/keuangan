@@ -12,6 +12,7 @@ class SettingController extends Controller
     public function index()
     {
         $settings = Setting::all()->pluck('value', 'key');
+        
         return Inertia::render('Admin/Settings/Index', [
             'settings' => $settings
         ]);
@@ -20,21 +21,14 @@ class SettingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'app_name'            => 'nullable|string|max:255',
-            'school_name'         => 'nullable|string|max:255',
-            'copyright'           => 'nullable|string|max:255',
-            'bank_name'           => 'nullable|string|max:255',
-            'bank_account_number' => 'nullable|string|max:50',
-            'bank_account_name'   => 'nullable|string|max:255',
-            'teaching_rate_per_hour' => 'nullable|numeric|min:0',
-            'transport_allowance' => 'nullable|numeric|min:0',
-            'logo'                => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'app_name'    => 'nullable|string|max:255',
+            'school_name' => 'nullable|string|max:255',
+            'copyright'   => 'nullable|string|max:255',
+            'logo'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->only([
-            'app_name', 'school_name', 'copyright',
-            'bank_name', 'bank_account_number', 'bank_account_name',
-            'teaching_rate_per_hour', 'transport_allowance'
+            'app_name', 'school_name', 'copyright'
         ]);
 
         foreach ($data as $key => $value) {

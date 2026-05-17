@@ -4,246 +4,416 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slip Gaji - {{ $salary->teacher->name }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap');
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f3f4f6;
+            margin: 0;
+            padding: 20px;
+            font-size: 11px;
+            color: #000;
+        }
+
+        .main-container {
+            background: white;
+            width: 210mm;
+            min-height: 135mm;
+            margin: 0 auto;
+            padding: 15px 30px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         @media print {
             @page {
-                size: A4 portrait;
-                margin: 15mm;
+                size: 210mm 135mm;
+                margin: 0;
             }
-            body { 
-                background: white; 
+            html, body {
+                background: white;
+                margin: 0;
                 padding: 0;
+                width: 210mm;
+                height: 135mm;
             }
             #printBtn { display: none; }
             .no-print { display: none; }
             .main-container {
                 box-shadow: none !important;
-                border: 1px solid #ddd !important;
                 margin: 0 !important;
-                width: 100% !important;
+                padding: 4mm 10mm !important;
+                width: 210mm !important;
+                height: 135mm !important;
+                box-sizing: border-box !important;
+                page-break-inside: avoid !important;
             }
         }
 
-        .kop-surat {
-            border-bottom: 3px double #000;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
         }
 
-        .slip-title {
-            text-decoration: underline;
-            text-underline-offset: 4px;
+        .header-left {
+            display: flex;
+            align-items: center;
         }
 
-        .label-cell {
-            width: 140px;
-            color: #666;
-            font-weight: 500;
-            font-size: 0.85rem;
+        .logo {
+            width: 60px;
+            height: auto;
+            margin-right: 15px;
         }
 
-        .value-cell {
-            font-weight: 700;
-            color: #000;
-            font-size: 0.85rem;
-        }
-
-        .section-header {
-            background-color: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 0.05em;
+        .school-info h1 {
+            font-size: 13px;
+            font-weight: bold;
+            margin: 0 0 5px 0;
             text-transform: uppercase;
-            padding: 8px 12px;
-            color: #1e293b;
         }
 
-        .amount-cell {
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 700;
+        .school-info p {
+            font-size: 11px;
+            margin: 0;
+            font-style: italic;
         }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header-right h2 {
+            font-size: 13px;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            text-decoration: underline;
+        }
+
+        .header-right p {
+            font-size: 11px;
+            font-weight: bold;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #000;
+            padding-bottom: 3px;
+            margin-bottom: 3px;
+        }
+
+        .info-col {
+            display: flex;
+        }
+
+        .info-label {
+            width: 80px;
+        }
+
+        .info-value {
+            font-weight: bold;
+        }
+
+        table.salary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 5px;
+        }
+
+        table.salary-table th {
+            border-bottom: 2px solid #000;
+            text-align: left;
+            padding: 3px 0;
+            font-size: 11px;
+        }
+
+        table.salary-table td {
+            padding: 1.5px 0;
+            vertical-align: top;
+        }
+
+        .col-pendapatan {
+            width: 35%;
+            padding-right: 20px !important;
+        }
+
+        .col-potongan {
+            width: 65%;
+            padding-left: 20px !important;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .item-label {
+            text-transform: uppercase;
+        }
+
+        .item-value {
+            text-align: right;
+            display: flex;
+            justify-content: space-between;
+            width: 90px;
+        }
+
+        .item-value span:first-child {
+            margin-right: 5px;
+        }
+
+        .total-row {
+            border-top: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 5px 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .total-col {
+            display: flex;
+            justify-content: space-between;
+            text-transform: uppercase;
+        }
+
+        .netto-box {
+            display: inline-block;
+            border: 2px solid #000;
+            padding: 2px 10px;
+            font-weight: bold;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 250px;
+        }
+
+        .btn-print {
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-print:hover {
+            background-color: #0f172a;
+        }
+
+        @php
+            $spjNetto = $salary->salaryDeduction ? $salary->salaryDeduction->spj_netto : ($salary->base_salary + $salary->allowance);
+            $deduction = $salary->salaryDeduction;
+            
+            function formatRp($value) {
+                if (!$value || $value == 0) return '<span>Rp</span><span>-</span>';
+                return '<span>Rp</span><span>' . number_format($value, 0, ',', '.') . '</span>';
+            }
+        @endphp
     </style>
 </head>
-<body class="py-10 flex justify-center">
-    
-    <div class="main-container bg-white w-[210mm] min-h-[148mm] p-10 shadow-xl border border-gray-200 rounded-sm overflow-hidden relative">
-        <!-- Watermark or Decorative element if needed -->
-        
-        <!-- Kop Surat -->
-        <div class="kop-surat flex items-center justify-between">
-            <div class="w-20">
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
                 @if($settingLogo)
-                    <img src="{{ asset('storage/' . $settingLogo) }}" alt="Logo Sekolah" class="w-full object-contain">
-                @else
-                    <div class="w-20 h-20 bg-gray-50 flex items-center justify-center border border-dashed border-gray-300 text-[10px] text-gray-400 font-bold uppercase">Logo</div>
+                    @php
+                        $cleanLogo = str_replace('/storage/', '', $settingLogo);
+                        $cleanLogo = str_replace('storage/', '', $cleanLogo);
+                    @endphp
+                    <img src="{{ asset('storage/' . $cleanLogo) }}" alt="Logo" class="logo">
                 @endif
-            </div>
-            <div class="flex-1 text-center px-4">
-                <h1 class="text-xl font-bold uppercase leading-tight text-gray-900">{{ $settingName ?? 'NAMA SEKOLAH' }}</h1>
-                <p class="text-[10px] text-gray-500 mt-1">{{ $settingAddress ?? 'Alamat Sekolah Belum Diatur' }}</p>
-                <p class="text-[9px] text-gray-400 font-medium">Telepon: (021) 12345678 | Email: info@sekolah.sch.id</p>
-            </div>
-            <div class="w-20 text-right">
-                <div class="inline-block border-2 border-gray-900 px-3 py-1 font-black text-sm uppercase tracking-tighter">
-                    OFFICIAL
+                <div class="school-info">
+                    <h1>{{ $settingName ?? 'SMK NU 1 ISLAMIYAH' }}</h1>
+                    <p>{{ $settingAddress ?? 'Jl. Garuda No. 39 - Kemantran' }}</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Judul Document -->
-        <div class="text-center mb-8">
-            <h2 class="text-lg font-black uppercase tracking-widest slip-title">SLIP GAJI KARYAWAN</h2>
-            <div class="text-xs font-bold text-gray-600 mt-2">
-                Periode: {{ Carbon\Carbon::create()->month($salary->month)->translatedFormat('F') }} {{ $salary->year }}
+            <div class="header-right">
+                <h2>SLIP GAJI</h2>
+                @php
+                    \Carbon\Carbon::setLocale('id');
+                    $date = $salary->payment_date 
+                        ? \Carbon\Carbon::parse($salary->payment_date) 
+                        : ($salary->paid_at ? \Carbon\Carbon::parse($salary->paid_at) : now());
+                @endphp
+                <p>{{ $date->translatedFormat('d F Y') }}</p>
             </div>
         </div>
 
-        <!-- Data Pegawai -->
-        <div class="grid grid-cols-2 gap-x-12 gap-y-2 mb-8 bg-gray-50/50 p-4 rounded-lg border border-gray-100">
-            <div class="flex items-center">
-                <span class="label-cell">Nama Lengkap</span>
-                <span class="mr-2">:</span>
-                <span class="value-cell uppercase">{{ $salary->teacher->name }}</span>
+        <!-- Info Pegawai -->
+        <div class="info-row">
+            <div class="info-col" style="flex: 1;">
+                <div class="info-label">Nama / NIK</div>
+                <div>: <span class="info-value">{{ $salary->teacher->name }} {{ $salary->teacher->nipy ? '(' . $salary->teacher->nipy . ')' : '' }}</span></div>
             </div>
-            <div class="flex items-center">
-                <span class="label-cell">Jam Mengajar</span>
-                <span class="mr-2">:</span>
-                <span class="value-cell">{{ $salary->teacher->teaching_hours }} Jam</span>
-            </div>
-            <div class="flex items-center">
-                <span class="label-cell">NIP / ID</span>
-                <span class="mr-2">:</span>
-                <span class="value-cell">{{ $salary->teacher->nip ?? '-' }}</span>
-            </div>
-            <div class="flex items-center">
-                <span class="label-cell">Rate Per Jam</span>
-                <span class="mr-2">:</span>
-                <span class="value-cell italic text-gray-500">Rp {{ number_format($teachingRate, 0, ',', '.') }}</span>
-            </div>
-            <div class="flex items-center">
-                <span class="label-cell">Jabatan</span>
-                <span class="mr-2">:</span>
-                <span class="value-cell">
+            <div class="info-col" style="width: 250px;">
+                <div class="info-label" style="width: 60px;">Jabatan</div>
+                <div>: <span class="info-value">
                     @if($salary->teacher->positions->count() > 0)
                         {{ $salary->teacher->positions->pluck('name')->join(', ') }}
                     @else
                         Guru Mata Pelajaran
                     @endif
-                </span>
-            </div>
-            @if($salary->payment_date)
-            <div class="flex items-center">
-                <span class="label-cell font-bold text-indigo-700">Tgl Pembayaran</span>
-                <span class="mr-2">:</span>
-                <span class="value-cell text-indigo-700">{{ Carbon\Carbon::parse($salary->payment_date)->translatedFormat('d F Y') }}</span>
-            </div>
-            @endif
-        </div>
-
-        <!-- Main Content (Earnings & Deductions) -->
-        <div class="grid grid-cols-2 gap-0 border border-gray-200">
-            <!-- Earnings Section -->
-            <div class="border-r border-gray-200 min-h-[250px]">
-                <div class="section-header">A. Penerimaan (Earnings)</div>
-                <div class="p-4 space-y-3">
-                    <div class="flex justify-between text-xs items-center">
-                        <span class="text-gray-600 font-medium italic">Honor Mengajar</span>
-                        <span class="font-bold tabular-nums">Rp {{ number_format($salary->base_salary, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs items-center">
-                        <span class="text-gray-600 font-medium italic">Tunjangan Jabatan & Kes.</span>
-                        <span class="font-bold tabular-nums">Rp {{ number_format($salary->allowance, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs items-center">
-                        <span class="text-gray-600 font-medium italic">
-                            Transportasi ({{ $salary->days_present }} hari)
-                        </span>
-                        <span class="font-bold tabular-nums">Rp {{ number_format($salary->transport_allowance, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-                <div class="mt-auto p-4 border-t border-gray-100 bg-gray-50/30">
-                    <div class="flex justify-between text-xs font-black uppercase text-gray-900">
-                        <span>Total (A)</span>
-                        <span>Rp {{ number_format($salary->base_salary + $salary->allowance + $salary->transport_allowance, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Deductions Section -->
-            <div class="min-h-[250px] flex flex-col">
-                <div class="section-header">B. Potongan (Deductions)</div>
-                <div class="p-4 space-y-3">
-                    @if($salary->deduction > 0)
-                    <div class="flex justify-between text-xs items-center">
-                        <span class="text-gray-600 font-medium italic">{{ $salary->deduction_description ?? 'Potongan Lain-lain' }}</span>
-                        <span class="font-bold text-rose-600 tabular-nums">Rp {{ number_format($salary->deduction, 0, ',', '.') }}</span>
-                    </div>
-                    @else
-                    <div class="text-[10px] text-gray-300 italic text-center py-4">Tidak ada potongan.</div>
-                    @endif
-                </div>
-                <div class="mt-auto p-4 border-t border-gray-100 bg-gray-50/30">
-                    <div class="flex justify-between text-xs font-black uppercase text-gray-900">
-                        <span>Total (B)</span>
-                        <span class="text-rose-600">Rp {{ number_format($salary->deduction, 0, ',', '.') }}</span>
-                    </div>
-                </div>
+                </span></div>
             </div>
         </div>
 
-        <!-- Take Home Pay Section -->
-        <div class="mt-4 bg-[#1e293b] text-white p-6 rounded-b-lg flex justify-between items-center shadow-inner">
+        <!-- Tabel Gaji -->
+        <table class="salary-table">
+            <thead>
+                <tr>
+                    <th class="col-pendapatan">PENDAPATAN</th>
+                    <th class="col-potongan">POTONGAN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <!-- Kolom Pendapatan -->
+                    <td class="col-pendapatan">
+                        <div class="item-row" style="margin-bottom: 20px;">
+                            <span class="item-label">NETTO</span>
+                            <span class="item-value">{!! formatRp($spjNetto) !!}</span>
+                        </div>
+                    </td>
+
+                    <!-- Kolom Potongan -->
+                    <td class="col-potongan">
+                        @if($deduction)
+                        <div class="item-row">
+                            <span class="item-label">TAB.KHUSUS/SHR</span>
+                            <span class="item-value">{!! formatRp($deduction->tab_khusus) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">SIMPANAN WAJIB</span>
+                            <span class="item-value">{!! formatRp($deduction->simpanan_wajib) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">SIMPANAN MANA SUKA</span>
+                            <span class="item-value">{!! formatRp($deduction->simpanan_sukarela) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">ANGSURAN PINJAMAN KOPERASI</span>
+                            <span class="item-value">{!! formatRp($deduction->angsuran_koperasi) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">DPLK BPD SLAWI</span>
+                            <span class="item-value">{!! formatRp($deduction->dplk_slawi) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">DPLK BPD KEMANTRAN</span>
+                            <span class="item-value">{!! formatRp($deduction->dplk_kemantran) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">PINJ. B. JATENG (KEMANTRAN)</span>
+                            <span class="item-value">{!! formatRp($deduction->pinjaman_bpd_jateng) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">BANK TGR</span>
+                            <span class="item-value">{!! formatRp($deduction->bank_tgr) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">PRMI BPJS ANGG +</span>
+                            <span class="item-value">{!! formatRp($deduction->premi_bpjs_anggota) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">DANSOS</span>
+                            <span class="item-value">{!! formatRp($deduction->dansos) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">LAINNYA (fingerprint)</span>
+                            <span class="item-value">{!! formatRp($deduction->denda_fingerprint) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">LAINNYA</span>
+                            <span class="item-value">{!! formatRp($deduction->lainnya_1) !!}</span>
+                        </div>
+                        <div class="item-row">
+                            <span class="item-label">LAINNYA</span>
+                            <span class="item-value">{!! formatRp($deduction->lainnya_2) !!}</span>
+                        </div>
+                        @else
+                        <div style="font-style: italic; color: #666; text-align: center; padding: 20px;">
+                            Data potongan belum diinput.
+                        </div>
+                        @endif
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Total -->
+        @php
+            $totalPotongan = $deduction ? $deduction->jumlah_potongan : 0;
+            $gajiBersih = $deduction ? $deduction->gaji_bersih : $spjNetto;
+        @endphp
+        <div class="total-row">
+            <div class="total-col" style="width: 35%; padding-right: 20px;">
+                <span>JUMLAH PENDAPATAN</span>
+                <span class="item-value">{!! formatRp($spjNetto) !!}</span>
+            </div>
+            <div class="total-col" style="width: 65%; padding-left: 20px;">
+                <span>JUMLAH POTONGAN</span>
+                <span class="item-value">{!! formatRp($totalPotongan) !!}</span>
+            </div>
+        </div>
+
+        <!-- Take Home Pay & Signatures -->
+        <div class="signature-area">
             <div>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Gaji Bersih Diterima (Take Home Pay)</span>
-                <span class="text-[10px] italic text-gray-300 block">
-                    Terbilang: * {{ ucwords((new NumberFormatter("id", NumberFormatter::SPELLOUT))->format($salary->net_salary)) }} Rupiah *
-                </span>
+                <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                    <span style="font-weight: bold; font-size: 11px;">GAJI BERSIH &nbsp;&nbsp;&nbsp;:</span>
+                    <span class="netto-box">Rp {{ number_format($gajiBersih, 0, ',', '.') }}</span>
+                </div>
+                <div style="font-style: italic; font-size: 10px; margin-left: 80px;">
+                    ( {{ ucwords((new NumberFormatter("id", NumberFormatter::SPELLOUT))->format($gajiBersih)) }} Rupiah )
+                </div>
             </div>
-            <div class="text-3xl font-black tabular-nums">
-                Rp {{ number_format($salary->net_salary, 0, ',', '.') }}
-            </div>
-        </div>
-
-        <!-- Signature Section -->
-        <div class="mt-16 grid grid-cols-2 gap-10 text-center text-[11px]">
-            <div>
-                <p class="text-gray-500 font-medium mb-20 uppercase tracking-tighter">Tanda Tangan Penerima,</p>
-                <p class="font-bold text-gray-900 border-b border-gray-900 inline-block px-10 pb-1 uppercase italic tracking-wide">{{ $salary->teacher->name }}</p>
-            </div>
-            <div>
-                <p class="text-gray-500 font-medium mb-3">{{ now()->translatedFormat('d F Y') }}</p>
-                <p class="text-gray-500 font-medium mb-16 uppercase tracking-tighter">Mengetahui, Bendahara</p>
-                <p class="font-bold text-gray-900 border-b border-gray-900 inline-block px-10 pb-1 uppercase italic tracking-wide">
-                    {{ Auth::user() ? Auth::user()->name : 'BENDAHARA SEKOLAH' }}
-                </p>
+            <div class="signature-box">
+                <div style="margin-bottom: 50px;">Bendahara,</div>
+                <div style="font-weight: bold;">{{ Auth::user() ? Auth::user()->name : 'Tina Agustina' }}</div>
             </div>
         </div>
 
-        <!-- Actions -->
-        <div class="mt-12 text-center no-print" id="printBtn">
-            <button onclick="window.print()" class="px-8 py-3 bg-[#1e293b] text-white rounded-xl text-sm font-black shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center space-x-2 mx-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        <!-- Footer Branding -->
+        <div style="margin-top: 15px; border-top: 1px dashed #ccc; padding-top: 3px; display: flex; justify-content: space-between; align-items: center; font-size: 8px; color: #666; font-style: italic;">
+            <span>{{ $settingFooter }}</span>
+            <span>Waktu Cetak: {{ now()->translatedFormat('d/m/Y H:i:s') }}</span>
+        </div>
+
+        <!-- Tombol Cetak -->
+        <div class="no-print" id="printBtn">
+            <button onclick="window.print()" class="btn-print">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
+                    <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                    <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
                 </svg>
-                <span>Cetak Slip Gaji Resmi</span>
+                Cetak Slip Gaji
             </button>
-            <p class="text-[10px] text-gray-400 mt-4 italic font-medium">Dokumen ini merupakan bukti pembayaran resmi yang sah secara digital.</p>
-        </div>
-
-        <!-- Decorative Footer -->
-        <div class="absolute bottom-4 left-0 w-full text-center pointer-events-none opacity-10 font-black text-[60px] uppercase -z-10 select-none">
-            {{ $settingName ?? 'CONFIDENTIAL' }}
         </div>
     </div>
-
 </body>
 </html>

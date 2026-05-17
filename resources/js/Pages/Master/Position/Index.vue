@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -18,10 +18,15 @@ const props = defineProps<{
 }>();
 
 const search = ref(props.filters?.search || '');
+const perPage = ref(props.filters?.per_page || '10');
 
 watch(search, debounce((value) => {
-    router.get(route('positions.index'), { search: value }, { preserveState: true, replace: true });
+    router.get(route('positions.index'), { search: value, per_page: perPage.value }, { preserveState: true, replace: true });
 }, 300));
+
+watch(perPage, (value) => {
+    router.get(route('positions.index'), { search: search.value, per_page: value }, { preserveState: true, replace: true });
+});
 
 const showingModal = ref(false);
 const modalMode = ref('create'); 
@@ -104,9 +109,22 @@ const deletePosition = async (position: any) => {
 
         <div class="space-y-6">
             <!-- Filter -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <div class="max-w-md">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="max-w-md w-full">
                     <TextInput v-model="search" placeholder="Cari Jabatan..." class="block w-full" />
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm font-bold text-gray-500">Lihat:</span>
+                    <select 
+                        v-model="perPage"
+                        class="rounded-xl border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm font-bold text-gray-700 dark:text-gray-300 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all px-4 py-2.5"
+                    >
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
                 </div>
             </div>
 
@@ -124,8 +142,8 @@ const deletePosition = async (position: any) => {
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                            <tr v-for="(pos, index) in positions" :key="pos.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150">
-                                <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ index + 1 }}</td>
+                            <tr v-for="(pos, index) in positions.data" :key="pos.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150">
+                                <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ (positions.current_page - 1) * positions.per_page + index + 1 }}</td>
                                 <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">{{ pos.name }}</td>
                                 <td class="px-6 py-4 font-black text-emerald-600 dark:text-emerald-400 text-right">Rp {{ Number(pos.allowance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
                                 <td class="px-6 py-4 font-black text-indigo-600 dark:text-indigo-400 text-right">Rp {{ Number(pos.health_allowance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
@@ -142,11 +160,30 @@ const deletePosition = async (position: any) => {
                                     </button>
                                 </td>
                             </tr>
-                            <tr v-if="positions.length === 0">
-                                <td colspan="4" class="px-6 py-20 text-center text-gray-500">Belum ada data jabatan.</td>
+                            <tr v-if="positions.data.length === 0">
+                                <td colspan="5" class="px-6 py-20 text-center text-gray-500 font-bold">Belum ada data jabatan.</td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Pagination Bar -->
+                <div v-if="positions.links && positions.links.length > 3" class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    <div class="text-sm text-gray-500 font-medium">
+                        Menampilkan <span class="font-black text-gray-900">{{ positions.from || 0 }}</span> s.d <span class="font-black text-gray-900">{{ positions.to || 0 }}</span> dari <span class="font-black text-gray-900">{{ positions.total }}</span> jabatan
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <template v-for="(link, k) in positions.links" :key="k">
+                            <div v-if="link.url === null" class="px-4 py-2 text-sm text-gray-400 border border-transparent" v-html="link.label"></div>
+                            <Link 
+                                v-else 
+                                :href="link.url" 
+                                class="px-4 py-2 text-sm font-black rounded-xl transition-all" 
+                                :class="link.active ? 'bg-[#003B73] text-white shadow-lg' : 'text-gray-600 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100'" 
+                                v-html="link.label"
+                            />
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>

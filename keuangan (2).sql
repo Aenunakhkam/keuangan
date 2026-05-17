@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 12, 2026 at 06:29 AM
+-- Generation Time: May 17, 2026 at 09:51 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.29
 
@@ -24,24 +24,54 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `academic_years`
+-- Table structure for table `bpjs_categories`
 --
 
-CREATE TABLE `academic_years` (
+CREATE TABLE `bpjs_categories` (
   `id` bigint UNSIGNED NOT NULL,
-  `year_name` varchar(255) NOT NULL,
-  `semester` tinyint UNSIGNED NOT NULL DEFAULT '1',
-  `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `code` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `has_health` tinyint(1) NOT NULL DEFAULT '0',
+  `has_naker` tinyint(1) NOT NULL DEFAULT '0',
+  `is_full_school` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Dumping data for table `academic_years`
+-- Dumping data for table `bpjs_categories`
 --
 
-INSERT INTO `academic_years` (`id`, `year_name`, `semester`, `is_active`, `created_at`, `updated_at`) VALUES
-(2, '2025/2026', 2, 1, '2026-03-11 21:56:03', '2026-03-11 21:56:03');
+INSERT INTO `bpjs_categories` (`id`, `code`, `name`, `has_health`, `has_naker`, `is_full_school`, `created_at`, `updated_at`) VALUES
+(1, 'A', 'Peserta BPJS Kes dan Naker (Berbagi Premi)', 1, 1, 0, '2026-05-16 16:20:35', '2026-05-16 16:20:35'),
+(2, 'B', 'Peserta BPJS Kes dan Naker (Full Sekolah)', 1, 1, 1, '2026-05-16 16:20:35', '2026-05-16 16:20:35'),
+(3, 'C', 'Peserta BPJS Kesehatan Saja', 1, 0, 1, '2026-05-16 16:20:35', '2026-05-16 16:20:35'),
+(4, 'D', 'Peserta BPJS Ketenagakerjaan Saja', 0, 1, 1, '2026-05-16 16:20:35', '2026-05-16 16:20:35'),
+(5, 'E', 'Belum Peserta', 0, 0, 0, '2026-05-16 16:20:35', '2026-05-16 16:20:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bpjs_configs`
+--
+
+CREATE TABLE `bpjs_configs` (
+  `id` bigint UNSIGNED NOT NULL,
+  `umk_reference` decimal(15,2) NOT NULL DEFAULT '2333586.00',
+  `health_school_percent` decimal(5,2) NOT NULL DEFAULT '4.00',
+  `health_employee_percent` decimal(5,2) NOT NULL DEFAULT '1.00',
+  `naker_school_percent` decimal(5,2) NOT NULL DEFAULT '6.24',
+  `naker_employee_percent` decimal(5,2) NOT NULL DEFAULT '3.00',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `bpjs_configs`
+--
+
+INSERT INTO `bpjs_configs` (`id`, `umk_reference`, `health_school_percent`, `health_employee_percent`, `naker_school_percent`, `naker_employee_percent`, `created_at`, `updated_at`) VALUES
+(1, '2333586.00', '4.00', '1.00', '6.24', '3.00', '2026-05-16 16:20:35', '2026-05-16 17:04:01');
 
 -- --------------------------------------------------------
 
@@ -54,6 +84,14 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('admin@admin.com|127.0.0.1', 'i:2;', 1779001539),
+('admin@admin.com|127.0.0.1:timer', 'i:1779001539;', 1779001539);
 
 -- --------------------------------------------------------
 
@@ -84,36 +122,6 @@ CREATE TABLE `cash_transactions` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `cash_transactions`
---
-
-INSERT INTO `cash_transactions` (`id`, `type`, `category`, `amount`, `description`, `transaction_date`, `created_at`, `updated_at`) VALUES
-(6, 'income', 'Pembayaran Siswa', '500000.00', 'Pembayaran SPP 1 - Finka Setia Wibawa', '2026-03-10', '2026-03-11 22:06:03', '2026-03-11 22:06:03'),
-(9, 'expense', 'Pulsa Listrik', '500000.00', NULL, '2026-03-12', '2026-03-11 23:09:41', '2026-03-11 23:09:41'),
-(10, 'expense', 'Gaji Guru', '1225000.00', 'Gaji Aenun Akhkam - Periode 3/2026', '2026-03-12', '2026-03-11 23:11:56', '2026-03-11 23:11:56');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `class_rooms`
---
-
-CREATE TABLE `class_rooms` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `class_rooms`
---
-
-INSERT INTO `class_rooms` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES
-(2, 'XI TJKT 1', NULL, '2026-03-08 10:51:39', '2026-03-08 10:51:39');
-
 -- --------------------------------------------------------
 
 --
@@ -129,29 +137,6 @@ CREATE TABLE `failed_jobs` (
   `exception` longtext NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `fee_types`
---
-
-CREATE TABLE `fee_types` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `default_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `period` enum('monthly','once') NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `fee_types`
---
-
-INSERT INTO `fee_types` (`id`, `name`, `default_amount`, `period`, `created_at`, `updated_at`) VALUES
-(1, 'SPP 1', '500000.00', 'monthly', '2026-03-09 21:47:12', '2026-03-09 21:47:12'),
-(2, 'SPP 2', '500000.00', 'monthly', '2026-03-09 21:47:33', '2026-03-09 21:47:33');
 
 -- --------------------------------------------------------
 
@@ -230,7 +215,21 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (23, '2026_03_09_040334_add_transport_allowance_to_salaries_table', 10),
 (24, '2026_03_09_062145_add_days_present_to_salaries_table', 11),
 (25, '2026_03_10_040443_add_payment_date_to_salaries_table', 12),
-(27, '2026_03_10_054318_add_health_allowance_to_positions_table', 13);
+(27, '2026_03_10_054318_add_health_allowance_to_positions_table', 13),
+(28, '2026_05_04_093717_add_education_to_teachers_table', 14),
+(29, '2026_05_04_095126_add_salary_fields_to_teachers_table', 15),
+(30, '2026_05_16_000000_create_salary_templates_table', 16),
+(31, '2026_05_16_000001_major_system_overhaul', 17),
+(32, '2026_05_16_141025_create_salary_scales_table', 18),
+(33, '2026_05_16_144416_add_gender_to_teachers_table', 19),
+(34, '2026_05_16_152935_add_salary_calc_fields_to_teachers_table', 20),
+(35, '2026_05_16_231923_create_bpjs_categories_table', 21),
+(36, '2026_05_16_231923_create_bpjs_configs_table', 21),
+(37, '2026_05_16_231950_add_bpjs_category_id_to_teachers_table', 21),
+(38, '2026_05_17_014344_create_salary_deductions_table', 22),
+(39, '2026_05_17_035750_remove_transport_from_salaries_table', 23),
+(40, '2026_05_17_073000_drop_salary_templates_table', 24),
+(41, '2026_05_17_081700_add_major_to_teachers_table', 25);
 
 -- --------------------------------------------------------
 
@@ -262,8 +261,12 @@ CREATE TABLE `model_has_roles` (
 
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 (1, 'App\\Models\\User', 1),
-(4, 'App\\Models\\User', 2),
-(3, 'App\\Models\\User', 3);
+(3, 'App\\Models\\User', 3),
+(3, 'App\\Models\\User', 4),
+(3, 'App\\Models\\User', 5),
+(3, 'App\\Models\\User', 6),
+(3, 'App\\Models\\User', 7),
+(3, 'App\\Models\\User', 8);
 
 -- --------------------------------------------------------
 
@@ -276,31 +279,6 @@ CREATE TABLE `password_reset_tokens` (
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `payments`
---
-
-CREATE TABLE `payments` (
-  `id` bigint UNSIGNED NOT NULL,
-  `student_bill_id` bigint UNSIGNED NOT NULL,
-  `amount` decimal(15,2) NOT NULL,
-  `payment_date` date NOT NULL,
-  `payment_method` varchar(255) NOT NULL DEFAULT 'cash',
-  `note` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `payments`
---
-
-INSERT INTO `payments` (`id`, `student_bill_id`, `amount`, `payment_date`, `payment_method`, `note`, `created_at`, `updated_at`) VALUES
-(1, 1, '500000.00', '2026-03-10', 'transfer', NULL, '2026-03-09 22:20:56', '2026-03-09 22:20:56'),
-(2, 1, '500000.00', '2026-03-10', 'transfer', NULL, '2026-03-09 22:21:00', '2026-03-09 22:21:00');
 
 -- --------------------------------------------------------
 
@@ -336,15 +314,26 @@ CREATE TABLE `positions` (
 --
 
 INSERT INTO `positions` (`id`, `name`, `allowance`, `health_allowance`, `created_at`, `updated_at`) VALUES
-(3, 'Kepala Sekolah', '2000000.00', '0.00', '2026-03-08 19:34:20', '2026-03-08 19:34:20'),
-(4, 'Wali Kelas', '75000.00', '0.00', '2026-03-08 19:34:41', '2026-03-08 21:33:04'),
-(5, 'Guru Mata Pelajaran', '700000.00', '0.00', '2026-03-08 19:35:10', '2026-03-08 19:35:10'),
-(6, 'Laboran', '150000.00', '100000.00', '2026-03-08 19:49:14', '2026-03-11 23:07:13'),
-(7, 'Wakil Kepala Sekolah Kurikulum', '1500000.00', '0.00', '2026-03-08 19:57:30', '2026-03-08 19:57:30'),
-(8, 'Wakil Kepala Sekolah Kesiswaan', '1500000.00', '0.00', '2026-03-08 19:57:43', '2026-03-08 19:57:43'),
-(9, 'Wakil Kepala Sekolah Sarana dan Prasarana', '1500000.00', '0.00', '2026-03-08 19:57:52', '2026-03-08 19:57:52'),
-(10, 'Wakil Kepala Sekolah Humas', '1500000.00', '0.00', '2026-03-08 19:58:16', '2026-03-08 19:58:16'),
-(11, 'Operator Sekolah', '1000000.00', '0.00', '2026-03-08 19:58:46', '2026-03-09 22:49:32');
+(3, 'Kepala Sekolah', '1500000.00', '0.00', '2026-03-08 19:34:20', '2026-05-16 06:17:29'),
+(13, 'Waka Sekolah', '6400000.00', '0.00', '2026-05-16 06:19:28', '2026-05-16 06:19:28'),
+(14, 'Kasubag TU', '6400000.00', '0.00', '2026-05-16 06:19:55', '2026-05-16 06:19:55'),
+(15, 'KaProdi', '430000.00', '0.00', '2026-05-16 06:20:15', '2026-05-16 06:20:15'),
+(16, 'KaLab', '230000.00', '0.00', '2026-05-16 06:20:30', '2026-05-16 06:20:30'),
+(17, 'STP2K', '230000.00', '0.00', '2026-05-16 06:20:51', '2026-05-16 06:20:51'),
+(18, 'Koord Eksul', '230000.00', '0.00', '2026-05-16 06:21:09', '2026-05-16 06:21:09'),
+(19, 'Wali Kelas', '150000.00', '0.00', '2026-05-16 06:21:30', '2026-05-16 06:21:30'),
+(20, 'Operator Sekolah', '430000.00', '0.00', '2026-05-16 06:21:55', '2026-05-16 06:21:55'),
+(21, 'Bendahara Sekolah', '430000.00', '0.00', '2026-05-16 06:22:25', '2026-05-16 06:22:25'),
+(22, 'Ka Unit Prodi', '230000.00', '0.00', '2026-05-16 06:22:46', '2026-05-16 06:22:46'),
+(23, 'Ka BKK', '230000.00', '0.00', '2026-05-16 06:23:05', '2026-05-16 06:23:05'),
+(24, 'Pembina Pramuka', '230000.00', '0.00', '2026-05-16 07:23:06', '2026-05-16 07:23:06'),
+(25, 'Ka.Unit Prod + Wali', '380000.00', '0.00', '2026-05-16 07:23:36', '2026-05-16 07:23:36'),
+(26, 'Wali Kelas 2', '200000.00', '0.00', '2026-05-16 07:24:12', '2026-05-16 07:24:12'),
+(27, 'Operator Web', '200000.00', '0.00', '2026-05-16 07:24:32', '2026-05-16 07:24:32'),
+(28, 'Operator#', '480000.00', '0.00', '2026-05-16 07:25:06', '2026-05-16 07:25:06'),
+(29, 'Guru Piket', '230000.00', '0.00', '2026-05-16 07:25:30', '2026-05-16 07:25:30'),
+(30, 'Guru Matematika', '0.00', '0.00', '2026-05-16 08:38:19', '2026-05-16 08:38:19'),
+(31, 'Guru Informatika', '0.00', '0.00', '2026-05-16 08:38:33', '2026-05-16 08:38:33');
 
 -- --------------------------------------------------------
 
@@ -365,8 +354,9 @@ CREATE TABLE `position_teacher` (
 --
 
 INSERT INTO `position_teacher` (`id`, `position_id`, `teacher_id`, `created_at`, `updated_at`) VALUES
-(2, 4, 1, NULL, NULL),
-(3, 6, 1, NULL, NULL);
+(6, 21, 2, NULL, NULL),
+(7, 3, 4, NULL, NULL),
+(10, 20, 6, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -414,9 +404,7 @@ CREATE TABLE `salaries` (
   `teacher_id` bigint UNSIGNED NOT NULL,
   `base_salary` decimal(15,2) NOT NULL,
   `allowance` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `transport_per_day` decimal(15,2) NOT NULL DEFAULT '0.00',
   `days_present` int UNSIGNED NOT NULL DEFAULT '0',
-  `transport_allowance` decimal(15,2) NOT NULL DEFAULT '0.00',
   `deduction` decimal(15,2) NOT NULL DEFAULT '0.00',
   `deduction_description` varchar(255) DEFAULT NULL,
   `net_salary` decimal(15,2) NOT NULL,
@@ -429,12 +417,65 @@ CREATE TABLE `salaries` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `salaries`
+-- Table structure for table `salary_deductions`
 --
 
-INSERT INTO `salaries` (`id`, `teacher_id`, `base_salary`, `allowance`, `transport_per_day`, `days_present`, `transport_allowance`, `deduction`, `deduction_description`, `net_salary`, `month`, `year`, `status`, `payment_date`, `paid_at`, `created_at`, `updated_at`) VALUES
-(14, 1, '900000.00', '325000.00', '15000.00', 0, '0.00', '0.00', NULL, '1225000.00', 3, 2026, 'paid', '2026-03-12', '2026-03-11 23:11:56', '2026-03-11 23:11:51', '2026-03-11 23:11:56');
+CREATE TABLE `salary_deductions` (
+  `id` bigint UNSIGNED NOT NULL,
+  `salary_id` bigint UNSIGNED NOT NULL,
+  `teacher_id` bigint UNSIGNED NOT NULL,
+  `spj_netto` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Nilai Netto dari Laporan SPJ (Gaji Pokok + Tunjangan - BPJS)',
+  `tab_khusus` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT '8% dari spj_netto',
+  `simpanan_wajib` decimal(15,2) NOT NULL DEFAULT '5000.00',
+  `simpanan_sukarela` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `angsuran_koperasi` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `jumlah_koperasi` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `dplk_slawi` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `dplk_kemantran` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `pinjaman_bpd_jateng` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `jumlah_bpd` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `bank_tgr` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `premi_bpjs_anggota` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `dansos` decimal(15,2) NOT NULL DEFAULT '20000.00',
+  `lainnya_1` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `lainnya_2` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `denda_fingerprint` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `jumlah_potongan` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Total seluruh kluster potongan',
+  `gaji_bersih` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Take Home Pay (spj_netto - jumlah_potongan)',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `salary_scales`
+--
+
+CREATE TABLE `salary_scales` (
+  `id` bigint UNSIGNED NOT NULL,
+  `grade` varchar(255) NOT NULL,
+  `mkg` int NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `salary_scales`
+--
+
+INSERT INTO `salary_scales` (`id`, `grade`, `mkg`, `amount`, `created_at`, `updated_at`) VALUES
+(1, 'II', 4, '1447700.00', '2026-05-16 07:15:11', '2026-05-16 07:15:11'),
+(2, 'I', 0, '1050000.00', '2026-05-16 07:17:53', '2026-05-16 07:17:53'),
+(3, 'V', 28, '2792100.00', '2026-05-16 07:34:20', '2026-05-16 07:34:20'),
+(4, 'IV', 12, '2090300.00', '2026-05-16 08:21:25', '2026-05-16 08:21:25'),
+(5, 'IV', 4, '1846600.00', '2026-05-16 08:22:54', '2026-05-16 08:22:54'),
+(6, 'IV', 6, '1904700.00', '2026-05-16 08:23:08', '2026-05-17 01:09:41'),
+(7, 'I', 20, '1431800.00', '2026-05-16 20:08:13', '2026-05-16 20:08:13');
 
 -- --------------------------------------------------------
 
@@ -456,7 +497,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('b8i6SljpMXlkwcVHlo8xnJYAG8cCyTBwQHrd9TwI', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiSkdlNzc2OThsM1JSdThvckpCd0k0Y3J6OGpGRzhWblpxTDVkeHhRWSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1773296905);
+('AjvsZHH4rS3623tDRq5QAlBjDhoSmtcvZ4OosHzT', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiTFE0Zmg2bzJTNUNkS3NlREtkMXlsV2FsaXBqUnF6MW1QejJQQmR5UyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1779009811),
+('Ql9k71TE7yLKkKoJFzYPsp9Bs4NnA5XSgSP8BopK', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiVlhQM1pIa3FCVUZEYlVTNXo1ZFUwUFdSRTVwckFUOXYzTHFSMTVWViI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjI5OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvcHJvZmlsZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1779011316);
 
 -- --------------------------------------------------------
 
@@ -485,58 +527,13 @@ INSERT INTO `settings` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 (9, 'bank_account_number', '606789018273829', '2026-03-08 19:47:44', '2026-03-09 21:41:04'),
 (10, 'bank_account_name', 'SMK NU 1  ISLAMIYAH KERAMAT', '2026-03-08 19:47:44', '2026-03-09 21:41:04'),
 (11, 'teaching_rate_per_hour', '25000', '2026-03-08 19:47:44', '2026-03-08 21:32:20'),
-(12, 'transport_allowance', '15000', '2026-03-08 21:19:11', '2026-03-08 21:32:20');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `students`
---
-
-CREATE TABLE `students` (
-  `id` bigint UNSIGNED NOT NULL,
-  `user_id` bigint UNSIGNED DEFAULT NULL,
-  `name` varchar(255) NOT NULL,
-  `nis` varchar(255) NOT NULL,
-  `gender` enum('L','P') NOT NULL,
-  `address` text,
-  `phone` varchar(255) DEFAULT NULL,
-  `parent_name` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `class_room_id` bigint UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `students`
---
-
-INSERT INTO `students` (`id`, `user_id`, `name`, `nis`, `gender`, `address`, `phone`, `parent_name`, `created_at`, `updated_at`, `class_room_id`) VALUES
-(1, 2, 'Finka Setia Wibawa', '27052002', 'P', 'DUkuh Bawangan kelurahan Bumijawa Kecamatan Bumijawa RT 01 RW 08 Kab.Tegal', '085201166815', NULL, '2026-03-08 09:27:09', '2026-03-08 10:51:54', 2);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `student_bills`
---
-
-CREATE TABLE `student_bills` (
-  `id` bigint UNSIGNED NOT NULL,
-  `student_id` bigint UNSIGNED NOT NULL,
-  `fee_type_id` bigint UNSIGNED NOT NULL,
-  `amount` decimal(15,2) NOT NULL,
-  `due_date` date NOT NULL,
-  `status` enum('unpaid','partial','paid') NOT NULL DEFAULT 'unpaid',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `student_bills`
---
-
-INSERT INTO `student_bills` (`id`, `student_id`, `fee_type_id`, `amount`, `due_date`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, '500000.00', '2026-03-10', 'paid', '2026-03-09 21:48:02', '2026-03-09 22:24:14');
+(12, 'transport_allowance', NULL, '2026-03-08 21:19:11', '2026-05-16 20:54:11'),
+(13, 'rate_education_sma', NULL, '2026-05-16 20:54:11', '2026-05-16 20:54:11'),
+(14, 'rate_education_d3', NULL, '2026-05-16 20:54:11', '2026-05-16 20:54:11'),
+(15, 'rate_education_s1', NULL, '2026-05-16 20:54:11', '2026-05-16 20:54:11'),
+(16, 'rate_education_s2', NULL, '2026-05-16 20:54:11', '2026-05-16 20:54:11'),
+(17, 'rate_education_s3', NULL, '2026-05-16 20:54:11', '2026-05-16 20:54:11'),
+(18, 'rate_service_per_year', NULL, '2026-05-16 20:54:11', '2026-05-16 20:54:11');
 
 -- --------------------------------------------------------
 
@@ -547,22 +544,37 @@ INSERT INTO `student_bills` (`id`, `student_id`, `fee_type_id`, `amount`, `due_d
 CREATE TABLE `teachers` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `teaching_hours` int NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
-  `nip` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) DEFAULT NULL,
-  `address` text,
+  `nipty` varchar(255) DEFAULT NULL,
+  `nipy` varchar(255) DEFAULT NULL,
+  `birth_place` varchar(255) DEFAULT NULL,
+  `birth_date` date DEFAULT NULL,
+  `gender` varchar(255) DEFAULT NULL,
+  `education` varchar(255) DEFAULT NULL,
+  `major` varchar(150) DEFAULT NULL,
+  `unit` varchar(255) DEFAULT NULL,
+  `service_years` int NOT NULL DEFAULT '0',
+  `service_months` int NOT NULL DEFAULT '0',
+  `grade` varchar(255) DEFAULT NULL,
+  `basic_salary` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `teaching_hours` int NOT NULL DEFAULT '32',
+  `discipline_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
+  `other_allowance` decimal(15,2) NOT NULL DEFAULT '0.00',
   `joined_date` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `bpjs_category_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `teachers`
 --
 
-INSERT INTO `teachers` (`id`, `user_id`, `teaching_hours`, `name`, `nip`, `phone`, `address`, `joined_date`, `created_at`, `updated_at`) VALUES
-(1, 3, 36, 'Aenun Akhkam', '3328021708010009', '085201166815', 'DUkuh Bawangan kelurahan Bumijawa Kecamatan Bumijawa RT 01 RW 08 Kab.Tegal', '2021-07-07', '2026-03-08 09:19:00', '2026-03-08 19:48:27');
+INSERT INTO `teachers` (`id`, `user_id`, `name`, `nipty`, `nipy`, `birth_place`, `birth_date`, `gender`, `education`, `major`, `unit`, `service_years`, `service_months`, `grade`, `basic_salary`, `teaching_hours`, `discipline_percentage`, `other_allowance`, `joined_date`, `created_at`, `updated_at`, `bpjs_category_id`) VALUES
+(2, 4, 'Tina Agustina', '2001-03-121', '200103121', 'Tegal', '2026-05-15', 'Perempuan', 'SMA/SMK', NULL, 'SMK Nu 1 Islamiyah Kramat', 5, 2, 'II', '1447700.00', 32, '0.00', '0.00', '2021-03-03', '2026-05-04 01:46:28', '2026-05-16 16:24:13', 2),
+(3, 5, 'Rokhimun', '2004-03-028', '200403028', 'Pemalang', '2026-05-21', 'Laki-laki', 'SD', NULL, 'SMK Nu 1 Islamiyah Kramat', 22, 2, 'I', '1431800.00', 32, '0.00', '0.00', '2004-03-03', '2026-05-16 07:22:03', '2026-05-16 20:08:45', 2),
+(4, 6, 'Umi Sa\'atun,S.Pd., M.M', '1997-03-019', '199703019', 'Tegal', '1976-11-23', 'Perempuan', 'S2', NULL, 'SMK Nu 1 Islamiyah Kramat', 29, 2, 'V', '2792100.00', 32, '0.00', '0.00', '1997-03-03', '2026-05-16 07:53:16', '2026-05-16 16:28:09', 1),
+(6, 8, 'Aenun Akhkam', '22205047', '22205047', 'Tegal', '2026-05-17', 'Laki-laki', 'S1', 'Teknik Informatika', 'SMK NU 1 Islamiyah Kramat', 7, 10, 'IV', '1904700.00', 32, '0.00', '0.00', '2018-07-19', '2026-05-17 00:52:05', '2026-05-17 01:20:04', NULL);
 
 -- --------------------------------------------------------
 
@@ -586,18 +598,29 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Administrator', 'admin@admin.com', NULL, '$2y$12$GoHh99U.VVGCSkpF5X/bsOAztI7Mhf4D/7z7yF2ikOBtBcGDSSZ1G', 'j2TjvKrARTwk6xPZajhRt426DNRKdCZTC1K1sA1TYcoouTHvyd2xnhSPyy6G', '2026-03-08 07:43:16', '2026-03-08 11:29:02'),
-(2, 'Finka Setia Wibawa', 'siswa@gmail.com', NULL, '$2y$12$a4rTOOiUkWto0a0s2rAZIuvM1EoxKVLRG4JKLl1zGctTvr/EIPuqu', NULL, '2026-03-08 10:19:47', '2026-03-09 21:44:34'),
-(3, 'Aenun Akhkam', 'guru@gmail.com', NULL, '$2y$12$Z5.JccUIoZmVjIyRmjoN/eTWhAPq9waQx8I9OMT7L0KJe/gauqGxu', NULL, '2026-03-08 10:19:47', '2026-03-08 22:36:03');
+(1, 'Tina Agustina', 'tina@gmail.com', NULL, '$2y$12$AYrm1od5KGdhvTM5o5NMEOwNFDFUWDhmCHnj7ccb3cCCc/tv3pJDu', 'jtMz6UhcA2L4UyjIsM8iOeGSXhO6KwbixA5gbs9L06RbPvrY9vWxSyWWsBKR', '2026-03-08 07:43:16', '2026-05-16 20:32:57'),
+(3, 'Aenun Akhkam', 'guru@gmail.com', NULL, '$2y$12$Z5.JccUIoZmVjIyRmjoN/eTWhAPq9waQx8I9OMT7L0KJe/gauqGxu', NULL, '2026-03-08 10:19:47', '2026-03-08 22:36:03'),
+(4, 'Tina Agustina', '123456789000112@school.local', NULL, '$2y$12$DY6drUinI97MvnQrRn3XJOiTv.VpdLt8DK1mIkIJJWYCzZuyyLscu', NULL, '2026-05-04 01:46:28', '2026-05-04 01:46:28'),
+(5, 'Rokhimun', '200403028@school.local', NULL, '$2y$12$AS1gQAc5ksE0t5G0vUR5n.9uNCT8Bo1rSZIHu/02LRnpdk0huaGne', NULL, '2026-05-16 07:22:03', '2026-05-16 07:22:03'),
+(6, 'Umi Sa\'atun,S.Pd., M.M', '199703019@school.local', NULL, '$2y$12$7aPy13id9OJs2kmZtZt7xOheZIIjeoPwthwN2KKNb4bnTnqwC170G', NULL, '2026-05-16 07:53:16', '2026-05-16 07:53:16'),
+(7, 'Windiya, S.Pd.', '2012-03-@school.local', NULL, '$2y$12$OMmZUaDPI0IIL7CMrgdOFeuBE8ZX54aL6T6P6Oi1gbT45v1o21ZGi', NULL, '2026-05-16 08:37:53', '2026-05-16 08:37:53'),
+(8, 'Aenun Akhkam', '22205047@school.local', NULL, '$2y$12$xyTNzgKRDQW51zz4JF7fpeOvzq517QPwMIL4jrFeCAHSA8EZ9qA3a', NULL, '2026-05-17 00:52:05', '2026-05-17 00:52:05');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `academic_years`
+-- Indexes for table `bpjs_categories`
 --
-ALTER TABLE `academic_years`
+ALTER TABLE `bpjs_categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `bpjs_categories_code_unique` (`code`);
+
+--
+-- Indexes for table `bpjs_configs`
+--
+ALTER TABLE `bpjs_configs`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -619,23 +642,11 @@ ALTER TABLE `cash_transactions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `class_rooms`
---
-ALTER TABLE `class_rooms`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
-
---
--- Indexes for table `fee_types`
---
-ALTER TABLE `fee_types`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `jobs`
@@ -675,13 +686,6 @@ ALTER TABLE `model_has_roles`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
-
---
--- Indexes for table `payments`
---
-ALTER TABLE `payments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `payments_student_bill_id_foreign` (`student_bill_id`);
 
 --
 -- Indexes for table `permissions`
@@ -727,6 +731,21 @@ ALTER TABLE `salaries`
   ADD KEY `salaries_teacher_id_foreign` (`teacher_id`);
 
 --
+-- Indexes for table `salary_deductions`
+--
+ALTER TABLE `salary_deductions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `salary_deductions_salary_id_foreign` (`salary_id`),
+  ADD KEY `salary_deductions_teacher_id_foreign` (`teacher_id`);
+
+--
+-- Indexes for table `salary_scales`
+--
+ALTER TABLE `salary_scales`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `salary_scales_grade_mkg_unique` (`grade`,`mkg`);
+
+--
 -- Indexes for table `sessions`
 --
 ALTER TABLE `sessions`
@@ -742,29 +761,12 @@ ALTER TABLE `settings`
   ADD UNIQUE KEY `settings_key_unique` (`key`);
 
 --
--- Indexes for table `students`
---
-ALTER TABLE `students`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `students_nis_unique` (`nis`),
-  ADD KEY `students_class_room_id_foreign` (`class_room_id`),
-  ADD KEY `students_user_id_foreign` (`user_id`);
-
---
--- Indexes for table `student_bills`
---
-ALTER TABLE `student_bills`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `student_bills_student_id_foreign` (`student_id`),
-  ADD KEY `student_bills_fee_type_id_foreign` (`fee_type_id`);
-
---
 -- Indexes for table `teachers`
 --
 ALTER TABLE `teachers`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `teachers_nip_unique` (`nip`),
-  ADD KEY `teachers_user_id_foreign` (`user_id`);
+  ADD KEY `teachers_user_id_foreign` (`user_id`),
+  ADD KEY `teachers_bpjs_category_id_foreign` (`bpjs_category_id`);
 
 --
 -- Indexes for table `users`
@@ -778,34 +780,28 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `academic_years`
+-- AUTO_INCREMENT for table `bpjs_categories`
 --
-ALTER TABLE `academic_years`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `bpjs_categories`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `bpjs_configs`
+--
+ALTER TABLE `bpjs_configs`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `cash_transactions`
 --
 ALTER TABLE `cash_transactions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT for table `class_rooms`
---
-ALTER TABLE `class_rooms`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `fee_types`
---
-ALTER TABLE `fee_types`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -817,13 +813,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
-
---
--- AUTO_INCREMENT for table `payments`
---
-ALTER TABLE `payments`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `permissions`
@@ -835,13 +825,13 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `positions`
 --
 ALTER TABLE `positions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `position_teacher`
 --
 ALTER TABLE `position_teacher`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -853,37 +843,37 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `salaries`
 --
 ALTER TABLE `salaries`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+
+--
+-- AUTO_INCREMENT for table `salary_deductions`
+--
+ALTER TABLE `salary_deductions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `salary_scales`
+--
+ALTER TABLE `salary_scales`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `students`
---
-ALTER TABLE `students`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `student_bills`
---
-ALTER TABLE `student_bills`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `teachers`
 --
 ALTER TABLE `teachers`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
@@ -900,12 +890,6 @@ ALTER TABLE `model_has_permissions`
 --
 ALTER TABLE `model_has_roles`
   ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `payments`
---
-ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_student_bill_id_foreign` FOREIGN KEY (`student_bill_id`) REFERENCES `student_bills` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `position_teacher`
@@ -928,23 +912,17 @@ ALTER TABLE `salaries`
   ADD CONSTRAINT `salaries_teacher_id_foreign` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `students`
+-- Constraints for table `salary_deductions`
 --
-ALTER TABLE `students`
-  ADD CONSTRAINT `students_class_room_id_foreign` FOREIGN KEY (`class_room_id`) REFERENCES `class_rooms` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `students_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `student_bills`
---
-ALTER TABLE `student_bills`
-  ADD CONSTRAINT `student_bills_fee_type_id_foreign` FOREIGN KEY (`fee_type_id`) REFERENCES `fee_types` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `student_bills_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE;
+ALTER TABLE `salary_deductions`
+  ADD CONSTRAINT `salary_deductions_salary_id_foreign` FOREIGN KEY (`salary_id`) REFERENCES `salaries` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `salary_deductions_teacher_id_foreign` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `teachers`
 --
 ALTER TABLE `teachers`
+  ADD CONSTRAINT `teachers_bpjs_category_id_foreign` FOREIGN KEY (`bpjs_category_id`) REFERENCES `bpjs_categories` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `teachers_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 COMMIT;
 

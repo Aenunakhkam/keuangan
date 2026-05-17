@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\CashTransaction;
-use App\Models\Payment;
 use App\Models\Salary;
-use App\Models\Student;
-use App\Models\StudentBill;
 use App\Models\Teacher;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -25,55 +23,80 @@ class DashboardController extends Controller
         switch ($role) {
             case 'admin':
                 $data['stats'] = [
-                    'students_count' => Student::count(),
                     'teachers_count' => Teacher::count(),
+                    'positions_count' => Position::count(),
                     'total_income' => CashTransaction::where('type', 'income')->sum('amount'),
                     'total_expense' => CashTransaction::where('type', 'expense')->sum('amount'),
-                    'today_paid_count' => Payment::whereDate('payment_date', now())->count(),
-                    'pending_bills_count' => StudentBill::where('status', '!=', 'paid')->count(),
+                    'payroll_this_month' => Salary::where('month', date('n'))->where('year', date('Y'))->sum('net_salary'),
+                    'pending_payroll_count' => Salary::where('month', date('n'))->where('year', date('Y'))->where('status', 'pending')->count(),
                 ];
 
+                // Generate the last 6 months as dynamic labels and a template map
+                $chartLabels = [];
+                $incomeMap = [];
+                $expenseMap = [];
+
+                for ($i = 5; $i >= 0; $i--) {
+                    $date = now()->subMonths($i);
+                    $monthNum = (int)$date->format('n');
+                    $monthName = $date->translatedFormat('M');
+                    $year = $date->format('Y');
+
+                    $key = $year . '-' . str_pad((string)$monthNum, 2, '0', STR_PAD_LEFT);
+                    $chartLabels[] = $monthName;
+                    $incomeMap[$key] = 0;
+                    $expenseMap[$key] = 0;
+                }
+
                 $driver = \DB::getDriverName();
-                $monthFormat = $driver === 'sqlite' ? "strftime('%m', transaction_date)" : "MONTH(transaction_date)";
+                if ($driver === 'sqlite') {
+                    $monthYearFormat = "strftime('%Y-%m', transaction_date)";
+                } else {
+                    $monthYearFormat = "DATE_FORMAT(transaction_date, '%Y-%m')";
+                }
 
-                $incomeData = CashTransaction::where('type', 'income')
-                    ->where('transaction_date', '>=', now()->subMonths(6))
-                    ->selectRaw("$monthFormat as month, SUM(amount) as total")
-                    ->groupBy('month')
-                    ->orderBy('month')
-                    ->pluck('total')
-                    ->toArray();
+                $incomeTransactions = CashTransaction::where('type', 'income')
+                    ->where('transaction_date', '>=', now()->subMonths(5)->startOfMonth())
+                    ->selectRaw("$monthYearFormat as month_year, SUM(amount) as total")
+                    ->groupBy('month_year')
+                    ->get();
 
-                $expenseData = CashTransaction::where('type', 'expense')
-                    ->where('transaction_date', '>=', now()->subMonths(6))
-                    ->selectRaw("$monthFormat as month, SUM(amount) as total")
-                    ->groupBy('month')
-                    ->orderBy('month')
-                    ->pluck('total')
-                    ->toArray();
+                foreach ($incomeTransactions as $tx) {
+                    if (isset($incomeMap[$tx->month_year])) {
+                        $incomeMap[$tx->month_year] = (float)$tx->total;
+                    }
+                }
 
-                $incomeData = array_pad(array_slice($incomeData, -6), -6, 0);
-                $expenseData = array_pad(array_slice($expenseData, -6), -6, 0);
+                $expenseTransactions = CashTransaction::where('type', 'expense')
+                    ->where('transaction_date', '>=', now()->subMonths(5)->startOfMonth())
+                    ->selectRaw("$monthYearFormat as month_year, SUM(amount) as total")
+                    ->groupBy('month_year')
+                    ->get();
+
+                foreach ($expenseTransactions as $tx) {
+                    if (isset($expenseMap[$tx->month_year])) {
+                        $expenseMap[$tx->month_year] = (float)$tx->total;
+                    }
+                }
 
                 $data['stats']['chart_data'] = [
-                    'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-                    'income' => array_values($incomeData),
-                    'expense' => array_values($expenseData),
+                    'labels' => $chartLabels,
+                    'income' => array_values($incomeMap),
+                    'expense' => array_values($expenseMap),
                 ];
                 break;
             case 'bendahara':
                 $data['stats'] = [
-                    'recent_payments' => Payment::with('studentBill.student')->latest()->limit(5)->get()->map(function ($p) {
+                    'recent_salaries' => Salary::with('teacher')->latest()->limit(5)->get()->map(function ($s) {
                         return [
-                            'id' => $p->id,
-                            'amount' => $p->amount,
-                            'payment_date' => $p->payment_date,
-                            'student_bill' => $p->studentBill ? [
-                                'student' => $p->studentBill->student ? ['name' => $p->studentBill->student->name] : null,
-                            ] : null,
+                            'id' => $s->id,
+                            'amount' => $s->net_salary,
+                            'month' => $s->month,
+                            'year' => $s->year,
+                            'teacher' => $s->teacher ? ['name' => $s->teacher->name] : null,
                         ];
                     }),
-                    'pending_bills_count' => StudentBill::where('status', '!=', 'paid')->count(),
+                    'pending_payroll_count' => Salary::where('status', 'pending')->count(),
                     'cash_balance' => CashTransaction::where('type', 'income')->sum('amount') - CashTransaction::where('type', 'expense')->sum('amount'),
                 ];
                 break;
@@ -100,9 +123,6 @@ class DashboardController extends Controller
                             'year' => $s->year,
                             'base_salary' => $s->base_salary,
                             'allowance' => $s->allowance,
-                            'transport_allowance' => $s->transport_allowance,
-                            'deduction' => $s->deduction,
-                            'deduction_description' => $s->deduction_description,
                             'net_salary' => $s->net_salary,
                             'status' => $s->status,
                         ];
@@ -112,8 +132,8 @@ class DashboardController extends Controller
                 $data['stats'] = [
                     'teacher' => $teacher ? [
                         'name' => $teacher->name,
-                        'nip' => $teacher->nip,
-                        'teaching_hours' => $teacher->teaching_hours,
+                        'nipty' => $teacher->nipty,
+                        'nipy' => $teacher->nipy,
                         'positions' => $teacher->positions ? $teacher->positions->map(function ($pos) {
                             return ['name' => $pos->name, 'allowance' => $pos->allowance];
                         }) : collect(),
@@ -123,38 +143,6 @@ class DashboardController extends Controller
                         'last_salary' => $lastSalary,
                     ],
                     'salaries' => $salaries,
-                ];
-                break;
-            case 'siswa':
-                $student = Student::with('classRoom')->where('user_id', $user->id)->first();
-                $bankSettings = \App\Models\Setting::whereIn('key', ['bank_name', 'bank_account_number', 'bank_account_name'])
-                    ->get()->pluck('value', 'key');
-                
-                $bills = $student ? StudentBill::with('feeType')->where('student_id', $student->id)->get() : collect();
-                
-                $data['stats'] = [
-                    'student' => $student ? [
-                        'name' => $student->name,
-                        'nis' => $student->nis,
-                        'class_name' => $student->classRoom ? $student->classRoom->name : '-',
-                    ] : null,
-                    'summary' => [
-                        'total_bills' => $bills->sum('amount'),
-                        'total_paid' => $bills->where('status', 'paid')->sum('amount'),
-                        'total_unpaid' => $bills->where('status', '!=', 'paid')->sum('amount'),
-                    ],
-                    'bills' => $bills->map(function ($b) {
-                        return [
-                            'id' => $b->id,
-                            'amount' => $b->amount,
-                            'due_date' => $b->due_date,
-                            'status' => $b->status,
-                            'fee_type' => $b->feeType ? ['name' => $b->feeType->name] : null,
-                        ];
-                    }),
-                    'bank_name'           => $bankSettings['bank_name'] ?? null,
-                    'bank_account_number' => $bankSettings['bank_account_number'] ?? null,
-                    'bank_account_name'   => $bankSettings['bank_account_name'] ?? null,
                 ];
                 break;
         }

@@ -23,29 +23,49 @@ class TeacherController extends Controller
             });
         }
 
-        $teachers = $query->with('positions')->latest()->paginate(10)->through(function ($teacher) {
+        $teachers = $query->with('positions')->latest()->paginate($request->input('per_page', 10))->through(function ($teacher) {
             return [
                 'id' => $teacher->id,
-                'nip' => $teacher->nip,
                 'name' => $teacher->name,
-                'phone' => $teacher->phone,
-                'address' => $teacher->address,
-                'joined_date' => $teacher->joined_date,
-                'teaching_hours' => $teacher->teaching_hours,
+                'nipty' => $teacher->nipty,
+                'nipy' => $teacher->nipy,
+                'birth_place' => $teacher->birth_place,
+                'birth_date' => $teacher->birth_date ? $teacher->birth_date->format('Y-m-d') : null,
+                'gender' => $teacher->gender,
+                'education' => $teacher->education,
+                'major' => $teacher->major,
+                'unit' => $teacher->unit,
+                'service_years' => $teacher->service_years,
+                'service_months' => $teacher->service_months,
+                'grade' => $teacher->grade,
+                'mkg' => floor($teacher->service_years / 2) * 2,
+                'basic_salary' => \App\Models\SalaryScale::getAmount($teacher->education, $teacher->service_years),
+                'other_allowance' => $teacher->other_allowance,
+                'joined_date' => $teacher->joined_date ? $teacher->joined_date->format('Y-m-d') : null,
                 'positions' => $teacher->positions->map(function ($pos) {
-                    return ['id' => $pos->id, 'name' => $pos->name];
+                    return [
+                        'id' => $pos->id, 
+                        'name' => $pos->name, 
+                        'allowance' => $pos->allowance,
+                        'health_allowance' => $pos->health_allowance
+                    ];
                 })->toArray(),
             ];
         })->withQueryString();
         
         $positions = \App\Models\Position::orderBy('name')->get()->map(function ($pos) {
-            return ['id' => $pos->id, 'name' => $pos->name];
+            return [
+                'id' => $pos->id, 
+                'name' => $pos->name, 
+                'allowance' => $pos->allowance,
+                'health_allowance' => $pos->health_allowance
+            ];
         });
 
         return inertia('Teacher/Index', [
             'teachers' => $teachers,
             'positions' => $positions,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search', 'per_page'])
         ]);
     }
 
@@ -53,7 +73,7 @@ class TeacherController extends Controller
     {
         $user = \App\Models\User::create([
             'name' => $request->name,
-            'email' => ($request->nip ?? uniqid()) . '@school.local',
+            'email' => ($request->nipty ?? $request->nipy ?? uniqid()) . '@school.local',
             'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
         ]);
         $user->assignRole('guru');
@@ -92,5 +112,226 @@ class TeacherController extends Controller
     {
         $teacher->delete();
         return redirect()->back()->with('success', 'Data guru berhasil dihapus.');
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Nama Pegawai (Wajib)', 
+            'NIPTY (Opsional)', 
+            'NIPY (Opsional)', 
+            'Jenis Kelamin (L/P)', 
+            'Tempat Lahir (Opsional)', 
+            'Tanggal Lahir (Format: YYYY-MM-DD)', 
+            'Pendidikan (SMA/SMK/D3/S1/S2/S3)', 
+            'Jurusan / Prodi (Opsional)',
+            'Unit Kerja (Contoh: SMK)', 
+            'Masa Kerja Tahun (Angka)', 
+            'Masa Kerja Bulan (Angka: 0-11)', 
+            'Golongan (Opsional)', 
+            'Tunjangan Lainnya (Angka)', 
+            'Tanggal Masuk (Format: YYYY-MM-DD)', 
+            'Nama Jabatan (Pisahkan koma jika lebih dari satu, contoh: Guru, Bendahara Sekolah)'
+        ];
+
+        $examples = [
+            [
+                'Tina Agustina, S.Pd', 
+                '200103121', 
+                '', 
+                'P', 
+                'Tegal', 
+                '1990-05-12', 
+                'S1', 
+                'Pendidikan Matematika',
+                'SMK', 
+                '5', 
+                '6', 
+                'III/a', 
+                '50000', 
+                '2018-07-01', 
+                'Guru, Bendahara Sekolah'
+            ],
+            [
+                'Ahmad Subarjo, M.Pd', 
+                '', 
+                '199703019', 
+                'L', 
+                'Brebes', 
+                '1985-11-23', 
+                'S2', 
+                'Manajemen Pendidikan',
+                'SMK', 
+                '10', 
+                '0', 
+                'III/c', 
+                '100000', 
+                '2014-01-15', 
+                'Kepala Sekolah'
+            ]
+        ];
+
+        $callback = function() use ($headers, $examples) {
+            $file = fopen('php://output', 'w');
+            
+            // Add UTF-8 BOM for Excel compatibility
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            fputcsv($file, $headers, ';'); // Semicolon is better for Indonesian Excel defaults
+            
+            foreach ($examples as $row) {
+                fputcsv($file, $row, ';');
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=template_import_pegawai.csv",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:2048'
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+        
+        $handle = fopen($path, 'r');
+        if (!$handle) {
+            return redirect()->back()->with('error', 'Gagal membuka file CSV.');
+        }
+
+        // Determine separator (comma or semicolon)
+        $firstLine = fgets($handle);
+        $separator = (strpos($firstLine, ';') !== false) ? ';' : ',';
+        rewind($handle);
+
+        // Skip UTF-8 BOM if present
+        $bom = fread($handle, 3);
+        if ($bom !== chr(0xEF).chr(0xBB).chr(0xBF)) {
+            rewind($handle);
+        }
+
+        // Skip header
+        fgetcsv($handle, 0, $separator);
+
+        $successCount = 0;
+        $errors = [];
+        $rowNum = 1;
+
+        \DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle, 0, $separator)) !== false) {
+                $rowNum++;
+                // Skip empty rows
+                if (empty($row) || !isset($row[0]) || empty(trim($row[0]))) {
+                    continue;
+                }
+
+                $name = trim($row[0]);
+                $nipty = !empty($row[1]) ? trim($row[1]) : null;
+                $nipy = !empty($row[2]) ? trim($row[2]) : null;
+                $gender = !empty($row[3]) ? strtoupper(trim($row[3])) : 'L';
+                $birthPlace = !empty($row[4]) ? trim($row[4]) : null;
+                $birthDate = !empty($row[5]) ? trim($row[5]) : null;
+                $education = !empty($row[6]) ? trim($row[6]) : 'S1';
+                $major = !empty($row[7]) ? trim($row[7]) : null;
+                $unit = !empty($row[8]) ? trim($row[8]) : 'SMK';
+                $serviceYears = isset($row[9]) ? (int) $row[9] : 0;
+                $serviceMonths = isset($row[10]) ? (int) $row[10] : 0;
+                $grade = !empty($row[11]) ? trim($row[11]) : null;
+                $otherAllowance = isset($row[12]) ? (float) $row[12] : 0;
+                $joinedDate = !empty($row[13]) ? trim($row[13]) : null;
+                $positionsStr = !empty($row[14]) ? trim($row[14]) : '';
+
+                // Validate birth date and joined date format
+                if ($birthDate && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $birthDate)) {
+                    $birthDate = null;
+                }
+                if ($joinedDate && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $joinedDate)) {
+                    $joinedDate = null;
+                }
+
+                // Check uniqueness of NIPTY / NIPY
+                if ($nipty && Teacher::where('nipty', $nipty)->exists()) {
+                    $errors[] = "Baris $rowNum: NIPTY '$nipty' sudah terdaftar.";
+                    continue;
+                }
+                if ($nipy && Teacher::where('nipy', $nipy)->exists()) {
+                    $errors[] = "Baris $rowNum: NIPY '$nipy' sudah terdaftar.";
+                    continue;
+                }
+
+                // Create User Account
+                $email = ($nipty ?? $nipy ?? uniqid()) . '@school.local';
+                $user = \App\Models\User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
+                ]);
+                $user->assignRole('guru');
+
+                // Calculate basic salary using SalaryScale
+                $basicSalary = \App\Models\SalaryScale::getAmount($education, $serviceYears);
+
+                // Create Teacher
+                $teacher = Teacher::create([
+                    'user_id' => $user->id,
+                    'name' => $name,
+                    'nipty' => $nipty,
+                    'nipy' => $nipy,
+                    'gender' => $gender,
+                    'birth_place' => $birthPlace,
+                    'birth_date' => $birthDate,
+                    'education' => $education,
+                    'major' => $major,
+                    'unit' => $unit,
+                    'service_years' => $serviceYears,
+                    'service_months' => $serviceMonths,
+                    'grade' => $grade,
+                    'basic_salary' => $basicSalary,
+                    'other_allowance' => $otherAllowance,
+                    'joined_date' => $joinedDate,
+                ]);
+
+                // Map and attach positions by matching names
+                if (!empty($positionsStr)) {
+                    $positionsArr = array_map('trim', explode(',', $positionsStr));
+                    $posIds = [];
+                    foreach ($positionsArr as $posName) {
+                        if (!empty($posName)) {
+                            $pos = \App\Models\Position::firstOrCreate(
+                                ['name' => $posName],
+                                ['allowance' => 0, 'health_allowance' => 0]
+                            );
+                            $posIds[] = $pos->id;
+                        }
+                    }
+                    $teacher->positions()->attach($posIds);
+                }
+
+                $successCount++;
+            }
+            fclose($handle);
+
+            if (!empty($errors)) {
+                \DB::rollBack();
+                return redirect()->back()->with('error', 'Gagal mengimpor data. Kesalahan: <br>' . implode('<br>', $errors));
+            }
+
+            \DB::commit();
+            return redirect()->back()->with('success', "Sukses mengimpor $successCount data pegawai.");
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            fclose($handle);
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem saat impor: ' . $e->getMessage());
+        }
     }
 }
