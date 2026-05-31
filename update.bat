@@ -5,8 +5,7 @@ echo ====================================================================
 echo             AUTO-UPDATER: APLIKASI KEUANGAN SEKOLAH
 echo ====================================================================
 echo.
-echo Script ini akan menarik kode terbaru dari GitHub, menyelaraskan database,
-echo serta membangun ulang aset visual aplikasi secara otomatis.
+echo Script ini akan menarik kode terbaru dari GitHub dan menyelaraskan database.
 echo.
 echo --------------------------------------------------------------------
 echo.
@@ -24,7 +23,7 @@ echo [OK] Kode berhasil diperbarui!
 echo.
 
 :: Step 2: Composer Install
-echo [2/5] Menyelaraskan dependensi PHP (composer install)...
+echo [2/3] Menyelaraskan dependensi PHP (composer install)...
 call composer install --no-interaction --prefer-dist --optimize-autoloader
 if %errorlevel% neq 0 (
     color 0C
@@ -34,19 +33,8 @@ if %errorlevel% neq 0 (
 echo [OK] Dependensi PHP berhasil diselaraskan!
 echo.
 
-:: Step 3: NPM Install
-echo [3/5] Menyelaraskan dependensi Javascript (npm install)...
-call npm install
-if %errorlevel% neq 0 (
-    color 0C
-    echo [ERROR] Gagal mengupdate dependensi Javascript.
-    goto end
-)
-echo [OK] Dependensi Javascript berhasil diselaraskan!
-echo.
-
-:: Step 4: Run Migrations
-echo [4/5] Menjalankan migrasi perubahan database (migrate)...
+:: Step 3: Run Migrations
+echo [3/3] Menjalankan migrasi perubahan database (migrate)...
 call php artisan migrate --force
 if %errorlevel% neq 0 (
     color 0C
@@ -56,19 +44,12 @@ if %errorlevel% neq 0 (
 echo [OK] Struktur database berhasil diperbarui!
 echo.
 
-:: Step 4.5: Storage Link
+:: Storage Link
 echo [*] Menghubungkan penyimpanan media (storage:link)...
 call php artisan storage:link
 echo.
 
-:: Step 5: Build Assets
-echo [5/5] Mengompilasi ulang tampilan visual (npm run build)...
-call npm run build
-if %errorlevel% neq 0 (
-    color 0C
-    echo [ERROR] Gagal melakukan build assets.
-    goto end
-)
+echo [OK] Tampilan visual sudah tersedia (sudah dikompilasi dari server pusat)!
 echo.
 echo ====================================================================
 echo         CONGRATULATIONS! APLIKASI KINI SUDAH 100% TERUPDATE!
