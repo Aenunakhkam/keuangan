@@ -294,10 +294,20 @@
                 <tr>
                     <!-- Kolom Pendapatan -->
                     <td class="col-pendapatan">
-                        <div class="item-row" style="margin-bottom: 20px;">
-                            <span class="item-label">NETTO</span>
+                        <div class="item-row" style="margin-bottom: 8px;">
+                            <span class="item-label">NETTO SPJ</span>
                             <span class="item-value">{!! formatRp($spjNetto) !!}</span>
                         </div>
+                        @if($disciplineDeduction > 0)
+                        <div class="item-row" style="margin-bottom: 8px; color: #dc2626;">
+                            <span class="item-label">{{ strtoupper($disciplineDesc) }}</span>
+                            <span class="item-value">({!! formatRp($disciplineDeduction) !!})</span>
+                        </div>
+                        <div class="item-row" style="margin-bottom: 8px; font-weight: bold; border-top: 1px solid #000; padding-top: 4px;">
+                            <span class="item-label">NETTO SETELAH SANKSI</span>
+                            <span class="item-value">{!! formatRp($spjNettoAfterDiscipline) !!}</span>
+                        </div>
+                        @endif
                     </td>
 
                     <!-- Kolom Potongan -->
@@ -367,13 +377,18 @@
 
         <!-- Total -->
         @php
+            $spjNetto = $salary->salaryDeduction ? $salary->salaryDeduction->spj_netto : ($salary->base_salary + $salary->allowance);
+            $disciplineDeduction = (float) $salary->deduction;
+            $disciplineDesc = $salary->deduction_description ?: ($disciplineDeduction > 0 ? 'Sanksi Disiplin' : '');
+            $spjNettoAfterDiscipline = $spjNetto - $disciplineDeduction;
+            $deduction = $salary->salaryDeduction;
             $totalPotongan = $deduction ? $deduction->jumlah_potongan : 0;
-            $gajiBersih = $deduction ? $deduction->gaji_bersih : $spjNetto;
+            $gajiBersih = $deduction ? $deduction->gaji_bersih : $spjNettoAfterDiscipline;
         @endphp
         <div class="total-row">
             <div class="total-col" style="width: 35%; padding-right: 20px;">
                 <span>JUMLAH PENDAPATAN</span>
-                <span class="item-value">{!! formatRp($spjNetto) !!}</span>
+                <span class="item-value">{!! formatRp($spjNettoAfterDiscipline) !!}</span>
             </div>
             <div class="total-col" style="width: 65%; padding-left: 20px;">
                 <span>JUMLAH POTONGAN</span>

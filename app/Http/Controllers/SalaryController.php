@@ -157,23 +157,38 @@ class SalaryController extends Controller
             if (is_null($baseSalary) || $baseSalary <= 0) {
                 $baseSalary = \App\Models\SalaryScale::getAmount($teacher->education, $teacher->service_years);
             }
+
+            // Hitung gaji pokok riil berdasarkan jam pelajaran (tugas jampel)
+            $teachingHours = $teacher->teaching_hours ?? 32;
+            $baseSalaryReal = $teachingHours > 0
+                ? ($baseSalary * $teachingHours) / 32
+                : $baseSalary;
             
             // Tunjangan Jabatan (Allowance) + Tunjangan Tetap Lainnya
             $structuralAllowance = $teacher->positions ? $teacher->positions->sum('allowance') : 0;
             $allowance = $structuralAllowance + ($teacher->other_allowance ?? 0);
-            
-            $netSalary = $baseSalary + $allowance;
+
+            // Hitung Sanksi Disiplin dari gaji pokok riil
+            $disciplinePercent = (float) ($teacher->discipline_percentage ?? 0);
+            $disciplineDeduction = round($baseSalaryReal * $disciplinePercent / 100);
+            $deductionDescription = $disciplineDeduction > 0
+                ? "Sanksi Disiplin {$disciplinePercent}%"
+                : null;
+
+            // Gaji bersih setelah dipotong sanksi disiplin
+            $netSalary = $baseSalaryReal + $allowance - $disciplineDeduction;
 
             Salary::create([
-                'teacher_id'        => $teacher->id,
-                'base_salary'       => $baseSalary,
-                'allowance'         => $allowance,
-                'days_present'      => 0,
-                'deduction'         => 0,
-                'net_salary'        => $netSalary,
-                'month'             => $request->month,
-                'year'              => $request->year,
-                'status'            => 'pending'
+                'teacher_id'            => $teacher->id,
+                'base_salary'           => $baseSalaryReal,
+                'allowance'             => $allowance,
+                'days_present'          => 0,
+                'deduction'             => $disciplineDeduction,
+                'deduction_description' => $deductionDescription,
+                'net_salary'            => $netSalary,
+                'month'                 => $request->month,
+                'year'                  => $request->year,
+                'status'                => 'pending'
             ]);
         }
 
