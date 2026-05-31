@@ -28,5 +28,9 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $adminUser->assignRole($adminRole);
+
+        $this->call([
+            BpjsSeeder::class,
+        ]);
     }
 }
