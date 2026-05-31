@@ -142,6 +142,6 @@ class SalarySpjController extends Controller
         header("Pragma: no-cache");
         header("Expires: 0");
 
-        return view('salary-spj-print', $data);
+        return view('salary-spj-excel', $data);
     }
 }
