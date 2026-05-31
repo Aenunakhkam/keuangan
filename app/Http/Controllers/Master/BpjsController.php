@@ -49,7 +49,11 @@ class BpjsController extends Controller
         ]);
 
         $config = BpjsConfig::first();
-        $config->update($validated);
+        if ($config) {
+            $config->update($validated);
+        } else {
+            BpjsConfig::create($validated);
+        }
 
         return redirect()->back()->with('success', 'Konfigurasi BPJS berhasil diperbarui.');
     }

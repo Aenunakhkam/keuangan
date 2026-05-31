@@ -78,13 +78,13 @@ const submitTeacherUpdate = () => {
 const calculateBpjs = (category: any) => {
     if (!category || !category.code || category.code === 'E') return { allowance: 0, health: 0, naker: 0 };
 
-    const umk = Number(props.config.umk_reference);
-    const healthTotalPercent = Number(props.config.health_school_percent) + Number(props.config.health_employee_percent);
-    const nakerTotalPercent = Number(props.config.naker_school_percent) + Number(props.config.naker_employee_percent);
+    const umk = Number(configForm.umk_reference);
+    const healthTotalPercent = Number(configForm.health_school_percent) + Number(configForm.health_employee_percent);
+    const nakerTotalPercent = Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent);
 
     let allowancePercent = 0;
     if (category.code === 'A') {
-        allowancePercent = Number(props.config.health_school_percent) + Number(props.config.naker_school_percent);
+        allowancePercent = Number(configForm.health_school_percent) + Number(configForm.naker_school_percent);
     } else if (category.code === 'B') {
         allowancePercent = healthTotalPercent + nakerTotalPercent;
     } else if (category.code === 'C') {
@@ -248,7 +248,7 @@ const formatCurrency = (value: number) => {
                                 <th class="border-l border-r border-black p-1 bg-white"></th>
                                 <th class="border-l border-r border-black p-1 bg-white"></th>
                                 <th class="border-l border-r border-black p-1 bg-white"></th>
-                                <th colspan="2" class="border border-black p-1 bg-white">14,24%</th>
+                                <th colspan="2" class="border border-black p-1 bg-white">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) + Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</th>
                                 <th class="border-l border-r border-black p-1 bg-white"></th>
                             </tr>
                             <tr>
@@ -270,10 +270,10 @@ const formatCurrency = (value: number) => {
                             <tr>
                                 <td class="border-l border-r border-black"></td>
                                 <td class="border-l border-r border-black"></td>
-                                <td class="p-1 border border-black bg-[#00b050]">10,24%</td>
-                                <td class="p-1 border border-black bg-[#00b050]">5%</td>
-                                <td class="p-1 border border-black bg-[#00b050]">9,24%</td>
-                                <td class="p-1 border border-black bg-[#00b050]">10,24%</td>
+                                <td class="p-1 border border-black bg-[#00b050]">{{ Number(configForm.health_school_percent) + Number(configForm.naker_school_percent) }}%</td>
+                                <td class="p-1 border border-black bg-[#00b050]">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) }}%</td>
+                                <td class="p-1 border border-black bg-[#00b050]">{{ Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</td>
+                                <td class="p-1 border border-black bg-[#00b050]">{{ Number(configForm.health_school_percent) + Number(configForm.naker_school_percent) }}%</td>
                             </tr>
                             <tr>
                                 <td class="p-2 border border-black align-middle text-sm font-normal">1</td>
@@ -289,17 +289,17 @@ const formatCurrency = (value: number) => {
                                 <td class="border-l border-r border-black"></td>
                                 <td class="border-l border-r border-black"></td>
                                 <td class="p-1 border border-black bg-[#00b0f0]">BPJS Kes &Naker</td>
-                                <td class="p-1 border border-black bg-[#00b0f0]">5%</td>
-                                <td class="p-1 border border-black bg-[#00b0f0]">9,24%</td>
+                                <td class="p-1 border border-black bg-[#00b0f0]">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) }}%</td>
+                                <td class="p-1 border border-black bg-[#00b0f0]">{{ Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</td>
                                 <td class="p-1 border border-black bg-[#00b0f0]">BPJS Kes & Naker</td>
                             </tr>
                             <tr>
                                 <td class="border-l border-r border-black"></td>
                                 <td class="border-l border-r border-black"></td>
-                                <td class="p-1 border border-black bg-[#00b0f0]">14,24%</td>
+                                <td class="p-1 border border-black bg-[#00b0f0]">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) + Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</td>
                                 <td class="p-2 border border-black bg-white font-normal" rowspan="2">{{ formatCurrency(calculateBpjs(categories.find(c => c.code === 'B')).health).replace('Rp', '').trim() }}</td>
                                 <td class="p-2 border border-black bg-white font-normal" rowspan="2">{{ formatCurrency(calculateBpjs(categories.find(c => c.code === 'B')).naker).replace('Rp', '').trim() }}</td>
-                                <td class="p-1 border border-black bg-[#00b0f0]">14,24%</td>
+                                <td class="p-1 border border-black bg-[#00b0f0]">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) + Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</td>
                             </tr>
                             <tr>
                                 <td class="border-l border-r border-black"></td>
@@ -319,10 +319,10 @@ const formatCurrency = (value: number) => {
                             <tr>
                                 <td class="border-l border-r border-black"></td>
                                 <td class="border-l border-r border-black"></td>
-                                <td class="p-1 border border-black bg-[#ffff00]">5,00%</td>
-                                <td class="p-1 border border-black bg-[#ffff00]">5%</td>
+                                <td class="p-1 border border-black bg-[#ffff00]">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) }}%</td>
+                                <td class="p-1 border border-black bg-[#ffff00]">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) }}%</td>
                                 <td class="p-1 border border-black bg-[#ffff00]">0%</td>
-                                <td class="p-1 border border-black bg-[#ffff00]">5,00%</td>
+                                <td class="p-1 border border-black bg-[#ffff00]">{{ Number(configForm.health_school_percent) + Number(configForm.health_employee_percent) }}%</td>
                             </tr>
                             <tr>
                                 <td class="border-l border-r border-black"></td>
@@ -345,10 +345,10 @@ const formatCurrency = (value: number) => {
                             <tr>
                                 <td class="border-l border-r border-black"></td>
                                 <td class="border-l border-r border-black"></td>
-                                <td class="p-1 border border-black bg-[#ffc000]">9,24%</td>
+                                <td class="p-1 border border-black bg-[#ffc000]">{{ Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</td>
                                 <td class="p-1 border border-black bg-[#ffc000]">0%</td>
-                                <td class="p-1 border border-black bg-[#ffc000]">9,24%</td>
-                                <td class="p-1 border border-black bg-[#ffc000]">9,24%</td>
+                                <td class="p-1 border border-black bg-[#ffc000]">{{ Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</td>
+                                <td class="p-1 border border-black bg-[#ffc000]">{{ Number(configForm.naker_school_percent) + Number(configForm.naker_employee_percent) }}%</td>
                             </tr>
                             <tr>
                                 <td class="border-l border-r border-black"></td>
