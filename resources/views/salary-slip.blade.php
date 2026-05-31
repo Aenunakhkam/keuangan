@@ -226,11 +226,18 @@
 
         @php
             $spjNetto = $salary->salaryDeduction ? $salary->salaryDeduction->spj_netto : ($salary->base_salary + $salary->allowance);
+            $disciplineDeduction = (float) $salary->deduction;
+            $disciplineDesc = $salary->deduction_description ?: ($disciplineDeduction > 0 ? 'Sanksi Disiplin' : '');
+            $spjNettoAfterDiscipline = $spjNetto - $disciplineDeduction;
             $deduction = $salary->salaryDeduction;
+            $totalPotongan = $deduction ? $deduction->jumlah_potongan : 0;
+            $gajiBersih = $deduction ? $deduction->gaji_bersih : $spjNettoAfterDiscipline;
             
-            function formatRp($value) {
-                if (!$value || $value == 0) return '<span>Rp</span><span>-</span>';
-                return '<span>Rp</span><span>' . number_format($value, 0, ',', '.') . '</span>';
+            if (!function_exists('formatRp')) {
+                function formatRp($value) {
+                    if (!$value || $value == 0) return '<span>Rp</span><span>-</span>';
+                    return '<span>Rp</span><span>' . number_format($value, 0, ',', '.') . '</span>';
+                }
             }
         @endphp
     </style>
@@ -242,10 +249,15 @@
             <div class="header-left">
                 @if($settingLogo)
                     @php
-                        $cleanLogo = str_replace('/storage/', '', $settingLogo);
-                        $cleanLogo = str_replace('storage/', '', $cleanLogo);
+                        // Support absolute URL and relative paths for cross-device compatibility
+                        $cleanLogo = $settingLogo;
+                        if (!str_starts_with($settingLogo, 'http')) {
+                            $cleanLogo = str_replace('/storage/', '', $settingLogo);
+                            $cleanLogo = str_replace('storage/', '', $cleanLogo);
+                            $cleanLogo = asset('storage/' . ltrim($cleanLogo, '/'));
+                        }
                     @endphp
-                    <img src="{{ asset('storage/' . $cleanLogo) }}" alt="Logo" class="logo">
+                    <img src="{{ $cleanLogo }}" alt="Logo Sekolah" class="logo" onerror="this.style.display='none'">
                 @endif
                 <div class="school-info">
                     <h1>{{ $settingName ?? 'SMK NU 1 ISLAMIYAH' }}</h1>
@@ -376,15 +388,6 @@
         </table>
 
         <!-- Total -->
-        @php
-            $spjNetto = $salary->salaryDeduction ? $salary->salaryDeduction->spj_netto : ($salary->base_salary + $salary->allowance);
-            $disciplineDeduction = (float) $salary->deduction;
-            $disciplineDesc = $salary->deduction_description ?: ($disciplineDeduction > 0 ? 'Sanksi Disiplin' : '');
-            $spjNettoAfterDiscipline = $spjNetto - $disciplineDeduction;
-            $deduction = $salary->salaryDeduction;
-            $totalPotongan = $deduction ? $deduction->jumlah_potongan : 0;
-            $gajiBersih = $deduction ? $deduction->gaji_bersih : $spjNettoAfterDiscipline;
-        @endphp
         <div class="total-row">
             <div class="total-col" style="width: 35%; padding-right: 20px;">
                 <span>JUMLAH PENDAPATAN</span>

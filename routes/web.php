@@ -51,6 +51,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/transactions', [ReportController::class, 'transactionReport'])->name('reports.transactions');
     Route::get('reports/salary-spj', [\App\Http\Controllers\Report\SalarySpjController::class, 'index'])->name('reports.salary-spj');
+    Route::get('reports/salary-spj/print', [\App\Http\Controllers\Report\SalarySpjController::class, 'print'])->name('reports.salary-spj.print');
+    Route::get('reports/salary-spj/excel', [\App\Http\Controllers\Report\SalarySpjController::class, 'excel'])->name('reports.salary-spj.excel');
     Route::get('reports/export-expense', [ReportController::class, 'exportExpense'])->name('reports.export-expense');
     Route::get('reports/export-income', [ReportController::class, 'exportIncome'])->name('reports.export-income');
 

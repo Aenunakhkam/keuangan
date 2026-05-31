@@ -12,31 +12,21 @@ use Carbon\Carbon;
 
 class SalarySpjController extends Controller
 {
-    public function index(Request $request)
+    public function getReportData($month, $year)
     {
-        $month = $request->get('month', date('n'));
-        $year = $request->get('year', date('Y'));
-
-        // Ambil konfigurasi BPJS aktif
         $bpjsConfig = BpjsConfig::first();
-
-        // Ambil data gaji bulan terkait beserta relasinya
-        // Kita juga butuh data teacher dan posisinya untuk menampilkan nama & jabatan
         $salaries = Salary::with(['teacher.positions', 'teacher.bpjsCategory'])
             ->where('month', $month)
             ->where('year', $year)
             ->get();
 
-        // Transformasi data untuk dihitung secara on-the-fly (terutama untuk BPJS)
-        $reportData = $salaries->map(function ($salary) use ($bpjsConfig) {
+        return $salaries->map(function ($salary) use ($bpjsConfig) {
             $teacher = $salary->teacher;
             
-            // Jabatan Text
             $jabatanText = $teacher && $teacher->positions->count() > 0 
                 ? $teacher->positions->pluck('name')->join(', ') 
                 : '-';
 
-            // Menghitung BPJS on the fly (jika ada konfigurasi dan kategori)
             $bpjsAllowance = 0;
             $bpjsHealth = 0;
             $bpjsNaker = 0;
@@ -69,21 +59,13 @@ class SalarySpjController extends Controller
                 $bpjsNaker = $category->has_naker ? round($umk * $nakerTotalPercent / 100) : 0;
             }
 
-            // Gaji Pokok (dari tabel salaries)
             $gajiPokok = (float) $salary->base_salary;
-            
-            // Tunjangan Jabatan (dari tabel salaries, dikurangi tunjangan transport jika ingin persis, tapi transport saat ini sudah pisah di 'transport_per_day')
             $tunjanganJabatan = (float) $salary->allowance;
 
-            // Perhitungan Matriks SPJ
             $jumlahTunjangan = $tunjanganJabatan + $bpjsAllowance;
             $jumlahBruto = $gajiPokok + $jumlahTunjangan;
             $jumlahPotonganBpjs = $bpjsHealth + $bpjsNaker;
             
-            // Perhatikan: Jika sistem lama Netto sudah dihitung di 'salaries', di sini kita menghitung ulang
-            // versi SPJ agar sesuai dengan penambahan BPJS yang on-the-fly
-            // Jika ada potongan lain (seperti indisipliner), bisa dimasukkan ke net. 
-            // Namun karena format Excel SPJ hanya spesifik BPJS, kita hitung murni seperti format.
             $jumlahNetto = $jumlahBruto - $jumlahPotonganBpjs;
 
             return [
@@ -101,6 +83,14 @@ class SalarySpjController extends Controller
                 'jumlah_netto' => $jumlahNetto,
             ];
         });
+    }
+
+    public function index(Request $request)
+    {
+        $month = $request->get('month', date('n'));
+        $year = $request->get('year', date('Y'));
+
+        $reportData = $this->getReportData($month, $year);
 
         return Inertia::render('Report/SalarySpj/Index', [
             'reportData' => $reportData,
@@ -109,5 +99,49 @@ class SalarySpjController extends Controller
                 'year' => $year,
             ]
         ]);
+    }
+
+    private function getCommonData($month, $year)
+    {
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        
+        return [
+            'reportData' => $this->getReportData($month, $year),
+            'monthName' => $months[$month] ?? 'Bulan',
+            'year' => $year,
+            'settingLogo' => \App\Models\Setting::where('key', 'logo_url')->value('value') ?? \App\Models\Setting::where('key', 'school_logo')->value('value'),
+            'settingName' => \App\Models\Setting::where('key', 'school_name')->value('value'),
+            'settingAddress' => \App\Models\Setting::where('key', 'school_address')->value('value'),
+            'settingCity' => \App\Models\Setting::where('key', 'school_city')->value('value') ?? 'Tegal',
+            'settingFooter' => \App\Models\Setting::where('key', 'copyright')->value('value'),
+        ];
+    }
+
+    public function print(Request $request)
+    {
+        $month = $request->get('month', date('n'));
+        $year = $request->get('year', date('Y'));
+        
+        return view('salary-spj-print', $this->getCommonData($month, $year));
+    }
+
+    public function excel(Request $request)
+    {
+        $month = $request->get('month', date('n'));
+        $year = $request->get('year', date('Y'));
+        $data = $this->getCommonData($month, $year);
+        
+        $filename = "Laporan_SPJ_Gaji_{$data['monthName']}_{$year}.xls";
+        
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        return view('salary-spj-print', $data);
     }
 }
