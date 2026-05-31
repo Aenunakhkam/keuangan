@@ -106,5 +106,43 @@
             </tr>
         </tfoot>
     </table>
+
+    {{-- BARIS KOSONG & TANDA TANGAN --}}
+    <table>
+        <tr><td colspan="6" style="height:16px;"></td></tr>
+        <tr>
+            <td colspan="6" style="font-size:10pt;">
+                <b>Total Netto Keseluruhan : {{ number_format($totalNetto, 0, ',', '.') }}</b>
+            </td>
+        </tr>
+        <tr><td colspan="6" style="height:16px;"></td></tr>
+
+        <tr>
+            <td style="width:200px; text-align:center; font-weight:bold;">Mengetahui,</td>
+            <td style="width:50px;"></td>
+            <td style="width:200px; text-align:center; font-weight:bold;">{{ $settingCity ?? 'Tegal' }}, {{ now()->translatedFormat('d F Y') }}</td>
+        </tr>
+        <tr>
+            <td style="text-align:center; font-weight:bold;">Kepala Sekolah</td>
+            <td></td>
+            <td style="text-align:center; font-weight:bold;">Bendahara</td>
+        </tr>
+        <tr>
+            <td style="height:50px;"></td>
+            <td></td>
+            <td style="height:50px;"></td>
+        </tr>
+        <tr>
+            <td style="text-align:center; border-top:1px solid #000; padding-top:3px;">___________________________</td>
+            <td></td>
+            <td style="text-align:center; border-top:1px solid #000; padding-top:3px;">___________________________</td>
+        </tr>
+        <tr>
+            <td style="text-align:center; color:#555;">NIP. -</td>
+            <td></td>
+            <td style="text-align:center; color:#555;">NIP. -</td>
+        </tr>
+    </table>
+
 </body>
 </html>

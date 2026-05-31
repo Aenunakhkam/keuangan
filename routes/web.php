@@ -36,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Potongan Gaji Pegawai
     Route::get('salary-deductions', [\App\Http\Controllers\SalaryDeductionController::class, 'index'])->name('salary-deductions.index');
+    Route::get('salary-deductions/export-pdf', [\App\Http\Controllers\SalaryDeductionController::class, 'exportPdf'])->name('salary-deductions.export-pdf');
+    Route::get('salary-deductions/export-excel', [\App\Http\Controllers\SalaryDeductionController::class, 'exportExcel'])->name('salary-deductions.export-excel');
     Route::post('salary-deductions/bulk', [\App\Http\Controllers\SalaryDeductionController::class, 'storeBulk'])->name('salary-deductions.storeBulk');
 
     Route::resource('salary-scales', SalaryScaleController::class);

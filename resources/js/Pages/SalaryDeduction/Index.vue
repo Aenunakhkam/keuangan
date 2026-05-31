@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import Swal from 'sweetalert2';
 import CurrencyInput from '@/Components/CurrencyInput.vue';
 
@@ -106,6 +106,14 @@ const submitBulk = () => {
     });
 };
 
+const exportPdfUrl = computed(() => {
+    return route('salary-deductions.export-pdf') + `?month=${selectedMonth.value}&year=${selectedYear.value}`;
+});
+
+const exportExcelUrl = computed(() => {
+    return route('salary-deductions.export-excel') + `?month=${selectedMonth.value}&year=${selectedYear.value}`;
+});
+
 </script>
 
 <template>
@@ -118,14 +126,34 @@ const submitBulk = () => {
                     <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Potongan Gaji & Take Home Pay</h2>
                     <p class="text-sm text-gray-500 font-medium mt-1">Kelola potongan Koperasi, BPD, Sektoral dan hasilkan Gaji Bersih akhir.</p>
                 </div>
-                <button @click="submitBulk" :disabled="form.processing" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                    <span>{{ form.processing ? 'Menyimpan...' : 'Simpan Semua Potongan' }}</span>
-                </button>
+                <div class="flex items-center gap-3">
+                    <!-- Ekspor PDF -->
+                    <a :href="exportPdfUrl" target="_blank"
+                        class="px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 flex items-center gap-2 shadow-md shadow-red-600/20 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM9.5 17.5H8v-5h1.5c1.1 0 1.8.7 1.8 2.5s-.7 2.5-1.8 2.5zm0-4H9v3h.5c.6 0 .8-.5.8-1.5s-.2-1.5-.8-1.5zm3.5 4h-1v-5h1c1.2 0 2 .8 2 2.5s-.8 2.5-2 2.5zm0-4h-.1v3H13c.6 0 1-.5 1-1.5s-.4-1.5-1-1.5zm4 0h-1.5v1h1.3v1h-1.3v2H14v-5h3v1z"/>
+                        </svg>
+                        <span>Ekspor PDF</span>
+                    </a>
+                    <!-- Ekspor Excel -->
+                    <a :href="exportExcelUrl"
+                        class="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 flex items-center gap-2 shadow-md shadow-emerald-600/20 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 17l2-3-2-3h1.5l1.25 2L12 11h1.5l-2 3 2 3H12l-1.25-2L9.5 17H8z"/>
+                        </svg>
+                        <span>Ekspor Excel</span>
+                    </a>
+                    <!-- Simpan -->
+                    <button @click="submitBulk" :disabled="form.processing" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2 shadow-md shadow-indigo-600/20 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <span>{{ form.processing ? 'Menyimpan...' : 'Simpan Semua Potongan' }}</span>
+                    </button>
+                </div>
             </div>
         </template>
+
 
         <div class="space-y-6">
             <!-- Filters -->

@@ -164,4 +164,122 @@ class SalaryDeductionController extends Controller
 
         return redirect()->back()->with('success', 'Data potongan berhasil disimpan & dikalkulasi!');
     }
+
+    private function getDeductionData($month, $year): array
+    {
+        $bpjsConfig = BpjsConfig::first();
+        $salaries = Salary::with(['teacher.positions', 'teacher.bpjsCategory'])
+            ->where('month', $month)
+            ->where('year', $year)
+            ->get();
+
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        $deductions = [];
+
+        foreach ($salaries as $salary) {
+            $teacher = $salary->teacher;
+            if (!$teacher) continue;
+
+            $bpjsAllowance = 0;
+            $bpjsHealth    = 0;
+            $bpjsNaker     = 0;
+
+            if ($bpjsConfig && $teacher->bpjsCategory) {
+                $category         = $teacher->bpjsCategory;
+                $umk              = (float) $bpjsConfig->umk_reference;
+                $healthSchool     = (float) $bpjsConfig->health_school_percent;
+                $healthEmp        = (float) $bpjsConfig->health_employee_percent;
+                $nakerSchool      = (float) $bpjsConfig->naker_school_percent;
+                $nakerEmp         = (float) $bpjsConfig->naker_employee_percent;
+                $healthTotalPct   = $healthSchool + $healthEmp;
+                $nakerTotalPct    = $nakerSchool  + $nakerEmp;
+
+                $allowancePct = 0;
+                if ($category->code === 'A')      $allowancePct = $healthSchool + $nakerSchool;
+                elseif ($category->code === 'B')  $allowancePct = $healthTotalPct + $nakerTotalPct;
+                elseif ($category->code === 'C')  $allowancePct = $healthTotalPct;
+                elseif ($category->code === 'D')  $allowancePct = $nakerTotalPct;
+
+                $bpjsAllowance = round($umk * $allowancePct / 100);
+                $bpjsHealth    = $category->has_health ? round($umk * $healthTotalPct / 100) : 0;
+                $bpjsNaker     = $category->has_naker  ? round($umk * $nakerTotalPct  / 100) : 0;
+            }
+
+            $jumlahBruto = $salary->base_salary + $salary->allowance + $bpjsAllowance;
+            $spjNetto    = $jumlahBruto - ($bpjsHealth + $bpjsNaker);
+
+            $existing = \App\Models\SalaryDeduction::where('salary_id', $salary->id)->first();
+
+            if ($existing) {
+                $existing->spj_netto = $spjNetto;
+                $existing->save();
+                $row = $existing->fresh()->toArray();
+            } else {
+                $tabKhusus     = round($spjNetto * 0.08);
+                $simpananWajib = 5000;
+                $dansos        = 20000;
+                $jumlahKoperasi  = $tabKhusus + $simpananWajib;
+                $jumlahPotongan  = $jumlahKoperasi + $dansos;
+                $gajiBersih      = $spjNetto - $jumlahPotongan;
+
+                $row = [
+                    'id' => null, 'salary_id' => $salary->id, 'teacher_id' => $teacher->id,
+                    'spj_netto' => $spjNetto, 'tab_khusus' => $tabKhusus,
+                    'simpanan_wajib' => $simpananWajib, 'simpanan_sukarela' => 0,
+                    'angsuran_koperasi' => 0, 'jumlah_koperasi' => $jumlahKoperasi,
+                    'dplk_slawi' => 0, 'dplk_kemantran' => 0, 'pinjaman_bpd_jateng' => 0,
+                    'jumlah_bpd' => 0, 'bank_tgr' => 0, 'premi_bpjs_anggota' => 0,
+                    'dansos' => $dansos, 'lainnya_1' => 0, 'lainnya_2' => 0,
+                    'denda_fingerprint' => 0, 'jumlah_potongan' => $jumlahPotongan,
+                    'gaji_bersih' => $gajiBersih,
+                ];
+            }
+
+            $row['teacher_name']     = $teacher->name;
+            $row['teacher_nipy']     = $teacher->nipy;
+            $row['teacher_position'] = $teacher->positions->pluck('name')->join(', ') ?: '-';
+
+            $deductions[] = $row;
+        }
+
+        return [
+            'deductions'     => $deductions,
+            'monthName'      => $months[$month] ?? 'Bulan',
+            'month'          => $month,
+            'year'           => $year,
+            'settingName'    => \App\Models\Setting::where('key', 'school_name')->value('value'),
+            'settingAddress' => \App\Models\Setting::where('key', 'school_address')->value('value'),
+            'settingCity'    => \App\Models\Setting::where('key', 'school_city')->value('value') ?? 'Tegal',
+            'settingFooter'  => \App\Models\Setting::where('key', 'copyright')->value('value'),
+        ];
+    }
+
+    public function exportPdf(\Illuminate\Http\Request $request)
+    {
+        $month = $request->get('month', date('n'));
+        $year  = $request->get('year',  date('Y'));
+        $data  = $this->getDeductionData($month, $year);
+
+        return view('salary-deduction-print', $data);
+    }
+
+    public function exportExcel(\Illuminate\Http\Request $request)
+    {
+        $month    = $request->get('month', date('n'));
+        $year     = $request->get('year',  date('Y'));
+        $data     = $this->getDeductionData($month, $year);
+        $filename = "Potongan_Gaji_{$data['monthName']}_{$year}.xls";
+
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        return view('salary-deduction-excel', $data);
+    }
 }
