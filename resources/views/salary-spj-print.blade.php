@@ -285,8 +285,7 @@
 <body>
 
 @php
-    use NumberFormatter;
-    $fmt = new NumberFormatter("id", NumberFormatter::SPELLOUT);
+    $fmt = new \NumberFormatter("id", \NumberFormatter::SPELLOUT);
 
     $totalGajiPokok     = $reportData->sum('gaji_pokok');
     $totalTunjJabatan   = $reportData->sum('tunjangan_jabatan');
