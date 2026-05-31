@@ -12,8 +12,9 @@ echo --------------------------------------------------------------------
 echo.
 
 :: Step 1: Git Pull
-echo [1/5] Menarik kode terbaru dari GitHub (git pull)...
-git pull origin main
+echo [1/5] Menarik kode terbaru dari GitHub (git fetch ^& reset)...
+git fetch origin main
+git reset --hard origin/main
 if %errorlevel% neq 0 (
     color 0C
     echo [ERROR] Gagal menarik kode dari GitHub. Pastikan Git terinstall dan internet aktif.
