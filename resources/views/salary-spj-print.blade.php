@@ -298,8 +298,10 @@
     $totalPotongan      = $reportData->sum('jumlah_potongan');
     $totalNetto         = $reportData->sum('jumlah_netto');
 
-    function rpFmt($val) {
-        return number_format($val, 0, ',', '.');
+    if (!function_exists('rpFmt')) {
+        function rpFmt($val) {
+            return number_format($val, 0, ',', '.');
+        }
     }
 
     // Logo
