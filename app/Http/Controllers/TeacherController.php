@@ -73,7 +73,7 @@ class TeacherController extends Controller
                 'service_months' => $teacher->service_months,
                 'grade' => $teacher->grade,
                 'mkg' => floor($teacher->service_years / 2) * 2,
-                'basic_salary' => \App\Models\SalaryScale::getAmount($teacher->education, $teacher->service_years),
+                'basic_salary' => $teacher->basic_salary > 0 ? (float)$teacher->basic_salary : (float)\App\Models\SalaryScale::getAmount($teacher->education, $teacher->service_years),
                 'other_allowance' => $teacher->other_allowance,
                 'joined_date' => $teacher->joined_date ? $teacher->joined_date->format('Y-m-d') : null,
                 'bpjs_info' => [
