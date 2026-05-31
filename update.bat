@@ -34,7 +34,7 @@ echo [OK] Dependensi PHP berhasil diselaraskan!
 echo.
 
 :: Step 3: Run Migrations
-echo [3/3] Menjalankan migrasi perubahan database (migrate)...
+echo [3/4] Menjalankan migrasi perubahan database (migrate)...
 call php artisan migrate --force
 if %errorlevel% neq 0 (
     color 0C
@@ -49,12 +49,21 @@ echo [*] Menghubungkan penyimpanan media (storage:link)...
 call php artisan storage:link
 echo.
 
-echo [OK] Tampilan visual sudah tersedia (sudah dikompilasi dari server pusat)!
+:: Step 4: Clear All Cache
+echo [4/4] Membersihkan cache Laravel (config, route, view, app)...
+call php artisan optimize:clear
+call php artisan config:clear
+call php artisan route:clear
+call php artisan view:clear
+call php artisan cache:clear
+echo [OK] Cache berhasil dibersihkan!
 echo.
+
 echo ====================================================================
 echo         CONGRATULATIONS! APLIKASI KINI SUDAH 100% TERUPDATE!
 echo ====================================================================
 echo Aplikasi Anda siap digunakan kembali dengan fitur-fitur terbaru.
+echo CATATAN: Tekan CTRL+F5 di browser untuk melihat tampilan terbaru!
 echo.
 
 :end
