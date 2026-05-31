@@ -13,7 +13,13 @@ class BpjsController extends Controller
 {
     public function index(Request $request)
     {
-        $config = BpjsConfig::first();
+        $config = BpjsConfig::first() ?? new BpjsConfig([
+            'umk_reference' => 0,
+            'health_school_percent' => 0,
+            'health_employee_percent' => 0,
+            'naker_school_percent' => 0,
+            'naker_employee_percent' => 0,
+        ]);
         $categories = BpjsCategory::all();
         
         $query = Teacher::query()->with('bpjsCategory');
