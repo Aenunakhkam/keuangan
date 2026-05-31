@@ -360,6 +360,7 @@
                 <th rowspan="3" style="width:72px">Jumlah<br>Bruto (Rp)</th>
                 <th colspan="3">Potongan BPJS (Rp)</th>
                 <th rowspan="3" style="width:75px">Jumlah<br>Netto (Rp)</th>
+                <th rowspan="3" style="width:80px">Tanda<br>Tangan</th>
             </tr>
             <tr class="sub-header">
                 <th style="width:68px">Jabatan</th>
@@ -385,10 +386,11 @@
                 <td class="angka-potongan">{{ $row['potongan_naker'] > 0 ? rpFmt($row['potongan_naker']) : '-' }}</td>
                 <td class="angka-potongan">{{ $row['jumlah_potongan'] > 0 ? rpFmt($row['jumlah_potongan']) : '-' }}</td>
                 <td class="angka-netto">{{ rpFmt($row['jumlah_netto']) }}</td>
+                <td style="font-size:7px; color:#555;">{{ $i + 1 }} . . . . . . . . .</td>
             </tr>
             @empty
             <tr>
-                <td colspan="12" style="text-align:center; padding:20px; font-style:italic; color:#666;">
+                <td colspan="13" style="text-align:center; padding:20px; font-style:italic; color:#666;">
                     Belum ada data gaji untuk periode ini.
                 </td>
             </tr>
@@ -403,9 +405,10 @@
                 <td>{{ rpFmt($totalJmlTunjangan) }}</td>
                 <td class="total-bruto">{{ rpFmt($totalBruto) }}</td>
                 <td class="total-potongan">{{ rpFmt($totalPotKes) }}</td>
-                <td class="total-potongan">{{ rpFmt($totalPotNaker) }}</td>
-                <td class="total-potongan">{{ rpFmt($totalPotongan) }}</td>
-                <td class="total-netto">{{ rpFmt($totalNetto) }}</td>
+                <td class="total-potongan">{{ $totalPotNaker > 0 ? rpFmt($totalPotNaker) : '-' }}</td>
+                <td class="total-potongan">{{ $totalPotongan > 0 ? rpFmt($totalPotongan) : '-' }}</td>
+                <td class="total-netto">{{ $totalNetto > 0 ? rpFmt($totalNetto) : '-' }}</td>
+                <td></td>
             </tr>
         </tfoot>
     </table>
