@@ -83,12 +83,12 @@ const getMonthName = (m: number) => {
             </div>
 
             <!-- Header Laporan -->
-            <div class="mb-2">
-                <div class="text-sm font-bold text-gray-800">BULAN : {{ getMonthName(selectedMonth) }} {{ selectedYear }}</div>
+            <div class="mb-2" id="print-section">
+                <div class="text-sm font-bold text-gray-800 print:text-center print:text-xl print:mb-4">LAPORAN DAFTAR GAJI SPJ - BULAN : {{ getMonthName(selectedMonth) }} {{ selectedYear }}</div>
             </div>
 
             <!-- Tabel SPJ Modern -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden print-table-container">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-max">
                         <thead>
@@ -194,6 +194,7 @@ const getMonthName = (m: number) => {
                     </table>
                 </div>
             </div>
+            <!-- End Print Section container (pseudo) -->
             
             <div class="flex justify-end mt-4">
                 <button class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold flex items-center space-x-2 hover:bg-blue-700" onclick="window.print()">
@@ -206,3 +207,45 @@ const getMonthName = (m: number) => {
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #print-section, #print-section *, .print-table-container, .print-table-container * {
+        visibility: visible;
+    }
+    #print-section {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    /* Move the table right below the header in print */
+    .print-table-container {
+        position: absolute;
+        left: 0;
+        top: 40px;
+        width: 100%;
+        overflow: visible !important;
+    }
+    /* Remove layout constraints */
+    .overflow-x-auto, .overflow-hidden {
+        overflow: visible !important;
+    }
+    /* Keep background colors */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    /* Hide scrollbars and borders that look bad in print */
+    .shadow-sm {
+        box-shadow: none !important;
+    }
+    @page {
+        size: landscape;
+        margin: 1cm;
+    }
+}
+</style>
