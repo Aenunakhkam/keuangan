@@ -249,15 +249,20 @@
             <div class="header-left">
                 @if($settingLogo)
                     @php
-                        // Support absolute URL and relative paths for cross-device compatibility
-                        $cleanLogo = $settingLogo;
+                        $logoSrc = $settingLogo;
                         if (!str_starts_with($settingLogo, 'http')) {
-                            $cleanLogo = str_replace('/storage/', '', $settingLogo);
-                            $cleanLogo = str_replace('storage/', '', $cleanLogo);
-                            $cleanLogo = asset('storage/' . ltrim($cleanLogo, '/'));
+                            $path = str_replace(['/storage/', 'storage/'], '', $settingLogo);
+                            $fullPath = storage_path('app/public/' . ltrim($path, '/'));
+                            if (file_exists($fullPath)) {
+                                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
+                                $data = file_get_contents($fullPath);
+                                $logoSrc = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                            } else {
+                                $logoSrc = asset('storage/' . ltrim($path, '/'));
+                            }
                         }
                     @endphp
-                    <img src="{{ $cleanLogo }}" alt="Logo Sekolah" class="logo" onerror="this.style.display='none'">
+                    <img src="{{ $logoSrc }}" alt="Logo Sekolah" class="logo" onerror="this.style.display='none'">
                 @endif
                 <div class="school-info">
                     <h1>{{ $settingName ?? 'SMK NU 1 ISLAMIYAH' }}</h1>

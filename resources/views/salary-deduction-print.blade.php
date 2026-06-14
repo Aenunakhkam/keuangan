@@ -109,7 +109,21 @@
     {{-- KOP --}}
     <div class="kop">
         @if(!empty($settingLogo ?? null))
-            <img src="{{ $settingLogo }}" class="kop-logo" alt="Logo">
+            @php
+                $logoSrc = $settingLogo;
+                if (!str_starts_with($settingLogo, 'http')) {
+                    $path = str_replace(['/storage/', 'storage/'], '', $settingLogo);
+                    $fullPath = storage_path('app/public/' . ltrim($path, '/'));
+                    if (file_exists($fullPath)) {
+                        $type = pathinfo($fullPath, PATHINFO_EXTENSION);
+                        $data = file_get_contents($fullPath);
+                        $logoSrc = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                    } else {
+                        $logoSrc = asset('storage/' . ltrim($path, '/'));
+                    }
+                }
+            @endphp
+            <img src="{{ $logoSrc }}" class="kop-logo" alt="Logo" onerror="this.style.display='none'">
         @else
             <div class="kop-logo-placeholder">LOGO</div>
         @endif

@@ -54,7 +54,21 @@
         <div class="kop-surat flex items-center justify-between">
             <div class="w-24">
                 @if($settingLogo)
-                    <img src="{{ asset('storage/' . $settingLogo) }}" alt="Logo Sekolah" class="w-full object-contain">
+                    @php
+                        $logoSrc = $settingLogo;
+                        if (!str_starts_with($settingLogo, 'http')) {
+                            $path = str_replace(['/storage/', 'storage/'], '', $settingLogo);
+                            $fullPath = storage_path('app/public/' . ltrim($path, '/'));
+                            if (file_exists($fullPath)) {
+                                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
+                                $data = file_get_contents($fullPath);
+                                $logoSrc = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                            } else {
+                                $logoSrc = asset('storage/' . ltrim($path, '/'));
+                            }
+                        }
+                    @endphp
+                    <img src="{{ $logoSrc }}" alt="Logo Sekolah" class="w-full object-contain" onerror="this.style.display='none'">
                 @else
                     <div class="w-full h-24 bg-gray-100 flex items-center justify-center border border-dashed border-gray-400 text-[10px] text-gray-400 font-bold uppercase">Logo</div>
                 @endif
