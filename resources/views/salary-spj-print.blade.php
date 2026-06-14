@@ -309,14 +309,14 @@
         if (str_starts_with($settingLogo, 'http')) {
             $logoUrl = $settingLogo;
         } else {
-            $path = str_replace(['/storage/', 'storage/'], '', $settingLogo);
-            $fullPath = storage_path('app/public/' . ltrim($path, '/'));
+            $relativePath = ltrim($settingLogo, '/');
+            $fullPath = public_path($relativePath);
             if (file_exists($fullPath)) {
                 $type = pathinfo($fullPath, PATHINFO_EXTENSION);
                 $data = file_get_contents($fullPath);
                 $logoUrl = 'data:image/' . $type . ';base64,' . base64_encode($data);
             } else {
-                $logoUrl = asset('storage/' . ltrim($path, '/'));
+                $logoUrl = asset($relativePath);
             }
         }
     }
