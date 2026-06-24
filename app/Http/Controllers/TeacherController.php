@@ -312,6 +312,13 @@ class TeacherController extends Controller
 
                 // Create User Account
                 $email = ($nipty ?? $nipy ?? uniqid()) . '@school.local';
+                
+                // Cek apakah email sudah digunakan di tabel users
+                if (\App\Models\User::where('email', $email)->exists()) {
+                    $errors[] = "Baris $rowNum: NIPTY/NIPY ($email) sudah terdaftar pada akun pengguna.";
+                    continue;
+                }
+
                 $user = \App\Models\User::create([
                     'name' => $name,
                     'email' => $email,
