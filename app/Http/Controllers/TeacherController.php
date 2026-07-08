@@ -163,8 +163,14 @@ class TeacherController extends Controller
 
     public function destroy(Teacher $teacher)
     {
+        $user = $teacher->user;
         $teacher->delete();
-        return redirect()->back()->with('success', 'Data guru berhasil dihapus.');
+        
+        if ($user) {
+            $user->delete();
+        }
+        
+        return redirect()->back()->with('success', 'Data guru dan akun pengguna berhasil dihapus.');
     }
 
     public function downloadTemplate()
