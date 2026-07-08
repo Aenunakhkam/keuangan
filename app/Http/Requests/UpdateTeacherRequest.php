@@ -18,6 +18,7 @@ class UpdateTeacherRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255|unique:users,email,' . $this->teacher->user_id,
             'nipty' => 'nullable|string|max:50|unique:teachers,nipty,' . $this->teacher->id,
             'nipy' => 'nullable|string|max:50|unique:teachers,nipy,' . $this->teacher->id,
             'birth_place' => 'nullable|string|max:100',

@@ -25,7 +25,7 @@ class TeacherController extends Controller
 
         $bpjsConfig = \App\Models\BpjsConfig::first();
 
-        $teachers = $query->with(['positions', 'bpjsCategory'])->latest()->paginate($request->input('per_page', 10))->through(function ($teacher) use ($bpjsConfig) {
+        $teachers = $query->with(['positions', 'bpjsCategory', 'user'])->latest()->paginate($request->input('per_page', 10))->through(function ($teacher) use ($bpjsConfig) {
             $bpjsAllowance = 0;
             $bpjsHealth = 0;
             $bpjsNaker = 0;
@@ -61,6 +61,7 @@ class TeacherController extends Controller
             return [
                 'id' => $teacher->id,
                 'name' => $teacher->name,
+                'email' => $teacher->user ? $teacher->user->email : '',
                 'nipty' => $teacher->nipty,
                 'nipy' => $teacher->nipy,
                 'birth_place' => $teacher->birth_place,
@@ -112,14 +113,16 @@ class TeacherController extends Controller
 
     public function store(StoreTeacherRequest $request)
     {
+        $email = $request->email ?: ($request->nipty ?? $request->nipy ?? uniqid()) . '@school.local';
+        
         $user = \App\Models\User::create([
             'name' => $request->name,
-            'email' => ($request->nipty ?? $request->nipy ?? uniqid()) . '@school.local',
+            'email' => $email,
             'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
         ]);
         $user->assignRole('guru');
 
-        $data = $request->except('position_ids');
+        $data = $request->except(['position_ids', 'email']);
         $data['user_id'] = $user->id;
 
         $teacher = Teacher::create($data);
@@ -131,14 +134,14 @@ class TeacherController extends Controller
         return redirect()->back()->with('success', 'Data guru dan akun berhasil ditambahkan.');
     }
 
-    // This new store method for students is added as per user instruction.
-    // Note: Having two methods named 'store' in the same class is generally not
-    // good practice unless they are intended to be distinct actions for different
-    // resources, typically handled by separate controllers or distinct method names.
     public function update(UpdateTeacherRequest $request, Teacher $teacher)
     {
-        $data = $request->except('position_ids');
+        $data = $request->except(['position_ids', 'email']);
         $teacher->update($data);
+        
+        if ($request->email && $teacher->user) {
+            $teacher->user->update(['email' => $request->email]);
+        }
         
         if ($request->has('position_ids')) {
             $teacher->positions()->sync($request->position_ids);
@@ -159,6 +162,7 @@ class TeacherController extends Controller
     {
         $headers = [
             'Nama Pegawai (Wajib)', 
+            'Email Akun (Opsional)',
             'NIPTY (Opsional)', 
             'NIPY (Opsional)', 
             'Jenis Kelamin (L/P)', 
@@ -178,6 +182,7 @@ class TeacherController extends Controller
         $examples = [
             [
                 'Tina Agustina, S.Pd', 
+                'tina.agustina@contoh.com',
                 '200103121', 
                 '', 
                 'P', 
@@ -195,6 +200,7 @@ class TeacherController extends Controller
             ],
             [
                 'Ahmad Subarjo, M.Pd', 
+                '', // email kosong akan di-generate otomatis
                 '', 
                 '199703019', 
                 'L', 
@@ -277,20 +283,21 @@ class TeacherController extends Controller
                 }
 
                 $name = trim($row[0]);
-                $nipty = !empty($row[1]) ? trim($row[1]) : null;
-                $nipy = !empty($row[2]) ? trim($row[2]) : null;
-                $gender = !empty($row[3]) ? strtoupper(trim($row[3])) : 'L';
-                $birthPlace = !empty($row[4]) ? trim($row[4]) : null;
-                $birthDate = !empty($row[5]) ? trim($row[5]) : null;
-                $education = !empty($row[6]) ? trim($row[6]) : 'S1';
-                $major = !empty($row[7]) ? trim($row[7]) : null;
-                $unit = !empty($row[8]) ? trim($row[8]) : 'SMK';
-                $serviceYears = isset($row[9]) ? (int) $row[9] : 0;
-                $serviceMonths = isset($row[10]) ? (int) $row[10] : 0;
-                $grade = !empty($row[11]) ? trim($row[11]) : null;
-                $otherAllowance = isset($row[12]) ? (float) $row[12] : 0;
-                $joinedDate = !empty($row[13]) ? trim($row[13]) : null;
-                $positionsStr = !empty($row[14]) ? trim($row[14]) : '';
+                $emailInput = !empty($row[1]) ? trim($row[1]) : null;
+                $nipty = !empty($row[2]) ? trim($row[2]) : null;
+                $nipy = !empty($row[3]) ? trim($row[3]) : null;
+                $gender = !empty($row[4]) ? strtoupper(trim($row[4])) : 'L';
+                $birthPlace = !empty($row[5]) ? trim($row[5]) : null;
+                $birthDate = !empty($row[6]) ? trim($row[6]) : null;
+                $education = !empty($row[7]) ? trim($row[7]) : 'S1';
+                $major = !empty($row[8]) ? trim($row[8]) : null;
+                $unit = !empty($row[9]) ? trim($row[9]) : 'SMK';
+                $serviceYears = isset($row[10]) ? (int) $row[10] : 0;
+                $serviceMonths = isset($row[11]) ? (int) $row[11] : 0;
+                $grade = !empty($row[12]) ? trim($row[12]) : null;
+                $otherAllowance = isset($row[13]) ? (float) $row[13] : 0;
+                $joinedDate = !empty($row[14]) ? trim($row[14]) : null;
+                $positionsStr = !empty($row[15]) ? trim($row[15]) : '';
 
                 // Validate birth date and joined date format
                 if ($birthDate && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $birthDate)) {
@@ -311,11 +318,11 @@ class TeacherController extends Controller
                 }
 
                 // Create User Account
-                $email = ($nipty ?? $nipy ?? uniqid()) . '@school.local';
+                $email = $emailInput ?: ($nipty ?? $nipy ?? uniqid()) . '@school.local';
                 
                 // Cek apakah email sudah digunakan di tabel users
                 if (\App\Models\User::where('email', $email)->exists()) {
-                    $errors[] = "Baris $rowNum: NIPTY/NIPY ($email) sudah terdaftar pada akun pengguna.";
+                    $errors[] = "Baris $rowNum: Email/NIPTY/NIPY ($email) sudah terdaftar pada akun pengguna.";
                     continue;
                 }
 

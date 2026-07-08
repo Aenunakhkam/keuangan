@@ -39,6 +39,7 @@ const viewingTeacher = ref<any>(null);
 
 const form = useForm({
     name: '',
+    email: '',
     nipty: '',
     nipy: '',
     birth_place: '',
@@ -67,6 +68,7 @@ const openEditModal = (teacher: any) => {
     modalMode.value = 'edit';
     selectedTeacher.value = teacher;
     form.name = teacher.name;
+    form.email = teacher.email || '';
     form.nipty = teacher.nipty;
     form.nipy = teacher.nipy;
     form.birth_place = teacher.birth_place;
@@ -419,6 +421,12 @@ watch(() => form.joined_date, (newDate) => {
                         <InputError :message="form.errors.name" />
                     </div>
 
+                    <div class="space-y-1.5 md:col-span-2">
+                        <InputLabel for="email" value="Alamat Email Akun (Opsional, bawaan dari sistem jika kosong)" />
+                        <TextInput id="email" v-model="form.email" type="email" class="block w-full" placeholder="email@contoh.com" />
+                        <InputError :message="form.errors.email" />
+                    </div>
+
                     <div class="space-y-1.5">
                         <InputLabel for="nipty" value="NIPTY" />
                         <TextInput id="nipty" v-model="form.nipty" type="text" class="block w-full" />
@@ -594,6 +602,10 @@ watch(() => form.joined_date, (newDate) => {
                             <div>
                                 <div class="text-[10px] font-black text-gray-400 uppercase mb-1">NIPY</div>
                                 <div class="text-sm font-bold text-gray-900">{{ viewingTeacher.nipy || '-' }}</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] font-black text-gray-400 uppercase mb-1">Akun Email</div>
+                                <div class="text-sm font-bold text-gray-900">{{ viewingTeacher.email || '-' }}</div>
                             </div>
                             <div>
                                 <div class="text-[10px] font-black text-gray-400 uppercase mb-1">Jenis Kelamin</div>

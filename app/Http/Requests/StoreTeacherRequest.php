@@ -18,6 +18,7 @@ class StoreTeacherRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255|unique:users,email',
             'nipty' => 'nullable|string|max:50|unique:teachers,nipty',
             'nipy' => 'nullable|string|max:50|unique:teachers,nipy',
             'birth_place' => 'nullable|string|max:100',
