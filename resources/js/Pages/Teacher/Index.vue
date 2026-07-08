@@ -144,7 +144,11 @@ const handleImport = (event: Event) => {
     formData.append('file', file);
 
     router.post(route('teachers.import'), formData, {
-        onSuccess: () => {
+        onSuccess: (page) => {
+            if (page.props.flash?.error) {
+                if (fileInput.value) fileInput.value.value = '';
+                return;
+            }
             Swal.fire({
                 icon: 'success',
                 title: 'Sukses',

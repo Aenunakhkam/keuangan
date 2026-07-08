@@ -371,7 +371,7 @@ class TeacherController extends Controller
 
             if (!empty($errors)) {
                 \DB::rollBack();
-                return redirect()->back()->with('error', 'Gagal mengimpor data. Kesalahan: <br>' . implode('<br>', $errors));
+                return redirect()->back()->with('error', "Gagal mengimpor data. Kesalahan:\n" . implode("\n", $errors));
             }
 
             \DB::commit();

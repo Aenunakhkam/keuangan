@@ -83,7 +83,7 @@ defineExpose({ show });
                         <p class="text-sm font-black text-gray-900 dark:text-white uppercase tracking-wider">
                             {{ type === 'success' ? 'Berhasil' : (type === 'error' ? 'Peringatan' : 'Informasi') }}
                         </p>
-                        <p class="mt-1 text-sm font-semibold text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <p class="mt-1 text-sm font-semibold text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line">
                             {{ message }}
                         </p>
                     </div>
