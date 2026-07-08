@@ -39,7 +39,7 @@ const toggleMobileMenu = (menu: string) => {
                                 {{ $page.props.settings?.app_name || 'SIM Keuangan' }}
                             </div>
                             <div class="text-xl font-extrabold tracking-tight">
-                                {{ $page.props.settings?.school_name || 'Universitas Keuangan Sekolah' }}
+                                {{ $page.props.settings?.school_name || 'Universitas Slip Gaji Sekolah' }}
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
-# 💳 Sistem Informasi Keuangan Sekolah (SI Keuangan)
+# 💳 Sistem Slip Gaji Sekolah
 
-Sistem ini dirancang untuk memudahkan administrasi keuangan sekolah dengan fokus pada transparansi data dan profesionalitas pelaporan.
+Sistem ini dirancang untuk memudahkan administrasi slip gaji sekolah dengan fokus pada transparansi data dan profesionalitas pelaporan.
 
 ## 🌟 Fitur Unggulan Terkini:
 

@@ -276,7 +276,7 @@
 
     {{-- FOOTER --}}
     <div class="footer-print">
-        <span>{{ $settingFooter ?? 'Aplikasi Keuangan Sekolah' }}</span>
+        <span>{{ $settingFooter ?? 'Aplikasi Slip Gaji Sekolah' }}</span>
         <span>Dicetak: {{ now()->translatedFormat('d/m/Y H:i') }} WIB</span>
     </div>
 </div>

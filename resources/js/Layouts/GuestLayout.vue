@@ -20,9 +20,9 @@ import { Link } from '@inertiajs/vue3';
                     </div>
                     <ApplicationLogo v-else class="h-24 w-24 fill-current text-white mb-8" />
                 </Link>
-                <h1 class="text-4xl font-extrabold tracking-tight mb-4">Sistem Keuangan Sekolah</h1>
+                <h1 class="text-4xl font-extrabold tracking-tight mb-4">Sistem Slip Gaji Sekolah</h1>
                 <p class="text-xl text-green-100 text-center max-w-md">
-                    Manajemen keuangan sekolah yang terintegrasi, transparan, dan profesional.
+                    Manajemen slip gaji sekolah yang terintegrasi, transparan, dan profesional.
                 </p>
                 <div class="mt-12 grid grid-cols-1 gap-6 w-full max-w-md">
                     <div class="p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 flex items-center space-x-4">
@@ -73,7 +73,7 @@ import { Link } from '@inertiajs/vue3';
                 </div>
                 
                 <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                    &copy; 2026 Sistem Keuangan Sekolah. Seluruh hak cipta dilindungi.
+                    &copy; 2026 Sistem Slip Gaji Sekolah. Seluruh hak cipta dilindungi.
                 </div>
             </div>
         </div>

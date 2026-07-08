@@ -273,7 +273,7 @@ class SalaryController extends Controller
         $settingAddress = \App\Models\Setting::where('key', 'school_address')->value('value');
         $settingName = \App\Models\Setting::where('key', 'school_name')->value('value');
         $teachingRate = \App\Models\Setting::where('key', 'teaching_rate_per_hour')->value('value') ?? 25000;
-        $settingFooter = \App\Models\Setting::where('key', 'copyright')->value('value') ?? 'Aplikasi Keuangan Sekolah (SIAKAD Keuangan)';
+        $settingFooter = \App\Models\Setting::where('key', 'copyright')->value('value') ?? 'Aplikasi Slip Gaji Sekolah';
 
         return view('salary-slip', compact('salary', 'settingLogo', 'settingAddress', 'settingName', 'teachingRate', 'settingFooter'));
     }
@@ -311,7 +311,7 @@ class SalaryController extends Controller
         $settingAddress = \App\Models\Setting::where('key', 'school_address')->value('value');
         $settingName = \App\Models\Setting::where('key', 'school_name')->value('value');
         $teachingRate = \App\Models\Setting::where('key', 'teaching_rate_per_hour')->value('value') ?? 25000;
-        $settingFooter = \App\Models\Setting::where('key', 'copyright')->value('value') ?? 'Aplikasi Keuangan Sekolah (SIAKAD Keuangan)';
+        $settingFooter = \App\Models\Setting::where('key', 'copyright')->value('value') ?? 'Aplikasi Slip Gaji Sekolah';
 
         return view('salary-slip-bulk', compact('salaries', 'settingLogo', 'settingAddress', 'settingName', 'teachingRate', 'settingFooter'));
     }

@@ -2,7 +2,7 @@
 title Auto Updater - Aplikasi Keuangan
 color 0A
 echo ====================================================================
-echo             AUTO-UPDATER: APLIKASI KEUANGAN SEKOLAH
+echo             AUTO-UPDATER: APLIKASI SLIP GAJI SEKOLAH
 echo ====================================================================
 echo.
 echo Script ini akan menarik kode terbaru dari GitHub dan menyelaraskan database.
