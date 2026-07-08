@@ -11,7 +11,10 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
-class TeacherTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+
+class TeacherTemplateExport implements FromArray, WithHeadings, WithStyles, ShouldAutoSize, WithColumnFormatting
 {
     public function array(): array
     {
@@ -27,10 +30,10 @@ class TeacherTemplateExport implements FromArray, WithHeadings, WithStyles, Shou
                 'S1', 
                 'Pendidikan Matematika',
                 'SMK', 
-                '5', 
-                '6', 
+                5, 
+                6, 
                 'III/a', 
-                '50000', 
+                50000, 
                 '2018-07-01', 
                 'Guru, Bendahara Sekolah'
             ],
@@ -45,10 +48,10 @@ class TeacherTemplateExport implements FromArray, WithHeadings, WithStyles, Shou
                 'S2', 
                 'Manajemen Pendidikan',
                 'SMK', 
-                '10', 
-                '0', 
+                10, 
+                0, 
                 'III/c', 
-                '100000', 
+                100000, 
                 '2014-01-15', 
                 'Kepala Sekolah'
             ]
@@ -91,6 +94,18 @@ class TeacherTemplateExport implements FromArray, WithHeadings, WithStyles, Shou
                     'startColor' => ['argb' => 'FF003B73']
                 ],
             ],
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            // Kolom K: Masa Kerja Tahun
+            'K' => NumberFormat::FORMAT_NUMBER,
+            // Kolom L: Masa Kerja Bulan
+            'L' => NumberFormat::FORMAT_NUMBER,
+            // Kolom N: Tunjangan Lainnya
+            'N' => '#,##0',
         ];
     }
 }
