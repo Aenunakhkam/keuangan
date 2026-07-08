@@ -69,13 +69,6 @@ const submit = () => {
             <div>
                 <div class="flex justify-between items-center mb-1.5">
                     <InputLabel for="password" value="Kata Sandi" />
-                    <Link
-                        v-if="canResetPassword"
-                        :href="route('password.request')"
-                        class="text-xs font-semibold text-green-600 hover:text-green-500 dark:text-green-400"
-                    >
-                        Lupa sandi?
-                    </Link>
                 </div>
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 group-focus-within:text-green-600">

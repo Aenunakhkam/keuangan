@@ -183,6 +183,38 @@ const handleImport = (event: Event) => {
     });
 };
 
+const resetPassword = (teacher: any) => {
+    Swal.fire({
+        title: 'Reset Password?',
+        text: `Anda yakin ingin mereset password untuk akun ${teacher.name} menjadi "12345678"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#F59E0B',
+        cancelButtonColor: '#9CA3AF',
+        confirmButtonText: 'Ya, Reset Password!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.post(route('teachers.reset-password', teacher.id), {}, {
+                onSuccess: () => {
+                    Swal.fire(
+                        'Berhasil!',
+                        'Password telah direset ke bawaan (12345678).',
+                        'success'
+                    );
+                },
+                onError: () => {
+                    Swal.fire(
+                        'Gagal!',
+                        'Terjadi kesalahan saat mereset password.',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+};
+
 // Auto-calculate Golongan (Grade) & Basic Salary based on Education and Service Years
 watch([() => form.education, () => form.service_years], debounce(async ([newEdu, newYears]) => {
     if (!newEdu) return;
@@ -368,6 +400,11 @@ watch(() => form.joined_date, (newDate) => {
                                 <div v-else class="text-xs text-gray-400 italic">Tanpa Jabatan</div>
                             </td>
                             <td class="px-6 py-4 text-right space-x-1">
+                                <button @click="resetPassword(teacher)" class="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-xl transition-all" title="Reset Password ke Bawaan">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                    </svg>
+                                </button>
                                 <button @click="openViewModal(teacher)" class="p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-xl transition-all" title="Lihat Detail">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

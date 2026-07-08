@@ -173,6 +173,17 @@ class TeacherController extends Controller
         return redirect()->back()->with('success', 'Data guru dan akun pengguna berhasil dihapus.');
     }
 
+    public function resetPassword(Teacher $teacher)
+    {
+        if ($teacher->user) {
+            $teacher->user->update([
+                'password' => \Illuminate\Support\Facades\Hash::make('12345678')
+            ]);
+            return redirect()->back()->with('success', "Password akun {$teacher->name} berhasil di-reset menjadi: 12345678");
+        }
+        return redirect()->back()->with('error', 'Akun pengguna tidak ditemukan untuk pegawai ini.');
+    }
+
     public function downloadTemplate()
     {
         return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\TeacherTemplateExport, 'template_import_pegawai.xlsx');

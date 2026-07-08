@@ -31,7 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Master Data
     Route::resource('positions', \App\Http\Controllers\PositionController::class);
     Route::get('teachers/template', [TeacherController::class, 'downloadTemplate'])->name('teachers.template');
-    Route::post('teachers/import', [TeacherController::class, 'import'])->name('teachers.import');
+    Route::post('/teachers/import', [TeacherController::class, 'import'])->name('teachers.import');
+    Route::post('/teachers/{teacher}/reset-password', [TeacherController::class, 'resetPassword'])->name('teachers.reset-password');
     Route::resource('teachers', TeacherController::class);
     
     // Potongan Gaji Pegawai
