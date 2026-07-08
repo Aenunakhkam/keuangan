@@ -337,7 +337,7 @@ watch(() => form.joined_date, (newDate) => {
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                         <tr v-for="(teacher, index) in teachers.data" :key="teacher.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150">
-                            <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ Number(teachers.from || 1) + index }}</td>
+                            <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ Number(teachers.from || 1) + Number(index) }}</td>
                             <td class="px-6 py-4 font-medium text-gray-700 dark:text-gray-300">
                                 <div class="font-black text-gray-900 dark:text-white">{{ teacher.name }}</div>
                                 <div v-if="teacher.education" class="text-[10px] font-bold text-emerald-600 uppercase">{{ teacher.education }}</div>
