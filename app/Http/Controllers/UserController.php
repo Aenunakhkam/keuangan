@@ -86,4 +86,22 @@ class UserController extends Controller
         $user->delete();
         return redirect()->back()->with('success', 'User berhasil dihapus.');
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:users,id',
+        ]);
+
+        $ids = collect($request->ids)->reject(fn ($id) => (int) $id === auth()->id());
+
+        if ($ids->isEmpty()) {
+            return redirect()->back()->with('error', 'Tidak ada akun yang valid untuk dihapus (Anda tidak dapat menghapus akun Anda sendiri).');
+        }
+
+        User::whereIn('id', $ids)->delete();
+
+        return redirect()->back()->with('success', count($ids) . ' Akun berhasil dihapus secara massal.');
+    }
 }

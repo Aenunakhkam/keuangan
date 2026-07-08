@@ -50,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('bpjs/config', [\App\Http\Controllers\Master\BpjsController::class, 'updateConfig'])->name('bpjs.config.update');
     Route::put('bpjs/teachers/{teacher}', [\App\Http\Controllers\Master\BpjsController::class, 'updateTeacherCategory'])->name('bpjs.teacher.update');
 
+    Route::post('users/bulk-delete', [UserController::class, 'bulkDelete'])->name('users.bulk-delete');
     Route::resource('users', UserController::class);
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/transactions', [ReportController::class, 'transactionReport'])->name('reports.transactions');

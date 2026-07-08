@@ -8,6 +8,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { watch } from 'vue';
 
 const props = defineProps<{
     users: any;
@@ -73,6 +74,37 @@ const deleteUser = async (user: any) => {
         router.delete(route('users.destroy', user.id));
     }
 };
+
+const selectedUsers = ref<number[]>([]);
+const selectAll = ref(false);
+
+watch(selectAll, (val) => {
+    if (val) {
+        selectedUsers.value = props.users.data.map((u: any) => u.id);
+    } else {
+        selectedUsers.value = [];
+    }
+});
+
+const bulkDeleteUsers = async () => {
+    if (selectedUsers.value.length === 0) return;
+    
+    const result = await confirmDelete(
+        'Hapus Massal',
+        `Apakah Anda yakin ingin menghapus ${selectedUsers.value.length} akun terpilih?`
+    );
+
+    if (result.isConfirmed) {
+        router.post(route('users.bulk-delete'), {
+            ids: selectedUsers.value
+        }, {
+            onSuccess: () => {
+                selectedUsers.value = [];
+                selectAll.value = false;
+            }
+        });
+    }
+};
 </script>
 
 <template>
@@ -88,7 +120,12 @@ const deleteUser = async (user: any) => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-lg font-medium">Daftar Pengguna</h3>
+                            <div class="flex items-center space-x-4">
+                                <h3 class="text-lg font-medium">Daftar Pengguna</h3>
+                                <button v-if="selectedUsers.length > 0" @click="bulkDeleteUsers" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-sm">
+                                    Hapus {{ selectedUsers.length }} Terpilih
+                                </button>
+                            </div>
                             <PrimaryButton @click="openCreateModal">
                                 Tambah User
                             </PrimaryButton>
@@ -98,6 +135,9 @@ const deleteUser = async (user: any) => {
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-[#003B73] text-white">
                                     <tr>
+                                        <th class="px-6 py-3 w-10 text-center">
+                                            <input type="checkbox" v-model="selectAll" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                        </th>
                                         <th class="px-6 py-3 text-center w-16 text-xs font-black text-white uppercase tracking-wider">No</th>
                                         <th class="px-6 py-3 text-left text-xs font-black text-white uppercase tracking-wider">Nama</th>
                                         <th class="px-6 py-3 text-left text-xs font-black text-white uppercase tracking-wider">Email</th>
@@ -107,6 +147,9 @@ const deleteUser = async (user: any) => {
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <tr v-for="(user, index) in users.data" :key="user.id">
+                                        <td class="px-6 py-4 text-center">
+                                            <input type="checkbox" :value="user.id" v-model="selectedUsers" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                        </td>
                                         <td class="px-6 py-4 text-center font-bold text-gray-900">{{ (users.current_page - 1) * users.per_page + index + 1 }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
