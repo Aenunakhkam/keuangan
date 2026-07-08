@@ -165,7 +165,7 @@ const filterByRole = (event: Event) => {
                                         <td class="px-6 py-4 text-center">
                                             <input type="checkbox" :value="user.id" v-model="selectedUsers" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
                                         </td>
-                                        <td class="px-6 py-4 text-center font-bold text-gray-900">{{ users && users.current_page ? (users.current_page - 1) * users.per_page + index + 1 : index + 1 }}</td>
+                                        <td class="px-6 py-4 text-center font-bold text-gray-900">{{ users && users.current_page ? (Number(users.current_page) - 1) * Number(users.per_page) + Number(index) + 1 : Number(index) + 1 }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
