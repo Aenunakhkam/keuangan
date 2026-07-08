@@ -239,21 +239,17 @@ class TeacherController extends Controller
 
                 // Create User Account
                 $email = $emailInput;
+                
+                // Jika email yang diinput sudah ada di database, kita ubah jadi kosong agar digenerate otomatis
+                if (!empty($email) && \App\Models\User::where('email', $email)->exists()) {
+                    $email = null;
+                }
+
                 if (empty($email)) {
-                    $baseEmail = $nipty ?? $nipy ?? strtolower(str_replace(' ', '', $name));
-                    if (empty($baseEmail)) $baseEmail = uniqid();
-                    
-                    $email = $baseEmail . '@school.local';
-                    $counter = 1;
+                    // Berikan email random yang belum terdaftar
+                    $email = 'guru_' . uniqid() . '@school.local';
                     while (\App\Models\User::where('email', $email)->exists()) {
-                        $email = $baseEmail . $counter . '@school.local';
-                        $counter++;
-                    }
-                } else {
-                    // Cek apakah email yang diinput sudah digunakan di tabel users
-                    if (\App\Models\User::where('email', $email)->exists()) {
-                        $errors[] = "Baris $rowNum: Email '$email' sudah terdaftar pada akun pengguna.";
-                        continue;
+                        $email = 'guru_' . uniqid() . '@school.local';
                     }
                 }
 
