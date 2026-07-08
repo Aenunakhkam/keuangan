@@ -33,7 +33,7 @@ class UserController extends Controller
                     })->toArray(),
                 ];
             }),
-            'roles' => Role::all()->map(function ($role) {
+            'roles' => Role::where('name', '!=', 'siswa')->get()->map(function ($role) {
                 return ['id' => $role->id, 'name' => $role->name];
             }),
             'filters' => [
