@@ -7,7 +7,7 @@
     <style>
         /* CSS Khusus Laporan Formal (Standar Instansi) */
         @page {
-            size: 330mm 215mm; /* F4 Landscape */
+            size: A4 landscape; /* Sesuai request: Landscape agar lebih lega */
             margin: 20mm;
         }
         body {
@@ -20,7 +20,7 @@
         }
         .container {
             width: 100%;
-            max-width: 210mm;
+            max-width: 297mm; /* Lebar A4 Landscape */
             margin: 0 auto;
         }
         
