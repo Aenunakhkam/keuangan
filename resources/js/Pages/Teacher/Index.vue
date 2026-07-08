@@ -147,11 +147,12 @@ const handleImport = (event: Event) => {
 
     router.post(route('teachers.import'), formData, {
         onSuccess: (page) => {
-            if (page.props.flash?.error) {
+            const flash = page.props.flash as any;
+            if (flash && flash.error && typeof flash.error === 'string') {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan Impor',
-                    html: page.props.flash.error.replace(/\n/g, '<br>'),
+                    html: flash.error.replace(/\n/g, '<br>'),
                     confirmButtonText: 'Tutup',
                     confirmButtonColor: '#4F46E5'
                 });
