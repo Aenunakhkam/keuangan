@@ -11,10 +11,19 @@ use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $roleFilter = $request->role;
+        $query = User::with('roles')->latest();
+
+        if ($roleFilter) {
+            $query->whereHas('roles', function($q) use ($roleFilter) {
+                $q->where('name', $roleFilter);
+            });
+        }
+
         return Inertia::render('Admin/Users/Index', [
-            'users' => User::with('roles')->latest()->paginate(10)->through(function ($user) {
+            'users' => $query->paginate(10)->withQueryString()->through(function ($user) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -27,6 +36,9 @@ class UserController extends Controller
             'roles' => Role::all()->map(function ($role) {
                 return ['id' => $role->id, 'name' => $role->name];
             }),
+            'filters' => [
+                'role' => $roleFilter ?? '',
+            ]
         ]);
     }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref, inject } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import InputError from '@/Components/InputError.vue';
@@ -13,6 +13,7 @@ import { watch } from 'vue';
 const props = defineProps<{
     users: any;
     roles: any[];
+    filters: any;
 }>();
 
 const showingUserModal = ref(false);
@@ -119,9 +120,18 @@ const bulkDeleteUsers = async () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="flex items-center space-x-4">
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                                 <h3 class="text-lg font-medium">Daftar Pengguna</h3>
+                                <select 
+                                    @change="router.get(route('users.index'), { role: $event.target.value }, { preserveState: true })"
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                >
+                                    <option value="">Semua Role (Filter)</option>
+                                    <option v-for="role in roles" :key="role.id" :value="role.name" :selected="filters?.role === role.name">
+                                        {{ role.name }}
+                                    </option>
+                                </select>
                                 <button v-if="selectedUsers.length > 0" @click="bulkDeleteUsers" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-sm">
                                     Hapus {{ selectedUsers.length }} Terpilih
                                 </button>
