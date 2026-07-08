@@ -4,55 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Pengeluaran - {{ $year }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Times+New+Roman&display=swap');
-        
+        /* CSS Khusus Laporan Formal (Standar Instansi) */
+        @page {
+            size: A4 portrait; /* Lebih resmi menggunakan Portrait untuk laporan tabel */
+            margin: 20mm;
+        }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            color: #000;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
         }
-
-        @media print {
-            @page {
-                size: A4 landscape;
-                margin: 15mm;
-            }
-            body { 
-                background: white; 
-                -webkit-print-color-adjust: exact;
-            }
-            #printBtn { display: none; }
-            .no-print { display: none; }
-            .print-border { border: 1px solid #000 !important; }
+        .container {
+            width: 100%;
+            max-width: 210mm;
+            margin: 0 auto;
         }
-
+        
+        /* Kop Surat Resmi */
         .kop-surat {
-            border-bottom: 3px double #000;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            display: table;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .kop-logo {
+            display: table-cell;
+            width: 80px;
+            vertical-align: middle;
+        }
+        .kop-logo img {
+            width: 80px;
+            height: auto;
+        }
+        .kop-text {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .kop-text h1 {
+            margin: 0;
+            font-size: 16pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .kop-text h2 {
+            margin: 0;
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .kop-text p {
+            margin: 2px 0 0 0;
+            font-size: 10pt;
+        }
+        
+        /* Garis Ganda Kop Surat */
+        .garis-kop {
+            border-top: 3px solid #000;
+            border-bottom: 1px solid #000;
+            height: 2px;
+            margin-bottom: 20px;
         }
 
-        .table-formal th {
-            background-color: #f3f4f6 !important;
-            color: #000 !important;
+        /* Judul Laporan */
+        .judul-laporan {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .judul-laporan h3 {
+            margin: 0;
+            font-size: 14pt;
+            text-transform: uppercase;
+            text-decoration: underline;
+        }
+        .judul-laporan p {
+            margin: 5px 0 0 0;
+            font-size: 11pt;
+        }
+
+        /* Tabel Data */
+        table.tabel-formal {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 11pt;
+        }
+        table.tabel-formal th, table.tabel-formal td {
             border: 1px solid #000;
+            padding: 6px 8px;
+        }
+        table.tabel-formal th {
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-left { text-align: left; }
+        .font-bold { font-weight: bold; }
+
+        /* Tanda Tangan */
+        .ttd-container {
+            width: 100%;
+            margin-top: 40px;
+            display: table;
+        }
+        .ttd-kiri {
+            display: table-cell;
+            width: 50%;
+            text-align: center;
+            vertical-align: bottom;
+        }
+        .ttd-kanan {
+            display: table-cell;
+            width: 50%;
+            text-align: center;
+            vertical-align: bottom;
+        }
+        .ttd-nama {
+            margin-top: 80px;
+            font-weight: bold;
+            text-decoration: underline;
         }
 
-        .table-formal td {
-            border: 1px solid #000;
+        /* UI Tombol Cetak (Sembunyi saat diprint) */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: none; }
+            .container { box-shadow: none; max-width: none; border: none; padding: 0; }
         }
-
-        .text-formal {
-            font-family: 'Times New Roman', serif;
+        /* Tampilan di Layar Monitor */
+        @media screen {
+            body { background-color: #f3f4f6; padding: 40px 0; }
+            .container { 
+                background: white; 
+                padding: 40px; 
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+                border: 1px solid #e5e7eb;
+            }
+            .tombol-cetak {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background-color: #111827;
+                color: white;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 8px;
+                font-size: 11pt;
+                font-weight: bold;
+                cursor: pointer;
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            }
+            .tombol-cetak:hover { background-color: #374151; }
         }
     </style>
 </head>
-<body class="bg-gray-100 py-10">
-    
-    <div class="bg-white mx-auto w-[297mm] min-h-[210mm] p-[15mm] shadow-lg border border-gray-300">
+<body>
+    <div class="container">
         <!-- Kop Surat -->
-        <div class="kop-surat flex items-center justify-between">
-            <div class="w-24">
+        <div class="kop-surat">
+            <div class="kop-logo">
                 @if($settingLogo)
                     @php
                         $logoSrc = $settingLogo;
@@ -68,111 +183,78 @@
                             }
                         }
                     @endphp
-                    <img src="{{ $logoSrc }}" alt="Logo Sekolah" class="w-full object-contain" onerror="this.style.display='none'">
-                @else
-                    <div class="w-full h-24 bg-gray-100 flex items-center justify-center border border-dashed border-gray-400 text-[10px] text-gray-400 font-bold uppercase">Logo</div>
+                    <img src="{{ $logoSrc }}" alt="Logo">
                 @endif
             </div>
-            <div class="flex-1 text-center px-6">
-                <h1 class="text-2xl font-bold uppercase tracking-tight text-gray-900 leading-tight">{{ $settingName ?? 'YAYASAN PENDIDIKAN SEKOLAH' }}</h1>
-                <h2 class="text-xl font-black uppercase text-gray-800 mb-1">UNIT KEUANGAN & BENDAHARA</h2>
-                <p class="text-[11px] text-gray-600 italic">{{ $settingAddress ?? 'Alamat Lengkap Sekolah Belum Diatur' }}</p>
-                <p class="text-[10px] text-gray-500 font-medium">Telepon: (021) 12345678 | Email: admin@sekolah.sch.id</p>
-            </div>
-            <div class="w-24"></div> <!-- Balancing space -->
-        </div>
-
-        <!-- Judul Laporan -->
-        <div class="text-center mb-10">
-            <h3 class="text-lg font-black underline uppercase tracking-widest decoration-2 underline-offset-4">LAPORAN REKAPITULASI PENGELUARAN</h3>
-            <p class="text-sm font-bold text-gray-700 mt-2">
-                Periode: {{ $month ? Carbon\Carbon::create()->month($month)->translatedFormat('F') : 'Semua Bulan' }} {{ $year }}
-            </p>
-        </div>
-
-        <!-- Detail Tabel Laporan -->
-        <div class="space-y-8">
-            @php $globalIndex = 1; @endphp
-            @foreach($expenses as $category => $items)
-                <div class="break-inside-avoid">
-                    <div class="flex items-center space-x-2 mb-2">
-                        <span class="w-2 h-4 bg-gray-800"></span>
-                        <h4 class="text-xs font-black uppercase tracking-widest text-gray-900">Kategori: {{ $category }}</h4>
-                    </div>
-                    <table class="w-full text-[12px] table-formal border-collapse">
-                        <thead>
-                            <tr class="text-center font-bold">
-                                <th class="px-3 py-2 w-10">NO</th>
-                                <th class="px-3 py-2 w-24">TANGGAL</th>
-                                <th class="px-3 py-2">URAIAN / KETERANGAN</th>
-                                <th class="px-3 py-2 w-32">NOMINAL (RP)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @foreach($items as $index => $item)
-                                <tr>
-                                    <td class="px-3 py-2 text-center">{{ $globalIndex++ }}</td>
-                                    <td class="px-3 py-2 text-center whitespace-nowrap">{{ Carbon\Carbon::parse($item->transaction_date)->format('d/m/Y') }}</td>
-                                    <td class="px-3 py-2 leading-tight uppercase">{{ $item->description }}</td>
-                                    <td class="px-3 py-2 text-right font-bold tabular-nums">{{ number_format($item->amount, 0, ',', '.') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot class="bg-gray-50 font-black">
-                            <tr>
-                                <td colspan="3" class="px-3 py-2 text-right uppercase tracking-tighter text-[10px]">Subtotal {{ $category }}</td>
-                                <td class="px-3 py-2 text-right bg-gray-50 underline decoration-double">Rp {{ number_format($items->sum('amount'), 0, ',', '.') }}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            @endforeach
-        </div>
-
-        <!-- Grand Total Section -->
-        <div class="mt-10 border-t-2 border-black pt-4 flex justify-between items-start">
-            <div>
-                <p class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Catatan Tambahan:</p>
-                <p class="text-[10px] text-gray-500 italic">* Laporan ini dihasilkan secara otomatis oleh Sistem Manajemen Keuangan Sekolah.</p>
-            </div>
-            <div class="text-right">
-                <span class="text-xs font-black uppercase tracking-widest mr-4">Total Pengeluaran Keseluruhan:</span>
-                <span class="text-xl font-black border-b-4 border-double border-gray-900 tabular-nums">Rp {{ number_format($totalExpense, 0, ',', '.') }}</span>
+            <div class="kop-text">
+                <h1>{{ $settingName ?? 'YAYASAN PENDIDIKAN SEKOLAH' }}</h1>
+                <h2>UNIT KEUANGAN DAN BENDAHARA</h2>
+                <p>{{ $settingAddress ?? 'Alamat Lengkap Sekolah Belum Diatur' }}</p>
+                <p>Telepon: (021) 12345678 | Email: admin@sekolah.sch.id</p>
             </div>
         </div>
+        <div class="garis-kop"></div>
+
+        <!-- Judul -->
+        <div class="judul-laporan">
+            <h3>Laporan Rekapitulasi Pengeluaran</h3>
+            <p>Periode: {{ $month ? Carbon\Carbon::create()->month($month)->translatedFormat('F') : 'Seluruh Bulan' }} Tahun {{ $year }}</p>
+        </div>
+
+        <!-- Tabel Data -->
+        <table class="tabel-formal">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 15%;">Tanggal</th>
+                    <th style="width: 20%;">Kategori</th>
+                    <th style="width: 40%;">Uraian / Keterangan</th>
+                    <th style="width: 20%;">Nominal (Rp)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php 
+                    $no = 1; 
+                @endphp
+                @forelse($expenses as $category => $items)
+                    @foreach($items as $item)
+                    <tr>
+                        <td class="text-center">{{ $no++ }}</td>
+                        <td class="text-center">{{ Carbon\Carbon::parse($item->transaction_date)->format('d/m/Y') }}</td>
+                        <td class="text-center">{{ $category }}</td>
+                        <td class="text-left">{{ $item->description }}</td>
+                        <td class="text-right">{{ number_format($item->amount, 0, ',', '.') }}</td>
+                    </tr>
+                    @endforeach
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data pengeluaran pada periode ini.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-right">TOTAL PENGELUARAN KESELURUHAN</th>
+                    <th class="text-right font-bold">Rp {{ number_format($totalExpense, 0, ',', '.') }}</th>
+                </tr>
+            </tfoot>
+        </table>
 
         <!-- Tanda Tangan -->
-        <div class="mt-20 grid grid-cols-2 gap-20 text-center text-sm">
-            <div class="break-inside-avoid">
-                <p class="mb-24">Mengetahui,<br><span class="font-bold">Kepala Sekolah</span></p>
-                <div class="w-48 border-b border-black mx-auto mb-1"></div>
-                <p class="text-xs uppercase font-bold text-gray-400 tracking-widest">( Nama Kepala Sekolah )</p>
+        <div class="ttd-container">
+            <div class="ttd-kiri">
+                <p>Mengetahui,<br><b>Kepala Sekolah</b></p>
+                <p class="ttd-nama">( ....................................... )</p>
+                <p>NIP: .......................................</p>
             </div>
-            <div class="break-inside-avoid">
-                <p class="mb-4">{{ now()->translatedFormat('d F Y') }}</p>
-                <p class="mb-20">Bendahara Sekolah</p>
-                <p class="font-black text-gray-900 uppercase border-b border-black mx-auto inline-block min-w-[200px]">{{ auth()->user()->name }}</p>
-                <p class="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-widest">NIP: ............................</p>
+            <div class="ttd-kanan">
+                <p>Brebes, {{ now()->translatedFormat('d F Y') }}<br><b>Bendahara Sekolah</b></p>
+                <p class="ttd-nama">{{ auth()->user()->name ?? '( ....................................... )' }}</p>
+                <p>NIP: .......................................</p>
             </div>
-        </div>
-
-        <!-- Print Buttons (Floating/Fixed) -->
-        <div class="fixed bottom-8 right-8 flex flex-col space-y-3 no-print" id="printBtn">
-            <button onclick="window.print()" class="px-6 py-4 bg-gray-900 text-white rounded-full text-sm font-black shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center space-x-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                <span>Cetak Portofolio Laporan</span>
-            </button>
-            <button onclick="window.close()" class="px-6 py-4 bg-white text-gray-500 border border-gray-200 rounded-full text-sm font-bold shadow-xl hover:bg-gray-50 transition-all text-center">
-                Tutup Halaman
-            </button>
         </div>
     </div>
 
-    <!-- Page Shadow/Border Decorative for Screen only -->
-    <div class="no-print mt-10 text-center text-xs text-gray-400 font-medium">
-        &copy; {{ date('Y') }} Sistem Keuangan Sekolah - Dokumen Digital Resmi
-    </div>
+    <button class="tombol-cetak no-print" onclick="window.print()">🖨️ Cetak Laporan</button>
 </body>
 </html>
