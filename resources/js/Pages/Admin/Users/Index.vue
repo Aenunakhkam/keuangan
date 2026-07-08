@@ -106,6 +106,11 @@ const bulkDeleteUsers = async () => {
         });
     }
 };
+
+const filterByRole = (event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    router.get(route('users.index'), { role: target.value }, { preserveState: true });
+};
 </script>
 
 <template>
@@ -124,7 +129,7 @@ const bulkDeleteUsers = async () => {
                             <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                                 <h3 class="text-lg font-medium">Daftar Pengguna</h3>
                                 <select 
-                                    @change="router.get(route('users.index'), { role: $event.target.value }, { preserveState: true })"
+                                    @change="filterByRole"
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
                                 >
                                     <option value="">Semua Role (Filter)</option>
