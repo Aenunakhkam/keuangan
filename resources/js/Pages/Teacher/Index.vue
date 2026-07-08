@@ -282,7 +282,7 @@ watch(() => form.joined_date, (newDate) => {
                         ref="fileInput" 
                         class="hidden" 
                         @change="handleImport" 
-                        accept=".csv" 
+                        accept=".xlsx, .xls, .csv" 
                     />
 
                     <!-- Tambah Pegawai -->

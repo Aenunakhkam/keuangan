@@ -169,114 +169,25 @@ class TeacherController extends Controller
 
     public function downloadTemplate()
     {
-        $headers = [
-            'Nama Pegawai (Wajib)', 
-            'Email Akun (Opsional)',
-            'NIPTY (Opsional)', 
-            'NIPY (Opsional)', 
-            'Jenis Kelamin (L/P)', 
-            'Tempat Lahir (Opsional)', 
-            'Tanggal Lahir (Format: YYYY-MM-DD)', 
-            'Pendidikan (SMA/SMK/D3/S1/S2/S3)', 
-            'Jurusan / Prodi (Opsional)',
-            'Unit Kerja (Contoh: SMK)', 
-            'Masa Kerja Tahun (Angka)', 
-            'Masa Kerja Bulan (Angka: 0-11)', 
-            'Golongan (Opsional)', 
-            'Tunjangan Lainnya (Angka)', 
-            'Tanggal Masuk (Format: YYYY-MM-DD)', 
-            'Nama Jabatan (Pisahkan koma jika lebih dari satu, contoh: Guru, Bendahara Sekolah)'
-        ];
-
-        $examples = [
-            [
-                'Tina Agustina, S.Pd', 
-                'tina.agustina@contoh.com',
-                '200103121', 
-                '', 
-                'P', 
-                'Tegal', 
-                '1990-05-12', 
-                'S1', 
-                'Pendidikan Matematika',
-                'SMK', 
-                '5', 
-                '6', 
-                'III/a', 
-                '50000', 
-                '2018-07-01', 
-                'Guru, Bendahara Sekolah'
-            ],
-            [
-                'Ahmad Subarjo, M.Pd', 
-                '', // email kosong akan di-generate otomatis
-                '', 
-                '199703019', 
-                'L', 
-                'Brebes', 
-                '1985-11-23', 
-                'S2', 
-                'Manajemen Pendidikan',
-                'SMK', 
-                '10', 
-                '0', 
-                'III/c', 
-                '100000', 
-                '2014-01-15', 
-                'Kepala Sekolah'
-            ]
-        ];
-
-        $callback = function() use ($headers, $examples) {
-            $file = fopen('php://output', 'w');
-            
-            // Add UTF-8 BOM for Excel compatibility
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            fputcsv($file, $headers, ';'); // Semicolon is better for Indonesian Excel defaults
-            
-            foreach ($examples as $row) {
-                fputcsv($file, $row, ';');
-            }
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, [
-            "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=template_import_pegawai.csv",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ]);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\TeacherTemplateExport, 'template_import_pegawai.xlsx');
     }
 
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,txt|max:2048'
+            'file' => 'required|file|mimes:xlsx,xls,csv,txt|max:2048'
         ]);
 
         $file = $request->file('file');
-        $path = $file->getRealPath();
         
-        $handle = fopen($path, 'r');
-        if (!$handle) {
-            return redirect()->back()->with('error', 'Gagal membuka file CSV.');
-        }
-
-        // Determine separator (comma or semicolon)
-        $firstLine = fgets($handle);
-        $separator = (strpos($firstLine, ';') !== false) ? ';' : ',';
-        rewind($handle);
-
-        // Skip UTF-8 BOM if present
-        $bom = fread($handle, 3);
-        if ($bom !== chr(0xEF).chr(0xBB).chr(0xBF)) {
-            rewind($handle);
+        try {
+            $rows = \Maatwebsite\Excel\Facades\Excel::toArray(new \stdClass, $file)[0];
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membaca file Excel. Pastikan format sesuai.');
         }
 
         // Skip header
-        fgetcsv($handle, 0, $separator);
+        array_shift($rows);
 
         $successCount = 0;
         $errors = [];
@@ -284,7 +195,7 @@ class TeacherController extends Controller
 
         \DB::beginTransaction();
         try {
-            while (($row = fgetcsv($handle, 0, $separator)) !== false) {
+            foreach ($rows as $row) {
                 $rowNum++;
                 // Skip empty rows
                 if (empty($row) || !isset($row[0]) || empty(trim($row[0]))) {
@@ -394,7 +305,6 @@ class TeacherController extends Controller
 
                 $successCount++;
             }
-            fclose($handle);
 
             if (!empty($errors)) {
                 \DB::rollBack();
@@ -405,7 +315,6 @@ class TeacherController extends Controller
             return redirect()->back()->with('success', "Sukses mengimpor $successCount data pegawai.");
         } catch (\Exception $e) {
             \DB::rollBack();
-            fclose($handle);
             return redirect()->back()->with('error', 'Terjadi kesalahan sistem saat impor: ' . $e->getMessage());
         }
     }
