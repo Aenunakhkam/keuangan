@@ -94,11 +94,11 @@ const barOptions = {
 };
 
 const exportExpense = () => {
-    window.open(route('reports.export-expense'), '_blank');
+    window.location.href = route('reports.export-expense');
 };
 
 const exportIncome = () => {
-    window.open(route('reports.export-income'), '_blank');
+    window.location.href = route('reports.export-income');
 };
 
 const monthName = (m: number) => {

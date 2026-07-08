@@ -90,7 +90,11 @@ class ReportController extends Controller
         $settingAddress = \App\Models\Setting::where('key', 'school_address')->value('value');
         $settingName = \App\Models\Setting::where('key', 'school_name')->value('value');
 
-        return view('reports.expense-report', compact('expenses', 'totalExpense', 'year', 'month', 'settingLogo', 'settingAddress', 'settingName'));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.expense-report', compact('expenses', 'totalExpense', 'year', 'month', 'settingLogo', 'settingAddress', 'settingName'));
+        // Menggunakan ukuran F4 landscape (215mm x 330mm) -> approx 8.5 x 13 in
+        $pdf->setPaper([0, 0, 935.433, 609.448], 'landscape');
+        
+        return $pdf->download('laporan-pengeluaran-' . $year . ($month ? '-' . $month : '') . '.pdf');
     }
 
     public function exportIncome(Request $request)
@@ -112,7 +116,10 @@ class ReportController extends Controller
         $settingAddress = \App\Models\Setting::where('key', 'school_address')->value('value');
         $settingName = \App\Models\Setting::where('key', 'school_name')->value('value');
 
-        return view('reports.income-report', compact('income', 'totalIncome', 'year', 'month', 'settingLogo', 'settingAddress', 'settingName'));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.income-report', compact('income', 'totalIncome', 'year', 'month', 'settingLogo', 'settingAddress', 'settingName'));
+        $pdf->setPaper([0, 0, 935.433, 609.448], 'landscape');
+        
+        return $pdf->download('laporan-pemasukan-' . $year . ($month ? '-' . $month : '') . '.pdf');
     }
 
     public function transactionReport(Request $request)

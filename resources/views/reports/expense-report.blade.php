@@ -7,7 +7,7 @@
     <style>
         /* CSS Khusus Laporan Formal (Standar Instansi) */
         @page {
-            size: A4 portrait; /* Lebih resmi menggunakan Portrait untuk laporan tabel */
+            size: 330mm 215mm; /* F4 Landscape */
             margin: 20mm;
         }
         body {
@@ -90,16 +90,26 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            font-size: 11pt;
+            font-size: 10.5pt; /* Sedikit lebih kecil agar lebih proporsional */
+            page-break-inside: auto; /* Memastikan tabel tidak terpotong sembarangan */
+        }
+        table.tabel-formal thead {
+            display: table-header-group; /* Mengulangi header di setiap halaman baru */
+        }
+        table.tabel-formal tr {
+            page-break-inside: avoid; /* Menghindari 1 baris terpotong menjadi 2 halaman */
+            page-break-after: auto;
         }
         table.tabel-formal th, table.tabel-formal td {
             border: 1px solid #000;
-            padding: 6px 8px;
+            padding: 8px 10px; /* Jarak dan spasi dinaikkan agar tabel tidak terlalu padat */
+            vertical-align: middle; /* Teks lebih rapi secara vertikal */
         }
         table.tabel-formal th {
             text-align: center;
             font-weight: bold;
             text-transform: uppercase;
+            background-color: #f8f9fa; /* Memberikan aksen warna tipis pada header */
         }
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -130,36 +140,23 @@
             text-decoration: underline;
         }
 
-        /* UI Tombol Cetak (Sembunyi saat diprint) */
-        @media print {
-            .no-print { display: none !important; }
-            body { background: none; }
-            .container { box-shadow: none; max-width: none; border: none; padding: 0; }
-        }
-        /* Tampilan di Layar Monitor */
-        @media screen {
-            body { background-color: #f3f4f6; padding: 40px 0; }
-            .container { 
-                background: white; 
-                padding: 40px; 
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-                border: 1px solid #e5e7eb;
-            }
-            .tombol-cetak {
-                position: fixed;
-                bottom: 30px;
-                right: 30px;
-                background-color: #111827;
-                color: white;
-                padding: 12px 24px;
-                border: none;
-                border-radius: 8px;
-                font-size: 11pt;
-                font-weight: bold;
-                cursor: pointer;
-                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            }
-            .tombol-cetak:hover { background-color: #374151; }
+        /* UI Tombol Cetak (Sembunyi) */
+        .no-print { display: none !important; }
+        .container { max-width: none; border: none; padding: 0; margin-bottom: 30px; }
+        
+        /* Footer yang selalu ada di bawah tiap halaman cetak */
+        .footer-print {
+            display: block;
+            position: fixed;
+            bottom: 0px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            font-size: 9pt;
+            color: #6b7280;
+            border-top: 1px solid #d1d5db;
+            padding-top: 8px;
+            background-color: white;
         }
     </style>
 </head>
@@ -254,7 +251,12 @@
             </div>
         </div>
     </div>
-
-    <button class="tombol-cetak no-print" onclick="window.print()">🖨️ Cetak Laporan</button>
+    <br>
+    <!-- Footer Modern Khusus Cetak -->
+    <div class="footer-print" style="display: block; position: fixed; bottom: 0; left: 0; right: 0; width: 100%; font-size: 9pt; color: #6b7280; border-top: 1px solid #d1d5db; padding-top: 8px; background-color: white;">
+        <div style="float: left; font-weight: bold;">Sistem Informasi Manajemen Keuangan</div>
+        <div style="float: right;">Dicetak oleh: {{ auth()->user()->name ?? 'Administrator' }} | {{ now()->translatedFormat('d F Y H:i') }}</div>
+        <div style="clear: both; text-align: center; margin-top: 5px; font-style: italic; font-size: 8pt;">Dokumen ini dihasilkan secara otomatis oleh sistem dan sah tanpa stempel basah.</div>
+    </div>
 </body>
 </html>

@@ -110,7 +110,7 @@ const deleteLogo = async () => {
                                 </div>
                                 <div class="space-y-1.5 md:col-span-2">
                                     <InputLabel for="copyright" value="Teks Copyright (Footer)" />
-                                    <TextInput id="copyright" v-model="form.copyright" type="text" class="block w-full" placeholder="© 2026 SMK Negeri 1 Contoh" />
+                                    <TextInput id="copyright" v-model="form.copyright" type="text" class="block w-full" placeholder="© 2026 Sistem Slip Gaji Sekolah. Seluruh hak cipta dilindungi." />
                                     <InputError :message="form.errors.copyright" />
                                 </div>
                             </div>
