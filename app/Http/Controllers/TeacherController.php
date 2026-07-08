@@ -113,7 +113,16 @@ class TeacherController extends Controller
 
     public function store(StoreTeacherRequest $request)
     {
-        $email = $request->email ?: ($request->nipty ?? $request->nipy ?? uniqid()) . '@school.local';
+        $email = $request->email;
+        if (empty($email)) {
+            $baseEmail = $request->nipty ?? $request->nipy ?? strtolower(str_replace(' ', '', $request->name));
+            $email = $baseEmail . '@school.local';
+            $counter = 1;
+            while (\App\Models\User::where('email', $email)->exists()) {
+                $email = $baseEmail . $counter . '@school.local';
+                $counter++;
+            }
+        }
         
         $user = \App\Models\User::create([
             'name' => $request->name,
@@ -318,12 +327,23 @@ class TeacherController extends Controller
                 }
 
                 // Create User Account
-                $email = $emailInput ?: ($nipty ?? $nipy ?? uniqid()) . '@school.local';
-                
-                // Cek apakah email sudah digunakan di tabel users
-                if (\App\Models\User::where('email', $email)->exists()) {
-                    $errors[] = "Baris $rowNum: Email/NIPTY/NIPY ($email) sudah terdaftar pada akun pengguna.";
-                    continue;
+                $email = $emailInput;
+                if (empty($email)) {
+                    $baseEmail = $nipty ?? $nipy ?? strtolower(str_replace(' ', '', $name));
+                    if (empty($baseEmail)) $baseEmail = uniqid();
+                    
+                    $email = $baseEmail . '@school.local';
+                    $counter = 1;
+                    while (\App\Models\User::where('email', $email)->exists()) {
+                        $email = $baseEmail . $counter . '@school.local';
+                        $counter++;
+                    }
+                } else {
+                    // Cek apakah email yang diinput sudah digunakan di tabel users
+                    if (\App\Models\User::where('email', $email)->exists()) {
+                        $errors[] = "Baris $rowNum: Email '$email' sudah terdaftar pada akun pengguna.";
+                        continue;
+                    }
                 }
 
                 $user = \App\Models\User::create([

@@ -148,6 +148,13 @@ const handleImport = (event: Event) => {
     router.post(route('teachers.import'), formData, {
         onSuccess: (page) => {
             if (page.props.flash?.error) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan Impor',
+                    html: page.props.flash.error.replace(/\n/g, '<br>'),
+                    confirmButtonText: 'Tutup',
+                    confirmButtonColor: '#4F46E5'
+                });
                 if (fileInput.value) fileInput.value.value = '';
                 return;
             }
