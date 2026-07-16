@@ -533,11 +533,7 @@ const toggleMobileMenu = (menu: string) => {
         <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-10 mt-auto">
             <div class="mx-auto max-w-7xl px-4 text-center">
                 <p class="text-gray-500 text-sm font-medium tracking-wide">
-<<<<<<< HEAD
                     {{ $page.props.settings?.copyright || '© 2026 Sistem Slip Gaji Sekolah. Seluruh hak cipta dilindungi.' }}
-=======
-                    {{ $page.props.settings?.copyright || '© 2026 Sistem Slip Gaji Sekolah. Dikembangkan secara profesional.' }}
->>>>>>> 4c4b844 (Update Laporan Bendahara dan fitur Export PDF/Excel)
                 </p>
             </div>
         </footer>
