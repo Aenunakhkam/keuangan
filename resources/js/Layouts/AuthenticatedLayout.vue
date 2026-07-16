@@ -86,6 +86,16 @@ const toggleMobileMenu = (menu: string) => {
                             <span>Dashboard</span>
                         </Link>
 
+                        <!-- Slip Gaji Saya (Guru) -->
+                        <Link v-if="$page.props.auth.user.roles.includes('guru')" :href="route('my-salaries.index')" 
+                            class="px-5 py-3 text-sm font-bold rounded-xl transition-all duration-300 flex items-center space-x-2 glass-nav"
+                            :class="route().current('my-salaries.index') ? 'bg-white/10 text-white shadow-sm ring-1 ring-white/20' : 'text-green-100 hover:bg-white/10 hover:text-white'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span>Slip Gaji Saya</span>
+                        </Link>
+
                         <!-- Data Master Dropdown (Consolidated Master & Akademik) -->
                         <Dropdown align="left" width="56" v-if="$page.props.auth.user.roles.includes('admin')">
                             <template #trigger>
@@ -160,7 +170,15 @@ const toggleMobileMenu = (menu: string) => {
                                 </button>
                             </template>
                             <template #content>
-                                <DropdownLink :href="route('salaries.index')">
+                                <DropdownLink v-if="$page.props.auth.user.roles.includes('bendahara')" :href="route('salary-approvals.index')">
+                                    <div class="flex items-center space-x-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Persetujuan Gaji</span>
+                                    </div>
+                                </DropdownLink>
+                                <DropdownLink v-if="$page.props.auth.user.roles.includes('admin')" :href="route('salaries.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -168,7 +186,7 @@ const toggleMobileMenu = (menu: string) => {
                                         <span>Penggajian (Payroll)</span>
                                     </div>
                                 </DropdownLink>
-                                <DropdownLink :href="route('salary-deductions.index')">
+                                <DropdownLink v-if="$page.props.auth.user.roles.includes('admin')" :href="route('salary-deductions.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -176,7 +194,7 @@ const toggleMobileMenu = (menu: string) => {
                                         <span>Potongan Gaji</span>
                                     </div>
                                 </DropdownLink>
-                                <DropdownLink :href="route('cash-transactions.index')">
+                                <DropdownLink v-if="$page.props.auth.user.roles.includes('admin')" :href="route('cash-transactions.index')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
@@ -184,7 +202,7 @@ const toggleMobileMenu = (menu: string) => {
                                         <span>Jurnal Kas</span>
                                     </div>
                                 </DropdownLink>
-                                <DropdownLink :href="route('reports.salary-spj')">
+                                <DropdownLink v-if="$page.props.auth.user.roles.includes('admin')" :href="route('reports.salary-spj')">
                                     <div class="flex items-center space-x-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
@@ -212,22 +230,42 @@ const toggleMobileMenu = (menu: string) => {
                                 </button>
                             </template>
                             <template #content>
-                                <DropdownLink :href="route('reports.index')">
-                                    <div class="flex items-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
-                                        <span>Ringkasan Keuangan</span>
-                                    </div>
-                                </DropdownLink>
-                                <DropdownLink :href="route('reports.transactions')">
-                                    <div class="flex items-center space-x-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                        <span>Laporan Transaksi</span>
-                                    </div>
-                                </DropdownLink>
+                                <template v-if="$page.props.auth.user.roles.includes('admin')">
+                                    <DropdownLink :href="route('reports.index')">
+                                        <div class="flex items-center space-x-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                            <span>Ringkasan Keuangan</span>
+                                        </div>
+                                    </DropdownLink>
+                                    <DropdownLink :href="route('reports.transactions')">
+                                        <div class="flex items-center space-x-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <span>Laporan Transaksi</span>
+                                        </div>
+                                    </DropdownLink>
+                                </template>
+                                <template v-if="$page.props.auth.user.roles.includes('bendahara')">
+                                    <DropdownLink :href="route('reports.monthly')">
+                                        <div class="flex items-center space-x-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <span>Laporan Perbulan</span>
+                                        </div>
+                                    </DropdownLink>
+                                    <DropdownLink :href="route('reports.yearly')">
+                                        <div class="flex items-center space-x-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
+                                            </svg>
+                                            <span>Laporan Pertahun</span>
+                                        </div>
+                                    </DropdownLink>
+                                </template>
                             </template>
                         </Dropdown>
 
@@ -334,6 +372,12 @@ const toggleMobileMenu = (menu: string) => {
                                 <span>Beranda</span>
                             </Link>
 
+                            <!-- Slip Gaji Saya (Guru) -->
+                            <Link v-if="$page.props.auth.user.roles.includes('guru')" :href="route('my-salaries.index')" class="w-full flex items-center space-x-3 text-left px-6 py-4 border-b border-gray-100 text-sm font-medium transition-colors" :class="route().current('my-salaries.index') ? 'text-green-600 bg-green-50/50' : 'text-gray-700 hover:bg-gray-50'">
+                                <svg class="h-5 w-5" :class="route().current('my-salaries.index') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                <span>Slip Gaji Saya</span>
+                            </Link>
+
                             <!-- Data Master Accordion (Consolidated) -->
                             <div class="w-full border-b border-gray-100" v-if="$page.props.auth.user.roles.includes('admin')">
                                 <button @click="toggleMobileMenu('master')" class="w-full flex items-center justify-between px-6 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
@@ -387,6 +431,10 @@ const toggleMobileMenu = (menu: string) => {
                                     leave-to-class="max-h-0 opacity-0"
                                 >
                                     <div v-show="activeMobileMenu === 'keuangan'" class="bg-gray-50/50 pb-2">
+                                        <Link v-if="$page.props.auth.user.roles.includes('bendahara')" :href="route('salary-approvals.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('salary-approvals.*')}">
+                                            <svg class="h-4 w-4" :class="route().current('salary-approvals.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            <span>Persetujuan Gaji</span>
+                                        </Link>
                                         <Link :href="route('salaries.index')" class="flex items-center space-x-3 w-full px-10 py-3 text-sm text-gray-600 hover:text-green-600 hover:bg-white transition-colors" :class="{'text-green-600 font-semibold bg-white': route().current('salaries.*')}">
                                             <svg class="h-4 w-4" :class="route().current('salaries.*') ? 'text-green-600' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                             <span>Penggajian</span>
@@ -485,7 +533,11 @@ const toggleMobileMenu = (menu: string) => {
         <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-10 mt-auto">
             <div class="mx-auto max-w-7xl px-4 text-center">
                 <p class="text-gray-500 text-sm font-medium tracking-wide">
+<<<<<<< HEAD
                     {{ $page.props.settings?.copyright || '© 2026 Sistem Slip Gaji Sekolah. Seluruh hak cipta dilindungi.' }}
+=======
+                    {{ $page.props.settings?.copyright || '© 2026 Sistem Slip Gaji Sekolah. Dikembangkan secara profesional.' }}
+>>>>>>> 4c4b844 (Update Laporan Bendahara dan fitur Export PDF/Excel)
                 </p>
             </div>
         </footer>

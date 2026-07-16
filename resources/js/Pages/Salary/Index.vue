@@ -19,6 +19,7 @@ const props = defineProps<{
     schoolLogo?: string | null;
     schoolName?: string;
     schoolAddress?: string;
+    totalSubmittedAmount?: number;
     filters?: any;
 }>();
 
@@ -296,6 +297,70 @@ const processBulkDelete = async () => {
         });
     }
 };
+
+const submittableSelectedIds = computed(() => {
+    return props.salaries.data
+        .filter((sal: any) => selectedIds.value.includes(sal.id) && ['pending', 'rejected'].includes(sal.approval_status))
+        .map((sal: any) => sal.id);
+});
+
+const publishableSelectedIds = computed(() => {
+    return props.salaries.data
+        .filter((sal: any) => selectedIds.value.includes(sal.id) && sal.approval_status === 'approved' && !sal.is_published)
+        .map((sal: any) => sal.id);
+});
+
+const processSubmit = async () => {
+    if (submittableSelectedIds.value.length === 0) return;
+    const result = await Swal.fire({
+        title: 'Ajukan ke Bendahara',
+        text: `Ajukan ${submittableSelectedIds.value.length} slip gaji yang terpilih?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Ajukan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#003B73',
+    });
+    if (result.isConfirmed) {
+        router.post(route('salaries.submit'), { ids: submittableSelectedIds.value }, {
+            onSuccess: () => {
+                selectedIds.value = [];
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Gaji telah diajukan ke Bendahara.',
+                    icon: 'success',
+                    confirmButtonColor: '#003B73',
+                });
+            }
+        });
+    }
+};
+
+const processPublish = async () => {
+    if (publishableSelectedIds.value.length === 0) return;
+    const result = await Swal.fire({
+        title: 'Kirim Slip ke Pegawai',
+        text: `Kirim ${publishableSelectedIds.value.length} slip gaji yang terpilih ke masing-masing pegawai?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Kirim',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#10b981',
+    });
+    if (result.isConfirmed) {
+        router.post(route('salaries.publish'), { ids: publishableSelectedIds.value }, {
+            onSuccess: () => {
+                selectedIds.value = [];
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Slip gaji telah dikirim/publish ke pegawai.',
+                    icon: 'success',
+                    confirmButtonColor: '#10b981',
+                });
+            }
+        });
+    }
+};
 </script>
 
 <template>
@@ -303,10 +368,17 @@ const processBulkDelete = async () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Penggajian Guru dan Staff kependidikan</h2>
-                    <p class="text-sm text-gray-500 font-medium mt-1">Kelola slip gaji dan pembayaran honorarium pengajar.</p>
+                    <h2 class="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Manajemen Penggajian</h2>
+                    <p class="text-sm text-gray-500 font-medium mt-1">Kelola data slip gaji guru dan staf.</p>
+                    <div v-if="totalSubmittedAmount" class="mt-2.5 inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50/80 rounded-xl border border-amber-200/60 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-amber-600 font-bold text-xs">Total Nominal Menunggu Bendahara:</span>
+                        <span class="text-amber-700 font-black text-sm">Rp {{ Number(totalSubmittedAmount || 0).toLocaleString('id-ID') }}</span>
+                    </div>
                 </div>
                 <div class="flex space-x-3">
                     <button 
@@ -378,7 +450,28 @@ const processBulkDelete = async () => {
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-3">
+                <div class="flex flex-wrap items-center gap-2 mt-4 md:mt-0 md:ml-auto w-full md:w-auto justify-end">
+                    <button 
+                        v-if="submittableSelectedIds.length > 0"
+                        @click="processSubmit"
+                        class="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center justify-center space-x-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                        <span>Ajukan ({{ submittableSelectedIds.length }})</span>
+                    </button>
+
+                    <button 
+                        v-if="publishableSelectedIds.length > 0"
+                        @click="processPublish"
+                        class="px-4 py-2.5 bg-teal-600 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-lg shadow-teal-500/20 hover:bg-teal-700 transition-all flex items-center justify-center space-x-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11.25l1.5 1.5.75-.75V8.758l2.276-.61a3 3 0 10-3.675-3.675l-.61 2.277H12l-.75.75 1.5 1.5M7.151 7.15a3 3 0 00-4.029 3.758A3 3 0 003 14.25v2.25H1.5l-.75.75 1.5 1.5.75-.75V19.5h2.25l.75-.75-1.5-1.5h1.5l.75-.75v-1.5c0-.828.672-1.5 1.5-1.5.828 0 1.5.672 1.5 1.5v2.25l-.75.75 1.5 1.5.75-.75v-1.5l1.5-1.5-.75-.75h-1.5v-2.25a3 3 0 00-3-3.75z" />
+                        </svg>
+                        <span>Kirim Slip ({{ publishableSelectedIds.length }})</span>
+                    </button>
                     <button 
                         v-if="pendingSelectedIds.length > 0"
                         @click="processBulkPayment"
@@ -431,7 +524,7 @@ const processBulkDelete = async () => {
                             <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-center">Periode</th>
                             <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-center">Tgl Gajian</th>
                             <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-right">Gaji Bersih</th>
-                            <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-center">Status</th>
+                            <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-center">Status Keseluruhan</th>
                             <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -460,22 +553,44 @@ const processBulkDelete = async () => {
                             </td>
                             <td class="px-6 py-4 text-right font-black text-indigo-600">Rp {{ Number(sal.final_net_salary || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest" :class="sal.status === 'paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'">
-                                    {{ sal.status === 'paid' ? 'Dibayarkan' : 'Menunggu' }}
-                                </span>
+                                <div class="flex flex-col items-center gap-1.5">
+                                    <span v-if="sal.status === 'paid'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                        Lunas Terbayar
+                                    </span>
+                                    <span v-else-if="sal.approval_status === 'approved'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-200">
+                                        Disetujui (Belum Dibayar)
+                                    </span>
+                                    <span v-else-if="sal.approval_status === 'rejected'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-rose-50 text-rose-700 border border-rose-200">
+                                        Ditolak Bendahara
+                                    </span>
+                                    <span v-else-if="sal.approval_status === 'submitted'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-50 text-amber-600 border border-amber-200">
+                                        Menunggu Persetujuan
+                                    </span>
+                                    <span v-else class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-gray-100 text-gray-600 border border-gray-200">
+                                        Draf Admin
+                                    </span>
+
+                                    <span v-if="sal.is_published" class="px-2 py-0.5 bg-teal-50 text-teal-600 rounded text-[9px] font-bold uppercase tracking-widest border border-teal-200 shadow-sm mt-0.5">Terpublikasi</span>
+                                    
+                                    <div v-if="sal.approval_status === 'rejected' && sal.rejection_note" class="text-[9px] text-rose-600 font-bold bg-rose-50/50 px-2 py-1.5 rounded-lg w-full max-w-[140px] border border-rose-100/80 mt-1 text-left whitespace-normal leading-tight">
+                                        Catatan: {{ sal.rejection_note }}
+                                    </div>
+                                </div>
                             </td>
-                            <td class="px-6 py-4 text-right space-x-2">
-                                <button @click="openViewModal(sal)" class="px-3 py-1.5 bg-sky-50 text-sky-600 hover:bg-sky-100 rounded-xl text-[10px] font-black uppercase transition-all inline-flex items-center space-x-1" title="Lihat Slip Gaji">
+                            <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
+                                <button v-if="sal.approval_status === 'approved'" @click="printSalary(sal.id)" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl text-[10px] font-black uppercase transition-all inline-flex items-center space-x-1" title="Cetak Slip">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                     </svg>
-                                    <span>Lihat</span>
+                                    <span>Cetak</span>
                                 </button>
-                                <button v-if="sal.status === 'pending'" @click="processPayment(sal.id)" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all">
+                                <button v-if="sal.approval_status === 'pending' || sal.approval_status === 'rejected'" @click="openViewModal(sal)" class="px-3 py-1.5 bg-sky-50 text-sky-600 hover:bg-sky-100 rounded-xl text-[10px] font-black uppercase transition-all inline-flex items-center space-x-1" title="Pratinjau Slip">
+                                    <span>Pratinjau</span>
+                                </button>
+                                <button v-if="sal.status === 'pending' && sal.approval_status === 'approved'" @click="processPayment(sal.id)" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all">
                                     Bayar
                                 </button>
-                                <button @click="deleteSalary(sal.id)" class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-all">
+                                <button @click="deleteSalary(sal.id)" class="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-all inline-block">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>

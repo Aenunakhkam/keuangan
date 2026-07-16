@@ -54,6 +54,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UserController::class);
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/transactions', [ReportController::class, 'transactionReport'])->name('reports.transactions');
+    Route::get('reports/monthly', [ReportController::class, 'monthlyReport'])->name('reports.monthly');
+    Route::get('reports/monthly/print', [ReportController::class, 'monthlyReportPrint'])->name('reports.monthly.print');
+    Route::get('reports/monthly/excel', [ReportController::class, 'monthlyReportExcel'])->name('reports.monthly.excel');
+    Route::get('reports/yearly', [ReportController::class, 'yearlyReport'])->name('reports.yearly');
+    Route::get('reports/yearly/print', [ReportController::class, 'yearlyReportPrint'])->name('reports.yearly.print');
+    Route::get('reports/yearly/excel', [ReportController::class, 'yearlyReportExcel'])->name('reports.yearly.excel');
     Route::get('reports/salary-spj', [\App\Http\Controllers\Report\SalarySpjController::class, 'index'])->name('reports.salary-spj');
     Route::get('reports/salary-spj/print', [\App\Http\Controllers\Report\SalarySpjController::class, 'print'])->name('reports.salary-spj.print');
     Route::get('reports/salary-spj/excel', [\App\Http\Controllers\Report\SalarySpjController::class, 'excel'])->name('reports.salary-spj.excel');
@@ -66,11 +72,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Payroll
     Route::post('salaries/generate-bulk', [SalaryController::class, 'generateBulk'])->name('salaries.generate-bulk');
     Route::get('salaries/print-bulk', [SalaryController::class, 'printBulk'])->name('salaries.print-bulk');
+    Route::post('salaries/submit', [SalaryController::class, 'submitToBendahara'])->name('salaries.submit');
+    Route::post('salaries/publish', [SalaryController::class, 'publishToPegawai'])->name('salaries.publish');
     Route::get('salaries/{salary}/print', [SalaryController::class, 'print'])->name('salaries.print');
     Route::post('salaries/{salary}/process-payment', [SalaryController::class, 'processPayment'])->name('salaries.process-payment');
     Route::post('salaries/bulk-pay', [SalaryController::class, 'bulkPay'])->name('salaries.bulk-pay');
     Route::post('salaries/bulk-delete', [SalaryController::class, 'bulkDelete'])->name('salaries.bulk-delete');
     Route::resource('salaries', SalaryController::class);
+
+    // Bendahara - Persetujuan Gaji
+    Route::get('salary-approvals', [\App\Http\Controllers\SalaryApprovalController::class, 'index'])->name('salary-approvals.index');
+    Route::post('salary-approvals/{salary}/approve', [\App\Http\Controllers\SalaryApprovalController::class, 'approve'])->name('salary-approvals.approve');
+    Route::post('salary-approvals/{salary}/reject', [\App\Http\Controllers\SalaryApprovalController::class, 'reject'])->name('salary-approvals.reject');
+    Route::post('salary-approvals/bulk-approve', [\App\Http\Controllers\SalaryApprovalController::class, 'bulkApprove'])->name('salary-approvals.bulk-approve');
+
+    // Pegawai - Slip Gaji Saya
+    Route::get('my-salaries', [\App\Http\Controllers\MySalaryController::class, 'index'])->name('my-salaries.index');
 
     // Pengaturan
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');

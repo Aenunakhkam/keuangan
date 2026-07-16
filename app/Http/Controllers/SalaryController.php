@@ -61,6 +61,9 @@ class SalaryController extends Controller
                 'month' => $salary->month,
                 'year' => $salary->year,
                 'status' => $salary->status,
+                'approval_status' => $salary->approval_status,
+                'rejection_note' => $salary->rejection_note,
+                'is_published' => $salary->is_published,
                 'paid_at' => $salary->paid_at,
                 'payment_date' => $salary->payment_date,
                 'teacher' => $salary->teacher ? [
@@ -103,6 +106,10 @@ class SalaryController extends Controller
         $schoolName = \App\Models\Setting::where('key', 'school_name')->value('value') ?? 'SMK NU 1 ISLAMIYAH KRAMAT';
         $schoolAddress = \App\Models\Setting::where('key', 'school_address')->value('value') ?? 'Jl. Garuda No. 39 - Kemantran';
 
+        $totalSubmittedAmount = (clone $query)->where('approval_status', 'submitted')->get()->sum(function($s) {
+            return $s->salaryDeduction ? $s->salaryDeduction->gaji_bersih : $s->net_salary;
+        });
+
         return inertia('Salary/Index', [
             'salaries' => $salaries,
             'teachers' => $teachers,
@@ -110,6 +117,7 @@ class SalaryController extends Controller
             'schoolLogo' => $schoolLogo,
             'schoolName' => $schoolName,
             'schoolAddress' => $schoolAddress,
+            'totalSubmittedAmount' => $totalSubmittedAmount,
             'filters' => $request->only(['search', 'month', 'year', 'per_page'])
         ]);
     }
@@ -195,6 +203,39 @@ class SalaryController extends Controller
         return redirect()->back()->with('success', 'Gaji massal berhasil di-generate.');
     }
 
+    public function submitToBendahara(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:salaries,id',
+        ]);
+
+        Salary::whereIn('id', $request->ids)
+            ->whereIn('approval_status', ['pending', 'rejected'])
+            ->update([
+                'approval_status' => 'submitted',
+                'rejection_note' => null
+            ]);
+
+        return redirect()->back()->with('success', 'Pengajuan gaji berhasil dikirim ke Bendahara.');
+    }
+
+    public function publishToPegawai(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:salaries,id',
+        ]);
+
+        Salary::whereIn('id', $request->ids)
+            ->where('approval_status', 'approved')
+            ->update([
+                'is_published' => true
+            ]);
+
+        return redirect()->back()->with('success', 'Slip gaji berhasil dikirim ke Pegawai.');
+    }
+
     public function processPayment(Salary $salary)
     {
         $salary->update([
@@ -267,6 +308,10 @@ class SalaryController extends Controller
 
     public function print(Salary $salary)
     {
+        if ($salary->approval_status !== 'approved') {
+            abort(403, 'Gaji belum disetujui oleh Bendahara.');
+        }
+
         $salary->load(['teacher.positions', 'salaryDeduction']);
         $settingLogo = \App\Models\Setting::where('key', 'logo_url')->value('value') 
             ?? \App\Models\Setting::where('key', 'school_logo')->value('value');
@@ -299,6 +344,8 @@ class SalaryController extends Controller
         if ($request->filled('year')) {
             $query->where('year', $request->input('year'));
         }
+
+        $query->where('approval_status', 'approved');
 
         $salaries = $query->latest()->get();
 

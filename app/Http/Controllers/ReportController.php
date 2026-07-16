@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\CashTransaction;
 use App\Models\Salary;
 use App\Models\Teacher;
@@ -165,5 +166,139 @@ class ReportController extends Controller
                 'category' => $category ?? 'all',
             ]
         ]);
+    }
+
+    private function getMonthlyData($year)
+    {
+        $salaries = Salary::with('salaryDeduction')
+            ->where('year', $year)
+            ->where('approval_status', '!=', 'draft')
+            ->get();
+
+        $monthlyData = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $monthSalaries = $salaries->where('month', $m);
+            $totalAmount = $monthSalaries->sum(function($s) {
+                return $s->salaryDeduction ? $s->salaryDeduction->gaji_bersih : $s->net_salary;
+            });
+            
+            $monthlyData[] = [
+                'month' => $m,
+                'total_pegawai' => $monthSalaries->count(),
+                'total_amount' => $totalAmount,
+            ];
+        }
+
+        return $monthlyData;
+    }
+
+    public function monthlyReport(Request $request)
+    {
+        $year = $request->year ?? date('Y');
+        $monthlyData = $this->getMonthlyData($year);
+
+        return inertia('Report/MonthlySalary', [
+            'year' => $year,
+            'monthlyData' => $monthlyData
+        ]);
+    }
+
+    private function getYearlyData()
+    {
+        $salaries = Salary::with('salaryDeduction')
+            ->where('approval_status', '!=', 'draft')
+            ->get();
+
+        $yearlyData = [];
+        $years = $salaries->pluck('year')->unique()->sort()->values();
+        if ($years->isEmpty()) {
+            $years = collect([date('Y')]);
+        }
+
+        foreach ($years as $y) {
+            $yearSalaries = $salaries->where('year', $y);
+            $totalAmount = $yearSalaries->sum(function($s) {
+                return $s->salaryDeduction ? $s->salaryDeduction->gaji_bersih : $s->net_salary;
+            });
+
+            $yearlyData[] = [
+                'year' => $y,
+                'total_pegawai' => $yearSalaries->count(),
+                'total_amount' => $totalAmount,
+            ];
+        }
+
+        return collect($yearlyData)->sortByDesc('year')->values()->all();
+    }
+
+    public function yearlyReport(Request $request)
+    {
+        $yearlyData = $this->getYearlyData();
+
+        return inertia('Report/YearlySalary', [
+            'yearlyData' => $yearlyData
+        ]);
+    }
+
+    private function getCommonPrintData()
+    {
+        return [
+            'settingLogo' => \App\Models\Setting::where('key', 'logo_url')->value('value') ?? \App\Models\Setting::where('key', 'school_logo')->value('value'),
+            'settingName' => \App\Models\Setting::where('key', 'school_name')->value('value'),
+            'settingAddress' => \App\Models\Setting::where('key', 'school_address')->value('value'),
+            'settingCity' => \App\Models\Setting::where('key', 'school_city')->value('value') ?? 'Tegal',
+        ];
+    }
+
+    public function monthlyReportPrint(Request $request)
+    {
+        $year = $request->year ?? date('Y');
+        $monthlyData = $this->getMonthlyData($year);
+        $commonData = $this->getCommonPrintData();
+        
+        $pdf = Pdf::loadView('reports.monthly-salary-print', compact('year', 'monthlyData', 'commonData'))
+                  ->setPaper('a4', 'landscape');
+                  
+        return $pdf->download("Laporan_Pengajuan_Gaji_Perbulan_{$year}.pdf");
+    }
+
+    public function monthlyReportExcel(Request $request)
+    {
+        $year = $request->year ?? date('Y');
+        $monthlyData = $this->getMonthlyData($year);
+        $commonData = $this->getCommonPrintData();
+        
+        $filename = "Laporan_Pengajuan_Gaji_Perbulan_{$year}.xls";
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        return view('reports.monthly-salary-excel', compact('year', 'monthlyData', 'commonData'));
+    }
+
+    public function yearlyReportPrint(Request $request)
+    {
+        $yearlyData = $this->getYearlyData();
+        $commonData = $this->getCommonPrintData();
+        
+        $pdf = Pdf::loadView('reports.yearly-salary-print', compact('yearlyData', 'commonData'))
+                  ->setPaper('a4', 'landscape');
+                  
+        return $pdf->download("Laporan_Pengajuan_Gaji_Pertahun.pdf");
+    }
+
+    public function yearlyReportExcel(Request $request)
+    {
+        $yearlyData = $this->getYearlyData();
+        $commonData = $this->getCommonPrintData();
+        
+        $filename = "Laporan_Pengajuan_Gaji_Pertahun.xls";
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        return view('reports.yearly-salary-excel', compact('yearlyData', 'commonData'));
     }
 }
