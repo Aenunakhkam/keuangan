@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
@@ -44,7 +45,7 @@ const saveConfig = () => {
 
 const formatInputCurrency = (val: any) => {
     if (!val && val !== 0) return '';
-    return Number(val).toLocaleString('id-ID');
+    return formatRupiah(val);
 };
 
 const handleUmkInput = (e: Event) => {

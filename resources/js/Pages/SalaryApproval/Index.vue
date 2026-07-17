@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
@@ -143,10 +144,6 @@ const processBulkApprove = async () => {
     }
 };
 
-const formatRupiah = (value: number) => {
-    if (value === undefined || value === null || value === 0) return 'Rp -';
-    return 'Rp ' + Number(value).toLocaleString('id-ID', { maximumFractionDigits: 0 });
-};
 </script>
 
 <template>
@@ -163,7 +160,7 @@ const formatRupiah = (value: number) => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span class="text-blue-600 font-bold text-xs">Total Pengajuan Bulan Ini:</span>
-                        <span class="text-blue-700 font-black text-sm">Rp {{ Number(totalSubmittedAmount || 0).toLocaleString('id-ID') }}</span>
+                        <span class="text-blue-700 font-black text-sm">{{ formatRupiah(totalSubmittedAmount || 0) }}</span>
                     </div>
                 </div>
             </div>

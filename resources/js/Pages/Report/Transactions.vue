@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -109,15 +110,15 @@ const printReport = () => {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-emerald-50 dark:bg-emerald-950/30 p-6 rounded-3xl border border-emerald-100 dark:border-emerald-900/50 print:p-3 print:border-gray-400">
                     <div class="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 print:text-[8pt] print:text-gray-900 mb-1">Total Pemasukan</div>
-                    <div class="text-2xl font-black text-emerald-700 dark:text-emerald-300 print:text-[14pt] print:text-gray-900">Rp {{ Number(summary.total_income).toLocaleString('id-ID') }}</div>
+                    <div class="text-2xl font-black text-emerald-700 dark:text-emerald-300 print:text-[14pt] print:text-gray-900">{{ formatRupiah(summary.total_income) }}</div>
                 </div>
                 <div class="bg-rose-50 dark:bg-rose-950/30 p-6 rounded-3xl border border-rose-100 dark:border-rose-900/50 print:p-3 print:border-gray-400">
                     <div class="text-[10px] font-black uppercase tracking-widest text-rose-600 dark:text-rose-400 print:text-[8pt] print:text-gray-900 mb-1">Total Pengeluaran</div>
-                    <div class="text-2xl font-black text-rose-700 dark:text-rose-300 print:text-[14pt] print:text-gray-900">Rp {{ Number(summary.total_expense).toLocaleString('id-ID') }}</div>
+                    <div class="text-2xl font-black text-rose-700 dark:text-rose-300 print:text-[14pt] print:text-gray-900">{{ formatRupiah(summary.total_expense) }}</div>
                 </div>
                 <div class="bg-indigo-50 dark:bg-indigo-950/30 p-6 rounded-3xl border border-indigo-100 dark:border-indigo-900/50 print:p-3 print:border-gray-400">
                     <div class="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 print:text-[8pt] print:text-gray-900 mb-1">Saldo Neto</div>
-                    <div class="text-2xl font-black text-indigo-700 dark:text-indigo-300 print:text-[14pt] print:text-gray-900 font-serif italic">Rp {{ Number(summary.balance).toLocaleString('id-ID') }}</div>
+                    <div class="text-2xl font-black text-indigo-700 dark:text-indigo-300 print:text-[14pt] print:text-gray-900 font-serif italic">{{ formatRupiah(summary.balance) }}</div>
                 </div>
             </div>
 
@@ -142,10 +143,10 @@ const printReport = () => {
                                 <td class="px-6 py-4 text-sm font-black text-indigo-600 uppercase tracking-tight print:px-2 print:py-2 print:text-gray-900">{{ tx.category }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 font-medium print:px-2 print:py-2 print:text-gray-900">{{ tx.description || '-' }}</td>
                                 <td class="px-6 py-4 text-right text-sm font-black text-emerald-600 print:px-2 print:py-2 print:text-gray-900">
-                                    {{ tx.type === 'income' ? 'Rp ' + Number(tx.amount).toLocaleString('id-ID') : '-' }}
+                                    {{ tx.type === 'income' ? formatRupiah(tx.amount) : '-' }}
                                 </td>
                                 <td class="px-6 py-4 text-right text-sm font-black text-rose-600 print:px-2 print:py-2 print:text-gray-900">
-                                    {{ tx.type === 'expense' ? 'Rp ' + Number(tx.amount).toLocaleString('id-ID') : '-' }}
+                                    {{ tx.type === 'expense' ? formatRupiah(tx.amount) : '-' }}
                                 </td>
                             </tr>
                             <tr v-if="transactions.length === 0">
@@ -155,8 +156,8 @@ const printReport = () => {
                         <tfoot v-if="transactions.length > 0">
                             <tr class="bg-gray-50 dark:bg-gray-900/50 font-black print:bg-gray-50">
                                 <td colspan="4" class="px-6 py-4 text-right uppercase tracking-widest text-xs print:px-2 print:py-2 print:text-[8pt] print:text-gray-900 print:border-t-2 print:border-gray-900">Total Akhir</td>
-                                <td class="px-6 py-4 text-right text-emerald-600 print:px-2 print:py-2 print:text-gray-900 print:border-t-2 print:border-gray-900">Rp {{ Number(summary.total_income).toLocaleString('id-ID') }}</td>
-                                <td class="px-6 py-4 text-right text-rose-600 print:px-2 print:py-2 print:text-gray-900 print:border-t-2 print:border-gray-900">Rp {{ Number(summary.total_expense).toLocaleString('id-ID') }}</td>
+                                <td class="px-6 py-4 text-right text-emerald-600 print:px-2 print:py-2 print:text-gray-900 print:border-t-2 print:border-gray-900">{{ formatRupiah(summary.total_income) }}</td>
+                                <td class="px-6 py-4 text-right text-rose-600 print:px-2 print:py-2 print:text-gray-900 print:border-t-2 print:border-gray-900">{{ formatRupiah(summary.total_expense) }}</td>
                             </tr>
                         </tfoot>
                     </table>

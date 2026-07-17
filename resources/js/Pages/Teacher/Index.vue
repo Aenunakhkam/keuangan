@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -523,7 +524,7 @@ watch(() => form.joined_date, (newDate) => {
                                 <input type="checkbox" :value="pos.id" v-model="form.position_ids" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 w-5 h-5 transition-all">
                                 <div>
                                     <span class="block text-sm font-bold text-gray-900">{{ pos.name }}</span>
-                                    <span class="block text-[10px] font-medium text-emerald-600">+ Rp {{ Number(pos.allowance).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</span>
+                                    <span class="block text-[10px] font-medium text-emerald-600">+ {{ formatRupiah(pos.allowance) }}</span>
                                 </div>
                             </label>
                         </div>
@@ -694,11 +695,11 @@ watch(() => form.joined_date, (newDate) => {
                             </div>
                             <div>
                                 <div class="text-[10px] font-black text-emerald-600 uppercase mb-1">Gaji Pokok</div>
-                                <div class="text-sm font-extrabold text-emerald-600">Rp {{ Number(viewingTeacher.basic_salary || 0).toLocaleString('id-ID') }}</div>
+                                <div class="text-sm font-extrabold text-emerald-600">{{ formatRupiah(viewingTeacher.basic_salary || 0) }}</div>
                             </div>
                             <div v-if="viewingTeacher.other_allowance > 0">
                                 <div class="text-[10px] font-black text-emerald-600 uppercase mb-1">Tunjangan Tetap</div>
-                                <div class="text-sm font-extrabold text-emerald-600">Rp {{ Number(viewingTeacher.other_allowance || 0).toLocaleString('id-ID') }}</div>
+                                <div class="text-sm font-extrabold text-emerald-600">{{ formatRupiah(viewingTeacher.other_allowance || 0) }}</div>
                             </div>
                         </div>
                     </div>
@@ -710,7 +711,7 @@ watch(() => form.joined_date, (newDate) => {
                             <div v-for="pos in viewingTeacher.positions" :key="pos.id" class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex justify-between items-center">
                                 <span class="text-sm font-bold text-gray-700">{{ pos.name }}</span>
                                 <div class="text-right">
-                                    <div class="text-xs font-black text-emerald-600">Rp {{ Number(pos.allowance).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
+                                    <div class="text-xs font-black text-emerald-600">{{ formatRupiah(pos.allowance) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -747,15 +748,15 @@ watch(() => form.joined_date, (newDate) => {
                             <div v-if="viewingTeacher.bpjs_info.category_name !== 'Belum Diatur' && viewingTeacher.bpjs_info.category_name !== 'Non-BPJS'" class="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full md:w-auto">
                                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 min-w-[120px]">
                                     <div class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Tunjangan BPJS</div>
-                                    <div class="text-xs font-extrabold text-emerald-600 mt-1">Rp {{ Number(viewingTeacher.bpjs_info.bpjs_allowance).toLocaleString('id-ID') }}</div>
+                                    <div class="text-xs font-extrabold text-emerald-600 mt-1">{{ formatRupiah(viewingTeacher.bpjs_info.bpjs_allowance) }}</div>
                                 </div>
                                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 min-w-[120px]">
                                     <div class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Potongan BPJS Kes</div>
-                                    <div class="text-xs font-extrabold text-rose-600 mt-1">Rp {{ Number(viewingTeacher.bpjs_info.bpjs_health).toLocaleString('id-ID') }}</div>
+                                    <div class="text-xs font-extrabold text-rose-600 mt-1">{{ formatRupiah(viewingTeacher.bpjs_info.bpjs_health) }}</div>
                                 </div>
                                 <div class="bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-100 dark:border-gray-700 min-w-[120px]">
                                     <div class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Potongan BPJS TK</div>
-                                    <div class="text-xs font-extrabold text-rose-600 mt-1">Rp {{ Number(viewingTeacher.bpjs_info.bpjs_naker).toLocaleString('id-ID') }}</div>
+                                    <div class="text-xs font-extrabold text-rose-600 mt-1">{{ formatRupiah(viewingTeacher.bpjs_info.bpjs_naker) }}</div>
                                 </div>
                             </div>
                             <div v-else class="text-sm font-bold text-gray-400 dark:text-gray-500 italic">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { Bar } from 'vue-chartjs';
@@ -40,7 +41,7 @@ const chartOptions = {
         y: {
             beginAtZero: true,
             ticks: {
-                callback: (value: any) => 'Rp ' + value.toLocaleString('id-ID', {maximumFractionDigits: 0})
+                callback: (value: any) => formatRupiah(value)
             }
         }
     }
@@ -111,7 +112,7 @@ const payrollPaidPercent = computed(() => {
                                     </svg>
                                 </div>
                                 <div class="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-1">Payroll Terbayar</div>
-                                <div class="text-xl font-extrabold tracking-tight">Rp {{ Number(stats.payroll_this_month || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
+                                <div class="text-xl font-extrabold tracking-tight">{{ formatRupiah(stats.payroll_this_month || 0) }}</div>
                                 <div class="mt-3 text-[9px] font-bold text-blue-200 bg-white/10 px-2 py-1 rounded-full w-fit">Bulan Ini</div>
                             </div>
                         </div>
@@ -178,7 +179,7 @@ const payrollPaidPercent = computed(() => {
                                 </div>
                                 <div>
                                     <div class="text-[10px] font-black uppercase tracking-widest text-indigo-100 mb-0.5">Saldo Kas Sekarang</div>
-                                    <div class="text-2xl font-black tracking-tight">Rp {{ Number(stats?.cash_balance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
+                                    <div class="text-2xl font-black tracking-tight">{{ formatRupiah(stats?.cash_balance || 0) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +208,7 @@ const payrollPaidPercent = computed(() => {
                                         <td class="py-4 pr-4 pl-2 text-center text-xs font-black text-gray-400">{{ index + 1 }}</td>
                                         <td class="py-4 font-bold text-gray-900 dark:text-white">{{ sal.teacher?.name }}</td>
                                         <td class="py-4 text-gray-500 font-medium">Periode {{ String(sal.month).padStart(2, '0') }}/{{ sal.year }}</td>
-                                        <td class="py-4 font-black text-emerald-600">Rp {{ (sal.amount || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
+                                        <td class="py-4 font-black text-emerald-600">{{ formatRupiah(sal.amount || 0) }}</td>
                                         <td class="py-4 text-right text-xs font-black uppercase text-gray-400">Status Selesai</td>
                                     </tr>
                                     <tr v-if="!stats?.recent_salaries?.length">
@@ -233,7 +234,7 @@ const payrollPaidPercent = computed(() => {
                                 </div>
                                 <div>
                                     <div class="text-xs font-black uppercase tracking-widest text-indigo-100 mb-1">Gaji Terakhir</div>
-                                    <div class="text-3xl font-black tracking-tight">Rp {{ (stats?.financials?.last_salary || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
+                                    <div class="text-3xl font-black tracking-tight">{{ formatRupiah(stats?.financials?.last_salary || 0) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -248,7 +249,7 @@ const payrollPaidPercent = computed(() => {
                                 </div>
                                 <div>
                                     <div class="text-xs font-black uppercase tracking-widest text-emerald-100 mb-1">Total Diterima Tahun Ini</div>
-                                    <div class="text-3xl font-black tracking-tight">Rp {{ (stats?.financials?.total_year || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
+                                    <div class="text-3xl font-black tracking-tight">{{ formatRupiah(stats?.financials?.total_year || 0) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -273,7 +274,7 @@ const payrollPaidPercent = computed(() => {
                                     <div v-for="pos in stats.teacher.positions" :key="pos.name"
                                         class="flex items-center justify-between text-sm bg-indigo-50 dark:bg-indigo-900/20 rounded-xl px-4 py-2">
                                         <span class="font-bold text-indigo-700 dark:text-indigo-300 text-left">{{ pos.name }}</span>
-                                        <span class="font-black text-indigo-600 dark:text-indigo-400 text-xs ml-2">+Rp {{ (pos.allowance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</span>
+                                        <span class="font-black text-indigo-600 dark:text-indigo-400 text-xs ml-2">+{{ formatRupiah(pos.allowance || 0) }}</span>
                                     </div>
                                 </div>
                                 <div v-else class="text-sm text-gray-400 italic py-2">Tidak ada jabatan tambahan.</div>
@@ -301,8 +302,8 @@ const payrollPaidPercent = computed(() => {
                                             <td class="py-3.5 px-3 font-bold text-gray-900 dark:text-white text-sm">
                                                 {{ String(sal.month).padStart(2, '0') }}/{{ sal.year }}
                                             </td>
-                                            <td class="py-3.5 px-3 text-gray-600 font-medium text-sm">Rp {{ Number(sal.base_salary || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
-                                            <td class="py-3.5 px-3 text-emerald-600 font-medium text-sm">+Rp {{ Number(sal.allowance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
+                                            <td class="py-3.5 px-3 text-gray-600 font-medium text-sm">{{ formatRupiah(sal.base_salary || 0) }}</td>
+                                            <td class="py-3.5 px-3 text-emerald-600 font-medium text-sm">+{{ formatRupiah(sal.allowance || 0) }}</td>
                                             <td class="py-3.5 px-3 text-center">
                                                 <span class="text-[10px] font-black uppercase px-2.5 py-1 rounded-full"
                                                     :class="sal.status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">

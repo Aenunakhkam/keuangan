@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -37,10 +38,6 @@ watch([month, year], debounce(() => {
     }, { preserveState: true, replace: true });
 }, 300));
 
-const formatRupiah = (value: number) => {
-    if (value === undefined || value === null || value === 0) return 'Rp -';
-    return 'Rp ' + Number(value).toLocaleString('id-ID', { maximumFractionDigits: 0 });
-};
 
 const printSalary = (id: number) => {
     window.open(route('salaries.print', id), '_blank');

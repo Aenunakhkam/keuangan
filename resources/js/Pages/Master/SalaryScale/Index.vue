@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -110,7 +111,7 @@ const grades = ['I', 'II', 'III', 'IV', 'V'];
                                     {{ scale.mkg }} s.d {{ scale.mkg + 1 }} Tahun
                                 </td>
                                 <td class="px-6 py-4 font-black text-emerald-600">
-                                    Rp {{ Number(scale.amount).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}
+                                    {{ formatRupiah(scale.amount) }}
                                 </td>
                                 <td class="px-6 py-4 text-right space-x-2">
                                     <button @click="openEditModal(scale)" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 /**
  * CurrencyInput.vue
  * 
@@ -30,7 +31,7 @@ function formatDisplay(value: number | string | null): string {
     // We do not need to strip Indonesian formatting here.
     const num = Number(value);
     if (isNaN(num)) return '';
-    return num.toLocaleString('id-ID');
+    return formatRupiah(num);
 }
 
 const displayValue = ref<string>(formatDisplay(props.modelValue));
@@ -64,7 +65,7 @@ function onInput(event: Event) {
     if (numericValue === 0 && raw === '') {
         displayValue.value = '';
     } else {
-        displayValue.value = numericValue.toLocaleString('id-ID');
+        displayValue.value = formatRupiah(numericValue);
     }
 
     // Set cursor to end after formatting to avoid jumps

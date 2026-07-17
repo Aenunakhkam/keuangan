@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -142,7 +143,7 @@ const deletePosition = async (position: any) => {
                              <tr v-for="(pos, index) in positions.data" :key="pos.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150">
                                 <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ (positions.current_page - 1) * positions.per_page + index + 1 }}</td>
                                 <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">{{ pos.name }}</td>
-                                <td class="px-6 py-4 font-black text-emerald-600 dark:text-emerald-400 text-right">Rp {{ Number(pos.allowance || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
+                                <td class="px-6 py-4 font-black text-emerald-600 dark:text-emerald-400 text-right">{{ formatRupiah(pos.allowance || 0) }}</td>
                                 <td class="px-6 py-4 text-right space-x-2">
                                     <button @click="openEditModal(pos)" class="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-all">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -113,17 +114,17 @@ watch([type, category], debounce(() => {
                 <div class="bg-indigo-600 p-8 rounded-3xl text-white shadow-xl shadow-indigo-100 flex flex-col justify-between h-44 group overflow-hidden relative">
                     <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-duration-500"></div>
                     <div class="text-xs font-black uppercase tracking-widest text-indigo-100">Total Pemasukan</div>
-                    <div class="text-3xl font-black tracking-tight">Rp {{ stats?.total_income?.toLocaleString('id-ID', {maximumFractionDigits: 0}) || '0' }}</div>
+                    <div class="text-3xl font-black tracking-tight">{{ formatRupiah(stats?.total_income) || '0' }}</div>
                 </div>
                 <div class="bg-rose-600 p-8 rounded-3xl text-white shadow-xl shadow-rose-100 flex flex-col justify-between h-44 group overflow-hidden relative">
                     <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-duration-500"></div>
                     <div class="text-xs font-black uppercase tracking-widest text-rose-100">Total Pengeluaran</div>
-                    <div class="text-3xl font-black tracking-tight">Rp {{ stats?.total_expense?.toLocaleString('id-ID', {maximumFractionDigits: 0}) || '0' }}</div>
+                    <div class="text-3xl font-black tracking-tight">{{ formatRupiah(stats?.total_expense) || '0' }}</div>
                 </div>
                 <div class="bg-emerald-600 p-8 rounded-3xl text-white shadow-xl shadow-emerald-100 flex flex-col justify-between h-44 group overflow-hidden relative">
                     <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-duration-500"></div>
                     <div class="text-xs font-black uppercase tracking-widest text-emerald-100">Saldo Akhir Kas</div>
-                    <div class="text-3xl font-black tracking-tight">Rp {{ stats?.balance?.toLocaleString('id-ID', {maximumFractionDigits: 0}) || '0' }}</div>
+                    <div class="text-3xl font-black tracking-tight">{{ formatRupiah(stats?.balance) || '0' }}</div>
                 </div>
             </div>
 
@@ -159,7 +160,7 @@ watch([type, category], debounce(() => {
                                 <td class="px-6 py-4 font-black text-gray-900 dark:text-white">{{ tx.category }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500 font-medium">{{ tx.description || '-' }}</td>
                                 <td class="px-6 py-4 text-right font-black" :class="tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'">
-                                    {{ tx.type === 'income' ? '+' : '-' }} Rp {{ Number(tx.amount || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}
+                                    {{ tx.type === 'income' ? '+' : '-' }} {{ formatRupiah(tx.amount || 0) }}
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest" :class="tx.type === 'income' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'">

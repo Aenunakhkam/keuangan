@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router, Link } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
@@ -167,10 +168,6 @@ const getTerbilang = (num: number): string => {
     return result + " Rupiah";
 };
 
-const formatRupiah = (value: number) => {
-    if (value === undefined || value === null || value === 0) return 'Rp -';
-    return 'Rp ' + Number(value).toLocaleString('id-ID', { maximumFractionDigits: 0 });
-};
 
 const getLogoUrl = (logo: string | null | undefined) => {
     if (!logo) return '';
@@ -377,7 +374,7 @@ const processPublish = async () => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <span class="text-amber-600 font-bold text-xs">Total Nominal Menunggu Bendahara:</span>
-                        <span class="text-amber-700 font-black text-sm">Rp {{ Number(totalSubmittedAmount || 0).toLocaleString('id-ID') }}</span>
+                        <span class="text-amber-700 font-black text-sm">{{ formatRupiah(totalSubmittedAmount || 0) }}</span>
                     </div>
                 </div>
                 <div class="flex space-x-3">
@@ -551,7 +548,7 @@ const processPublish = async () => {
                             <td class="px-6 py-4 text-center font-bold text-gray-500 text-xs">
                                 {{ sal.payment_date ? new Date(sal.payment_date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'}) : '-' }}
                             </td>
-                            <td class="px-6 py-4 text-right font-black text-indigo-600">Rp {{ Number(sal.final_net_salary || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
+                            <td class="px-6 py-4 text-right font-black text-indigo-600">{{ formatRupiah(sal.final_net_salary || 0) }}</td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex flex-col items-center gap-1.5">
                                     <span v-if="sal.status === 'paid'" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-200">
@@ -650,7 +647,7 @@ const processPublish = async () => {
                     </div>
                     <div class="p-6 bg-gray-50 rounded-2xl">
                         <div class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Nilai Netto (Sebelum Potongan)</div>
-                        <div class="text-3xl font-black text-indigo-600">Rp {{ form.net_salary.toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</div>
+                        <div class="text-3xl font-black text-indigo-600">{{ formatRupiah(form.net_salary) }}</div>
                     </div>
                     <div class="space-y-1.5">
                         <InputLabel value="Periode Gaji (Bulan & Tahun)" />
@@ -887,7 +884,7 @@ const processPublish = async () => {
                             <span class="text-[10px] font-black text-indigo-300 uppercase tracking-widest block">GAJI BERSIH DITERIMA (TAKE HOME PAY)</span>
                             <div class="text-3xl font-black tracking-tight text-white font-mono flex items-baseline">
                                 <span class="text-xl font-bold mr-1">Rp</span>
-                                <span>{{ Number(selectedSalary.salary_deduction ? selectedSalary.salary_deduction.gaji_bersih : selectedSalary.net_salary).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</span>
+                                <span>{{ formatRupiah(selectedSalary.salary_deduction ? selectedSalary.salary_deduction.gaji_bersih : selectedSalary.net_salary) }}</span>
                             </div>
                         </div>
                         <div class="flex-1 max-w-xl bg-white/5 backdrop-blur-md px-6 py-3 rounded-lg border border-white/10">

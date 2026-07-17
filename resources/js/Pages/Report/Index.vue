@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -87,7 +88,7 @@ const barOptions = {
         y: {
             beginAtZero: true,
             ticks: {
-                callback: (value: any) => 'Rp ' + Number(value).toLocaleString('id-ID')
+                callback: (value: any) => formatRupiah(value)
             }
         }
     }
@@ -173,7 +174,7 @@ const monthName = (m: number) => {
                     <div class="space-y-4">
                         <div v-for="item in incomeByMonth" :key="item.month" class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl">
                             <span class="font-bold text-gray-600">{{ monthName(item.month) }}</span>
-                            <span class="font-black text-emerald-600">Rp {{ Number(item.total || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</span>
+                            <span class="font-black text-emerald-600">{{ formatRupiah(item.total || 0) }}</span>
                         </div>
                         <div v-if="incomeByMonth.length === 0" class="text-center py-4 text-gray-400 font-medium italic">Belum ada data pemasukan.</div>
                     </div>
@@ -186,7 +187,7 @@ const monthName = (m: number) => {
                     <div class="space-y-4">
                         <div v-for="item in expenseByMonth" :key="item.month" class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl">
                             <span class="font-bold text-gray-600">{{ monthName(item.month) }}</span>
-                            <span class="font-black text-rose-600">Rp {{ Number(item.total || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</span>
+                            <span class="font-black text-rose-600">{{ formatRupiah(item.total || 0) }}</span>
                         </div>
                         <div v-if="expenseByMonth.length === 0" class="text-center py-4 text-gray-400 font-medium italic">Belum ada data pengeluaran.</div>
                     </div>
@@ -212,7 +213,7 @@ const monthName = (m: number) => {
                                 <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ index + 1 }}</td>
                                 <td class="px-6 py-4 font-bold text-gray-900">{{ sal.teacher?.name || '-' }}</td>
                                 <td class="px-6 py-4 text-gray-600 font-medium text-sm">{{ sal.period }}</td>
-                                <td class="px-6 py-4 text-right font-black text-indigo-600">Rp {{ Number(sal.amount || 0).toLocaleString('id-ID', {maximumFractionDigits: 0}) }}</td>
+                                <td class="px-6 py-4 text-right font-black text-indigo-600">{{ formatRupiah(sal.amount || 0) }}</td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase">
                                         {{ sal.status }}

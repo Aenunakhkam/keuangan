@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -59,7 +60,7 @@ const formatCurrency = (value: number) => {
 };
 
 const formatPercent = (value: number) => {
-    return value.toLocaleString('id-ID', { minimumFractionDigits: 2 }) + '%';
+    return formatRupiah(value) + '%';
 };
 </script>
 

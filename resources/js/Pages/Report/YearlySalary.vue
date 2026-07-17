@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatRupiah } from '@/Utils/formatRupiah';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -61,7 +62,7 @@ const props = defineProps<{
                                             <span v-else class="text-gray-400 text-sm font-medium">-</span>
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <span class="text-sm font-black text-gray-900">Rp {{ Number(data.total_amount).toLocaleString('id-ID') }}</span>
+                                            <span class="text-sm font-black text-gray-900">{{ formatRupiah(data.total_amount) }}</span>
                                         </td>
                                     </tr>
                                     <tr v-if="yearlyData.length === 0">
