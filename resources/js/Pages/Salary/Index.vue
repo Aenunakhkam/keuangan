@@ -536,7 +536,7 @@ const processPublish = async () => {
                                 />
                             </td>
                             <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300 w-12">
-                                {{ (salaries.current_page - 1) * salaries.per_page + index + 1 }}
+                                {{ (Number(salaries.current_page) - 1) * Number(salaries.per_page) + index + 1 }}
                             </td>
                             <td class="px-6 py-4">
                                 <div class="font-bold text-gray-900 dark:text-white">{{ sal.teacher.name }}</div>
