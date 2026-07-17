@@ -23,7 +23,7 @@ echo [OK] Kode berhasil diperbarui!
 echo.
 
 :: Step 2: Composer Install
-echo [2/3] Menyelaraskan dependensi PHP (composer install)...
+echo [2/5] Menyelaraskan dependensi PHP (composer install)...
 call composer install --no-interaction --prefer-dist --optimize-autoloader
 if %errorlevel% neq 0 (
     color 0C
@@ -33,8 +33,25 @@ if %errorlevel% neq 0 (
 echo [OK] Dependensi PHP berhasil diselaraskan!
 echo.
 
-:: Step 3: Run Migrations
-echo [3/4] Menjalankan migrasi perubahan database (migrate)...
+:: Step 3: NPM Install & Build
+echo [3/5] Membangun asset frontend (npm install ^& npm run build)...
+call npm install
+if %errorlevel% neq 0 (
+    color 0C
+    echo [ERROR] Gagal menjalankan npm install.
+    goto end
+)
+call npm run build
+if %errorlevel% neq 0 (
+    color 0C
+    echo [ERROR] Gagal menjalankan npm run build.
+    goto end
+)
+echo [OK] Asset frontend berhasil dibangun!
+echo.
+
+:: Step 4: Run Migrations
+echo [4/5] Menjalankan migrasi perubahan database (migrate)...
 call php artisan migrate --force
 if %errorlevel% neq 0 (
     color 0C
@@ -49,8 +66,8 @@ echo [*] Menghubungkan penyimpanan media (storage:link)...
 call php artisan storage:link
 echo.
 
-:: Step 4: Clear All Cache
-echo [4/4] Membersihkan cache Laravel (config, route, view, app)...
+:: Step 5: Clear All Cache
+echo [5/5] Membersihkan cache Laravel (config, route, view, app)...
 call php artisan optimize:clear
 call php artisan config:clear
 call php artisan route:clear
