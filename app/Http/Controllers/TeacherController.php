@@ -19,7 +19,8 @@ class TeacherController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('nip', 'like', '%' . $request->search . '%');
+                  ->orWhere('nipty', 'like', '%' . $request->search . '%')
+                  ->orWhere('nipy', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -115,11 +116,15 @@ class TeacherController extends Controller
     {
         $email = $request->email;
         if (empty($email)) {
-            $baseEmail = $request->nipty ?? $request->nipy ?? strtolower(str_replace(' ', '', $request->name));
-            $email = $baseEmail . '@school.local';
+            // Gunakan nama guru (hilangkan spasi dan karakter khusus) + @gmail.com
+            $baseEmail = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $request->name));
+            if (empty($baseEmail)) {
+                $baseEmail = 'guru';
+            }
+            $email = $baseEmail . '@gmail.com';
             $counter = 1;
             while (\App\Models\User::where('email', $email)->exists()) {
-                $email = $baseEmail . $counter . '@school.local';
+                $email = $baseEmail . $counter . '@gmail.com';
                 $counter++;
             }
         }
@@ -263,10 +268,16 @@ class TeacherController extends Controller
                 }
 
                 if (empty($email)) {
-                    // Berikan email random yang belum terdaftar
-                    $email = 'guru_' . uniqid() . '@school.local';
+                    // Gunakan nama guru (hilangkan spasi dan karakter khusus) + @gmail.com
+                    $baseEmail = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $name));
+                    if (empty($baseEmail)) {
+                        $baseEmail = 'guru';
+                    }
+                    $email = $baseEmail . '@gmail.com';
+                    $counter = 1;
                     while (\App\Models\User::where('email', $email)->exists()) {
-                        $email = 'guru_' . uniqid() . '@school.local';
+                        $email = $baseEmail . $counter . '@gmail.com';
+                        $counter++;
                     }
                 }
 
