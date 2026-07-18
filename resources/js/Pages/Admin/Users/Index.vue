@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { watch } from 'vue';
+import { debounce } from 'lodash';
 
 const props = defineProps<{
     users: any;
@@ -107,10 +108,15 @@ const bulkDeleteUsers = async () => {
     }
 };
 
-const filterByRole = (event: Event) => {
-    const target = event.target as HTMLSelectElement;
-    router.get(route('users.index'), { role: target.value }, { preserveState: true });
-};
+const role = ref(props.filters?.role || '');
+const perPage = ref(props.filters?.per_page || 10);
+
+watch([role, perPage], debounce(() => {
+    router.get(route('users.index'), {
+        role: role.value,
+        per_page: perPage.value,
+    }, { preserveState: true, replace: true });
+}, 300));
 </script>
 
 <template>
@@ -129,14 +135,27 @@ const filterByRole = (event: Event) => {
                             <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                                 <h3 class="text-lg font-medium">Daftar Pengguna</h3>
                                 <select 
-                                    @change="filterByRole"
+                                    v-model="role"
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
                                 >
                                     <option value="">Semua Role (Filter)</option>
-                                    <option v-for="role in roles" :key="role.id" :value="role.name" :selected="filters?.role === role.name">
-                                        {{ role.name }}
+                                    <option v-for="r in roles" :key="r.id" :value="r.name">
+                                        {{ r.name }}
                                     </option>
                                 </select>
+                                <div class="flex items-center space-x-2 text-sm text-gray-700">
+                                    <span>Lihat:</span>
+                                    <select 
+                                        v-model="perPage" 
+                                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm py-2 pl-3 pr-8"
+                                    >
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="all">Semua</option>
+                                    </select>
+                                </div>
                                 <button v-if="selectedUsers.length > 0" @click="bulkDeleteUsers" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-sm">
                                     Hapus {{ selectedUsers.length }} Terpilih
                                 </button>

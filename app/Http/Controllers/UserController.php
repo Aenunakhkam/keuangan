@@ -22,8 +22,10 @@ class UserController extends Controller
             });
         }
 
+        $perPage = $request->per_page === 'all' ? ($query->count() > 0 ? $query->count() : 1) : (int) ($request->per_page ?? 10);
+
         return Inertia::render('Admin/Users/Index', [
-            'users' => $query->paginate(10)->withQueryString()->through(function ($user) {
+            'users' => $query->paginate($perPage)->withQueryString()->through(function ($user) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -38,6 +40,7 @@ class UserController extends Controller
             }),
             'filters' => [
                 'role' => $roleFilter ?? '',
+                'per_page' => $request->per_page ?? 10,
             ]
         ]);
     }
