@@ -695,9 +695,9 @@ watch(() => form.joined_date, (newDate) => {
                                 <div class="text-[10px] font-black text-gray-400 uppercase mb-1">NIPY</div>
                                 <div class="text-sm font-bold text-gray-900">{{ viewingTeacher.nipy || '-' }}</div>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <div class="text-[10px] font-black text-gray-400 uppercase mb-1">Akun Email</div>
-                                <div class="text-sm font-bold text-gray-900">{{ viewingTeacher.email || '-' }}</div>
+                                <div class="text-sm font-bold text-gray-900 truncate" :title="viewingTeacher.email">{{ viewingTeacher.email || '-' }}</div>
                             </div>
                             <div>
                                 <div class="text-[10px] font-black text-gray-400 uppercase mb-1">Jenis Kelamin</div>
