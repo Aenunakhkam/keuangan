@@ -123,6 +123,34 @@ const deleteTeacher = async (teacher: any) => {
     }
 };
 
+const selectedIds = ref<number[]>([]);
+
+const selectAll = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (target.checked) {
+        selectedIds.value = props.teachers.data.map((t: any) => t.id);
+    } else {
+        selectedIds.value = [];
+    }
+};
+
+const bulkDelete = async () => {
+    if (selectedIds.value.length === 0) return;
+    
+    const result = await confirmDelete(
+        'Hapus Data Terpilih',
+        `Apakah Anda yakin ingin menghapus ${selectedIds.value.length} data guru yang dipilih? Tindakan ini tidak dapat dibatalkan.`
+    );
+
+    if (result.isConfirmed) {
+        router.post(route('teachers.bulk-delete'), { ids: selectedIds.value }, {
+            onSuccess: () => {
+                selectedIds.value = [];
+            }
+        });
+    }
+};
+
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const triggerFileInput = () => {
@@ -335,8 +363,20 @@ watch(() => form.joined_date, (newDate) => {
         <div class="space-y-6">
             <!-- Filter -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="max-w-md w-full">
-                    <TextInput v-model="search" placeholder="Cari Guru atau NIP..." class="block w-full" />
+                <div class="flex items-center space-x-4 w-full md:w-auto">
+                    <div class="max-w-md w-full">
+                        <TextInput v-model="search" placeholder="Cari Guru atau NIP..." class="block w-full" />
+                    </div>
+                    <button 
+                        v-if="selectedIds.length > 0"
+                        @click="bulkDelete"
+                        class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm flex items-center space-x-2 whitespace-nowrap"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Hapus Terpilih ({{ selectedIds.length }})</span>
+                    </button>
                 </div>
                 <div class="flex items-center space-x-3">
                     <span class="text-sm font-bold text-gray-500">Lihat:</span>
@@ -358,7 +398,10 @@ watch(() => form.joined_date, (newDate) => {
                 <table class="w-full text-left">
                     <thead>
                         <tr class="bg-[#003B73] border-b border-indigo-800">
-                            <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-center w-16">No</th>
+                            <th class="px-4 py-4 text-center w-12">
+                                <input type="checkbox" @change="selectAll" :checked="selectedIds.length === teachers.data.length && teachers.data.length > 0" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                            </th>
+                            <th class="px-4 py-4 text-xs font-black text-white uppercase tracking-widest text-center w-12">No</th>
                             <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest">Nama / Pend.</th>
                             <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest text-center">JK</th>
                             <th class="px-6 py-4 text-xs font-black text-white uppercase tracking-widest">NIPTY / NIPY</th>
@@ -370,7 +413,10 @@ watch(() => form.joined_date, (newDate) => {
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                         <tr v-for="(teacher, index) in teachers.data" :key="teacher.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors duration-150">
-                            <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ Number(teachers.from || 1) + Number(index) }}</td>
+                            <td class="px-4 py-4 text-center">
+                                <input type="checkbox" v-model="selectedIds" :value="teacher.id" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                            </td>
+                            <td class="px-4 py-4 text-center font-bold text-gray-900 dark:text-gray-300">{{ Number(teachers.from || 1) + Number(index) }}</td>
                             <td class="px-6 py-4 font-medium text-gray-700 dark:text-gray-300">
                                 <div class="font-black text-gray-900 dark:text-white">{{ teacher.name }}</div>
                                 <div v-if="teacher.education" class="text-[10px] font-bold text-emerald-600 uppercase">{{ teacher.education }}</div>

@@ -178,6 +178,27 @@ class TeacherController extends Controller
         return redirect()->back()->with('success', 'Data guru dan akun pengguna berhasil dihapus.');
     }
 
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:teachers,id'
+        ]);
+
+        $teachers = Teacher::whereIn('id', $request->ids)->get();
+        
+        foreach ($teachers as $teacher) {
+            $user = $teacher->user;
+            $teacher->delete();
+            if ($user) {
+                $user->delete();
+            }
+        }
+
+        return redirect()->back()->with('success', count($request->ids) . ' Data guru berhasil dihapus.');
+    }
+
+
     public function resetPassword(Teacher $teacher)
     {
         if ($teacher->user) {

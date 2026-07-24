@@ -27,12 +27,15 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/export-pdf', [\App\Http\Controllers\DashboardExportController::class, 'exportPdf'])->name('dashboard.export-pdf');
+    Route::get('/dashboard/export-excel', [\App\Http\Controllers\DashboardExportController::class, 'exportExcel'])->name('dashboard.export-excel');
     
     // Master Data
     Route::resource('positions', \App\Http\Controllers\PositionController::class);
     Route::get('teachers/template', [TeacherController::class, 'downloadTemplate'])->name('teachers.template');
     Route::post('/teachers/import', [TeacherController::class, 'import'])->name('teachers.import');
     Route::post('/teachers/{teacher}/reset-password', [TeacherController::class, 'resetPassword'])->name('teachers.reset-password');
+    Route::post('teachers/bulk-delete', [TeacherController::class, 'bulkDelete'])->name('teachers.bulk-delete');
     Route::resource('teachers', TeacherController::class);
     
     // Potongan Gaji Pegawai
