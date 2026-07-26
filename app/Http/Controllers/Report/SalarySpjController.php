@@ -60,7 +60,11 @@ class SalarySpjController extends Controller
             }
 
             $gajiPokok = (float) $salary->base_salary;
-            $tunjanganJabatan = (float) $salary->allowance;
+            
+            // Hitung tunjangan secara dinamis dari relasi positions agar sinkron dengan nama jabatan
+            $structuralAllowance = $teacher && $teacher->positions ? $teacher->positions->sum('allowance') : 0;
+            $otherAllowance = $teacher ? (float) ($teacher->other_allowance ?? 0) : 0;
+            $tunjanganJabatan = $structuralAllowance + $otherAllowance;
 
             $jumlahTunjangan = $tunjanganJabatan + $bpjsAllowance;
             $jumlahBruto = $gajiPokok + $jumlahTunjangan;

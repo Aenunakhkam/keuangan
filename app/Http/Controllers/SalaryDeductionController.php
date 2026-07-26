@@ -64,7 +64,11 @@ class SalaryDeductionController extends Controller
                 $bpjsNaker = $category->has_naker ? round($umk * $nakerTotalPercent / 100) : 0;
             }
 
-            $jumlahBruto = $salary->base_salary + $salary->allowance + $bpjsAllowance;
+            $structuralAllowance = $teacher && $teacher->positions ? $teacher->positions->sum('allowance') : 0;
+            $otherAllowance = $teacher ? (float) ($teacher->other_allowance ?? 0) : 0;
+            $tunjanganJabatan = $structuralAllowance + $otherAllowance;
+
+            $jumlahBruto = $salary->base_salary + $tunjanganJabatan + $bpjsAllowance;
             $spjNetto = $jumlahBruto - ($bpjsHealth + $bpjsNaker);
 
             // Cek apakah sudah ada di tabel salary_deductions
@@ -210,7 +214,11 @@ class SalaryDeductionController extends Controller
                 $bpjsNaker     = $category->has_naker  ? round($umk * $nakerTotalPct  / 100) : 0;
             }
 
-            $jumlahBruto = $salary->base_salary + $salary->allowance + $bpjsAllowance;
+            $structuralAllowance = $teacher && $teacher->positions ? $teacher->positions->sum('allowance') : 0;
+            $otherAllowance = $teacher ? (float) ($teacher->other_allowance ?? 0) : 0;
+            $tunjanganJabatan = $structuralAllowance + $otherAllowance;
+
+            $jumlahBruto = $salary->base_salary + $tunjanganJabatan + $bpjsAllowance;
             $spjNetto    = $jumlahBruto - ($bpjsHealth + $bpjsNaker);
 
             $existing = \App\Models\SalaryDeduction::where('salary_id', $salary->id)->first();
