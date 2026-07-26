@@ -221,7 +221,7 @@ class SalaryDeductionController extends Controller
             $jumlahBruto = $salary->base_salary + $tunjanganJabatan + $bpjsAllowance;
             $spjNetto    = $jumlahBruto - ($bpjsHealth + $bpjsNaker);
 
-            $existing = \App\Models\SalaryDeduction::where('salary_id', $salary->id)->first();
+            $existing = SalaryDeduction::where('salary_id', $salary->id)->first();
 
             if ($existing) {
                 $existing->spj_netto = $spjNetto;
@@ -267,7 +267,7 @@ class SalaryDeductionController extends Controller
         ];
     }
 
-    public function exportPdf(\Illuminate\Http\Request $request)
+    public function exportPdf(Request $request)
     {
         $month = $request->get('month', date('n'));
         $year  = $request->get('year',  date('Y'));
@@ -276,7 +276,7 @@ class SalaryDeductionController extends Controller
         return view('salary-deduction-print', $data);
     }
 
-    public function exportExcel(\Illuminate\Http\Request $request)
+    public function exportExcel(Request $request)
     {
         $month    = $request->get('month', date('n'));
         $year     = $request->get('year',  date('Y'));
